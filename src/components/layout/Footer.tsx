@@ -71,7 +71,7 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 px-5 py-6 text-xs text-white/40 md:flex-row md:items-center md:justify-between md:px-8">
           <p>
-            ? {new Date().getFullYear()} {site.legalName}. All rights reserved.
+            © {new Date().getFullYear()} {site.legalName}. All rights reserved.
           </p>
           <div className="flex flex-wrap gap-5">
             <Link href="/privacy" className="hover:text-white">
@@ -82,6 +82,9 @@ export function Footer() {
             </Link>
             <Link href="/portal/login" className="hover:text-white">
               Client Portal
+            </Link>
+            <Link href="/admin/login" className="hover:text-white">
+              Admin
             </Link>
           </div>
         </div>
