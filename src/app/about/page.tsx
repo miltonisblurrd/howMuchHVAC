@@ -5,7 +5,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { site } from "@/lib/site";
-import { getLeadership, team } from "@/lib/team";
+import { team } from "@/lib/team";
 
 export const metadata: Metadata = {
   title: "About",
@@ -14,8 +14,6 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-  const leadership = getLeadership();
-
   return (
     <SiteShell>
       <Section tone="dark" className="!pt-16 md:!pt-24">
@@ -107,49 +105,6 @@ export default function AboutPage() {
 
       <Section tone="white">
         <Container>
-          <Eyebrow>Leadership</Eyebrow>
-          <Heading as="h2" className="mt-3 text-hm-charcoal">
-            The people running the company
-          </Heading>
-          <p className="mt-3 max-w-2xl text-hm-muted">
-            Not a faceless call center — leadership you can put a name and face to.
-          </p>
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            {leadership.map((member) => (
-              <Link
-                key={member.slug}
-                href={`/team/${member.slug}`}
-                className="group overflow-hidden rounded-2xl border border-hm-line bg-hm-fog transition hover:border-hm-red/35"
-              >
-                <div className="relative h-56">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    sizes="33vw"
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-5">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-hm-red">
-                    {member.role}
-                  </p>
-                  <h3 className="mt-1 font-display text-xl font-bold text-hm-charcoal">
-                    {member.name}
-                  </h3>
-                  <p className="mt-2 text-sm text-hm-muted">{member.shortBio}</p>
-                  <span className="mt-4 inline-block text-sm font-semibold text-hm-red">
-                    Learn more →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      <Section tone="fog">
-        <Container>
           <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
               <Eyebrow>Our team</Eyebrow>
@@ -170,7 +125,7 @@ export default function AboutPage() {
               <Link
                 key={member.slug}
                 href={`/team/${member.slug}`}
-                className="rounded-2xl border border-hm-line bg-white p-4 transition hover:border-hm-red/35"
+                className="rounded-2xl border border-hm-line bg-hm-fog p-4 transition hover:border-hm-red/35"
               >
                 <div className="relative mb-3 h-40 overflow-hidden rounded-xl">
                   <Image
