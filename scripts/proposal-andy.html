@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Website Proposal for Andy</title>
+    <style>
+      @page {
+        size: letter;
+        margin: 0.75in 0.8in;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: Helvetica, Arial, sans-serif;
+        color: #1a1a1a;
+        font-size: 10pt;
+        line-height: 1.5;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      h1 {
+        font-size: 22pt;
+        line-height: 1.15;
+        letter-spacing: -0.03em;
+        margin: 0 0 12px;
+        font-weight: 700;
+      }
+
+      h2 {
+        font-size: 12pt;
+        line-height: 1.25;
+        margin: 26px 0 12px;
+        padding: 0 0 6px;
+        border-bottom: 2px solid #e10600;
+        font-weight: 700;
+      }
+
+      h3 {
+        font-size: 10.5pt;
+        line-height: 1.3;
+        margin: 0 0 6px;
+        font-weight: 700;
+      }
+
+      p {
+        margin: 0 0 10px;
+      }
+
+      ul,
+      ol {
+        margin: 0 0 12px;
+        padding-left: 1.2em;
+      }
+
+      li {
+        margin: 0 0 4px;
+      }
+
+      a {
+        color: #c40014;
+        text-decoration: none;
+      }
+
+      .meta {
+        font-size: 9.5pt;
+        color: #555;
+        margin: 0 0 18px;
+        line-height: 1.5;
+      }
+
+      .meta strong {
+        color: #222;
+      }
+
+      .hero {
+        background: #15181c;
+        color: #fff;
+        padding: 20px 22px;
+        margin: 0 0 22px;
+      }
+
+      .hero .label {
+        font-size: 8.5pt;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.5);
+        margin: 0 0 10px;
+      }
+
+      .hero p {
+        margin: 0 0 10px;
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      .hero .price {
+        font-size: 18pt;
+        font-weight: 700;
+        margin: 14px 0 6px;
+        color: #fff;
+        line-height: 1.2;
+      }
+
+      .hero .price-note {
+        font-size: 9.5pt;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0;
+      }
+
+      .pain {
+        border: 1px solid #f0c4c7;
+        background: #fff7f7;
+        padding: 16px 18px;
+        margin: 0 0 14px;
+      }
+
+      .sites {
+        display: table;
+        width: 100%;
+        border-spacing: 0;
+      }
+
+      .site {
+        display: table-cell;
+        width: 50%;
+        vertical-align: top;
+        padding-right: 16px;
+      }
+
+      .site + .site {
+        padding-right: 0;
+        padding-left: 16px;
+        border-left: 1px solid #f0c4c7;
+      }
+
+      .site .tag {
+        font-size: 8pt;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #b40012;
+        margin: 0 0 6px;
+      }
+
+      .site .url {
+        font-size: 11pt;
+        font-weight: 700;
+        margin: 0 0 6px;
+      }
+
+      .site p {
+        margin: 0;
+        font-size: 9.5pt;
+        color: #333;
+      }
+
+      .outcome {
+        font-size: 10pt;
+        font-weight: 700;
+        margin: 10px 0 0;
+      }
+
+      .item {
+        margin: 0 0 16px;
+      }
+
+      .cols {
+        display: table;
+        width: 100%;
+        border-spacing: 0;
+      }
+
+      .col {
+        display: table-cell;
+        width: 50%;
+        vertical-align: top;
+      }
+
+      .col + .col {
+        padding-left: 28px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 8px 0 14px;
+        font-size: 9pt;
+      }
+
+      th,
+      td {
+        border-top: 1px solid #e2e2e2;
+        border-bottom: 1px solid #e2e2e2;
+        padding: 9px 8px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background: #f5f6f8;
+        font-weight: 700;
+        font-size: 8pt;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #666;
+      }
+
+      td:first-child {
+        font-weight: 600;
+        width: 30%;
+      }
+
+      td.num,
+      th.num {
+        text-align: right;
+        white-space: nowrap;
+        width: 90px;
+      }
+
+      tr.total td {
+        font-weight: 700;
+        background: #f5f6f8;
+      }
+
+      tr.family td {
+        font-weight: 700;
+        background: #fff5f5;
+        color: #b40012;
+        border-bottom: 2px solid #e10600;
+      }
+
+      .note {
+        font-size: 9pt;
+        color: #666;
+        margin: 0 0 12px;
+      }
+
+      .soft {
+        background: #f5f6f8;
+        border: 1px solid #e6e8ec;
+        padding: 14px 16px;
+        margin: 0 0 18px;
+      }
+
+      .soft p {
+        margin: 0;
+      }
+
+      .pay {
+        border: 1.5px solid #222;
+        padding: 14px 16px;
+        margin: 18px 0;
+      }
+
+      .pay .amount {
+        font-size: 12pt;
+        font-weight: 700;
+        margin: 0 0 4px;
+      }
+
+      .pay .note {
+        margin: 0;
+      }
+
+      .sig {
+        margin-top: 18px;
+        color: #555;
+        font-weight: 600;
+      }
+
+      .page-break {
+        break-before: page;
+        page-break-before: always;
+      }
+
+      .tight-top {
+        margin-top: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>
+      Website Proposal<br />
+      for How Much Air &amp; Home Improvements
+    </h1>
+
+    <div class="meta">
+      <strong>For:</strong> Andy &nbsp;&nbsp;|&nbsp;&nbsp;
+      <strong>From:</strong> Milton &nbsp;&nbsp;|&nbsp;&nbsp;
+      <strong>Date:</strong> August 2026
+    </div>
+
+    <div class="hero">
+      <p class="label">The short version</p>
+      <p>
+        Right now your online presence is hurting you. Two sites are fighting
+        each other, and one does not even say you are an HVAC company anymore.
+      </p>
+      <p>
+        This proposal fixes that with one strong website, a real customer
+        portal, a real owner admin, payments, texts, emails, and an AI helper.
+      </p>
+      <p class="price">Your family price: $1,500</p>
+      <p class="price-note">
+        Normal fair price for this work: about $27,500<br />
+        You save about $26,000 because we are family.
+      </p>
+    </div>
+
+    <h2 class="tight-top">Your pain right now</h2>
+    <p>You have two websites that pull people in two directions.</p>
+
+    <div class="pain">
+      <div class="sites">
+        <div class="site">
+          <p class="tag">Site 1 - your real brand</p>
+          <p class="url">
+            <a href="https://trusthowmuch.com">trusthowmuch.com</a>
+          </p>
+          <p>
+            This is the domain people already know. It is tied to How Much Air
+            &amp; Home Improvements.
+          </p>
+        </div>
+        <div class="site">
+          <p class="tag">Site 2 - the other company&rsquo;s site</p>
+          <p class="url">
+            <a href="https://askhowmuch.work/home">askhowmuch.work/home</a>
+          </p>
+          <p>
+            Another company set this up as a different web address instead of
+            using the domain you already had.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <p><strong>That created a mess:</strong></p>
+    <ul>
+      <li>
+        Google and customers now see <strong>two places</strong>, not one clear
+        home
+      </li>
+      <li>
+        Your own sites are basically
+        <strong>competing against each other</strong>
+      </li>
+      <li>After you stopped working with that company, they changed the site</li>
+      <li>
+        It now shows a <strong>concrete company in Texas</strong>, not your HVAC
+        business
+      </li>
+      <li>
+        Anyone who lands there sees the
+        <strong>wrong business, wrong city, wrong trade</strong>
+      </li>
+    </ul>
+
+    <p>
+      What that means: people may find the wrong thing, trust gets broken, and
+      old links or ads can send people to a dead end. You are paying for
+      confusion instead of getting more jobs.
+    </p>
+    <p class="outcome">
+      Outcome of this project: one clear home online. Your name. Your trade.
+      Your cities. No concrete company stealing your attention.
+    </p>
+
+    <div class="page-break"></div>
+
+    <h2 class="tight-top">What you get</h2>
+
+    <div class="item">
+      <h3>1. One clean company website</h3>
+      <p>
+        A modern How Much website that works on phones and computers - built for
+        trust and quotes.
+      </p>
+      <ul>
+        <li>Home page with a quote form up top</li>
+        <li>Service pages (A/C, heating, furnace, and more)</li>
+        <li>City / service-area pages</li>
+        <li>About, team, projects, blog, FAQs</li>
+        <li>
+          Booking / quote, financing, maintenance, warranty, second opinion
+        </li>
+        <li>Contact, reviews, partners, ads landing page</li>
+        <li>Privacy and terms</li>
+      </ul>
+      <p class="outcome">
+        Outcome: People land on the right site, understand you fast, and ask for
+        help.
+      </p>
+    </div>
+
+    <div class="item">
+      <h3>2. Fix the two-website problem</h3>
+      <ul>
+        <li>Make <strong>trusthowmuch.com</strong> the one true home</li>
+        <li>Stop the damage from the old subdomain site</li>
+        <li>
+          Set up redirects / cleanup so old traffic points the right way when we
+          can
+        </li>
+        <li>
+          Align your business info so Google sees HVAC again - not concrete in
+          Texas
+        </li>
+      </ul>
+      <p class="outcome">Outcome: Your brand stops fighting itself online.</p>
+    </div>
+
+    <div class="item">
+      <h3>3. Built to be found (SEO)</h3>
+      <ul>
+        <li>Sitemap and clean page structure</li>
+        <li>City and service pages that can rank over time</li>
+        <li>Blog SEO pieces</li>
+        <li>
+          Setup so Google and AI tools understand your business correctly
+        </li>
+      </ul>
+      <p class="outcome">
+        Outcome: A better chance people searching for HVAC near you find you.
+      </p>
+      <p class="note">
+        Ranking still takes time. This builds the foundation. Ads and reviews
+        help too.
+      </p>
+    </div>
+
+    <div class="item">
+      <h3>4. Real customer portal</h3>
+      <p>A real login area for your customers - not a fake sample forever.</p>
+      <ul>
+        <li>Log in with their own account</li>
+        <li>See their jobs / projects</li>
+        <li>Send and read messages</li>
+        <li>View documents and paperwork</li>
+        <li>Request service</li>
+        <li>Pay invoices online</li>
+      </ul>
+      <p class="outcome">
+        Outcome: Fewer lost texts. Fewer &ldquo;Where&rsquo;s my
+        paperwork?&rdquo; calls. Customers feel taken care of.
+      </p>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="item">
+      <h3>5. Real owner admin + AI helper</h3>
+      <p>Your private business control room.</p>
+      <ul>
+        <li>See money numbers (paid, unpaid, overdue)</li>
+        <li>Manage invoices</li>
+        <li>See the job schedule</li>
+        <li>Read messages and track leads</li>
+        <li>Ask an AI helper about cash, jobs, leads, and follow-ups</li>
+      </ul>
+      <p class="outcome">
+        Outcome: Check the business in one place - and get help drafting
+        reminders and next steps.
+      </p>
+    </div>
+
+    <div class="item">
+      <h3>6. Real payments, texts, and emails</h3>
+      <ul>
+        <li>Online payments for invoices / deposits</li>
+        <li>Text and email alerts for quotes, reminders, and job updates</li>
+        <li>Messages that connect to the portal and admin</li>
+      </ul>
+      <p class="outcome">
+        Outcome: Customers can pay easier. You follow up faster. Less chasing.
+      </p>
+    </div>
+
+    <div class="item">
+      <h3>7. Design that matches your brand</h3>
+      <p>Your How Much look - logo, colors, clean and trustworthy style.</p>
+      <p class="outcome">
+        Outcome: The website feels like your company, not a cheap template and
+        not someone else&rsquo;s concrete business.
+      </p>
+    </div>
+
+    <h2>Price breakdown</h2>
+    <p class="note">
+      These are normal fair prices for this kind of full custom build.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Piece</th>
+          <th>What you get</th>
+          <th class="num">Normal price</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Main marketing website</td>
+          <td>
+            Full site: services, cities, about, team, blog, booking, trust pages
+          </td>
+          <td class="num">$8,500</td>
+        </tr>
+        <tr>
+          <td>Domain cleanup + SEO</td>
+          <td>One true home on trusthowmuch.com + search setup</td>
+          <td class="num">$2,500</td>
+        </tr>
+        <tr>
+          <td>Ads landing page</td>
+          <td>Page built to turn ad clicks into quotes</td>
+          <td class="num">$1,000</td>
+        </tr>
+        <tr>
+          <td>Real customer portal</td>
+          <td>Real logins, jobs, docs, messages, service requests</td>
+          <td class="num">$5,500</td>
+        </tr>
+        <tr>
+          <td>Real owner admin + AI</td>
+          <td>Money, invoices, schedule, leads, AI helper</td>
+          <td class="num">$5,000</td>
+        </tr>
+        <tr>
+          <td>Payments + texts/emails</td>
+          <td>Online pay + real SMS/email follow-ups</td>
+          <td class="num">$5,000</td>
+        </tr>
+        <tr class="total">
+          <td>Normal total</td>
+          <td>Full package</td>
+          <td class="num">$27,500</td>
+        </tr>
+        <tr class="family">
+          <td>Your family price</td>
+          <td>Same full package</td>
+          <td class="num">$1,500</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="soft">
+      <p>
+        <strong>Why the normal price is that high:</strong> This is not one
+        pretty page. It is a full website, domain cleanup, customer portal,
+        owner admin, payments, texts/emails, and AI - all built around your
+        brand and real day-to-day work.
+      </p>
+    </div>
+
+    <div class="page-break"></div>
+
+    <div class="cols">
+      <div class="col">
+        <h2 class="tight-top">What is included</h2>
+        <ul>
+          <li>Everything listed above</li>
+          <li>Launch on <strong>trusthowmuch.com</strong></li>
+          <li>Real customer logins</li>
+          <li>Real payments</li>
+          <li>Real texts and emails</li>
+          <li>Owner admin + AI helper</li>
+          <li>Help cleaning up the old competing site problem</li>
+          <li>A walkthrough so you know how to use it</li>
+        </ul>
+      </div>
+      <div class="col">
+        <h2 class="tight-top">What is not included</h2>
+        <p>These are ongoing costs, not the build itself:</p>
+        <ul>
+          <li>Paying for ads every month</li>
+          <li>Monthly SEO retainers after launch</li>
+          <li>
+            Monthly text / email / payment processing fees from those companies
+          </li>
+          <li>Unlimited redesigns forever after launch</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>What success looks like</h2>
+    <ol>
+      <li>People find the right How Much website.</li>
+      <li>The old wrong site is not confusing customers anymore.</li>
+      <li>People can ask for a quote easily.</li>
+      <li>Customers can log in, see their job, and pay.</li>
+      <li>You can see money, jobs, and messages in one place.</li>
+      <li>Texts and emails help you follow up without chaos.</li>
+    </ol>
+
+    <h2>Next steps</h2>
+    <ol>
+      <li>You review this proposal.</li>
+      <li>You say yes to the <strong>$1,500</strong> family price.</li>
+      <li>We launch on <strong>trusthowmuch.com</strong>.</li>
+      <li>We clean up the two-site confusion.</li>
+      <li>We turn on portal, payments, texts, and emails.</li>
+      <li>We do a short walkthrough together.</li>
+    </ol>
+
+    <div class="pay">
+      <p class="amount">Payment: Total due $1,500</p>
+      <p class="note">
+        Pay however you prefer (Zelle, cash app, check, or whatever we agree
+        on).
+      </p>
+    </div>
+
+    <p>
+      Your current setup is not just &ldquo;old.&rdquo; It is actively working
+      against you. Two websites. Wrong business info. Wrong trade. Wrong state.
+    </p>
+    <p>
+      This project gives you one clear home online - plus the real tools to run
+      jobs, get paid, and follow up.
+    </p>
+    <p>
+      I am not charging you what this is worth on the open market. I
+      <em>am</em> showing you the real number so you know the value.
+    </p>
+    <p>If you have questions, ask. Happy to walk through it page by page.</p>
+    <p class="sig">- Milton</p>
+  </body>
+</html>

@@ -1,41 +1,55 @@
+import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
-import { adminMessages } from "@/lib/admin-data";
-import { requireAdmin } from "@/lib/admin-session";
+import { requireAdmin } from "@/lib/auth";
+import { getAdminMessages } from "@/lib/admin-queries";
+import { formatWhen } from "@/lib/db-types";
 
 export default async function AdminMessagesPage() {
   const admin = await requireAdmin();
+  const messages = await getAdminMessages();
 
   return (
-    <AdminShell userName={admin.name}>
-      <h1 className="font-display text-3xl font-bold tracking-tight text-hm-charcoal">
-        Messages
-      </h1>
-      <p className="mt-2 text-hm-muted">
-        Portal, SMS, and email threads in one inbox ? demo only.
-      </p>
+    <AdminShell userName={admin.name || admin.email}>
+      <h1 className="font-display text-3xl font-bold tracking-tight">Messages</h1>
+      <p className="mt-2 text-hm-muted">Portal threads across jobs. Reply from the job page.</p>
 
-      <div className="mt-8 space-y-3">
-        {adminMessages.map((m) => (
-          <article
-            key={m.id}
-            className={`rounded-2xl border bg-white p-5 shadow-sm ${
-              m.unread ? "border-hm-red/30" : "border-hm-line"
-            }`}
-          >
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                {m.unread && <span className="h-2 w-2 rounded-full bg-hm-red" />}
-                <h2 className="font-display text-base font-bold text-hm-charcoal">{m.from}</h2>
-                <span className="rounded-full bg-hm-fog px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-hm-muted">
-                  {m.channel}
-                </span>
+      <ul className="mt-8 space-y-3">
+        {messages.map((row) => {
+          const m = row as {
+            id: string;
+            body: string;
+            from_role: string;
+            created_at: string;
+            job_id: string;
+            jobs?: {
+              title?: string;
+              profiles?: { name?: string; email?: string } | null;
+            } | null;
+          };
+          return (
+            <li key={m.id} className="rounded-2xl border border-hm-line bg-white px-5 py-4">
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-hm-muted">
+                    {m.from_role === "admin" ? "You" : m.jobs?.profiles?.name || "Customer"} ·{" "}
+                    {formatWhen(m.created_at)}
+                  </p>
+                  <p className="mt-1 font-semibold">{m.jobs?.title || "Job"}</p>
+                  <p className="mt-1 line-clamp-2 text-sm text-hm-muted">{m.body}</p>
+                </div>
+                <Link href={`/admin/jobs/${m.job_id}`} className="text-sm font-semibold text-hm-red">
+                  Open →
+                </Link>
               </div>
-              <p className="text-xs text-hm-muted">{m.at}</p>
-            </div>
-            <p className="mt-2 text-sm text-hm-muted">{m.preview}</p>
-          </article>
-        ))}
-      </div>
+            </li>
+          );
+        })}
+        {!messages.length && (
+          <p className="rounded-2xl border border-dashed border-hm-line bg-white p-8 text-center text-hm-muted">
+            No portal messages yet.
+          </p>
+        )}
+      </ul>
     </AdminShell>
   );
 }

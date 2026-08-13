@@ -3,7 +3,7 @@ export const site = {
   legalName: "How Much? Air & Home Improvements",
   tagline: "Honest HVAC. Transparent pricing. Real answers.",
   description:
-    "Licensed, insured HVAC experts serving Orange County, Los Angeles, and San Diego. Fair options, no pressure ? just trustworthy service for your family.",
+    "Licensed, insured HVAC experts serving Orange County, Los Angeles, and San Diego. Fair options, no pressure — just trustworthy service for your family.",
   url: "https://www.trusthowmuch.com",
   email: "andy@trusthowmuch.com",
   phones: {

@@ -1,56 +1,79 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { services } from "@/lib/services";
+import { site } from "@/lib/site";
 
 export function RequestForm() {
-  const [sent, setSent] = useState(false);
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [service, setService] = useState(services[0]?.name || "HVAC service");
+  const [city, setCity] = useState("");
+  const [message, setMessage] = useState("");
 
-  if (sent) {
-    return (
-      <div className="mt-8 rounded-2xl border border-hm-line bg-white p-8">
-        <h2 className="font-display text-2xl font-bold">Request received (demo)</h2>
-        <p className="mt-3 text-hm-muted">
-          Andy would see this in the real portal queue. Nice for walking through the client
-          experience.
-        </p>
-        <Button href="/portal" className="mt-6">
-          Back to dashboard
-        </Button>
-      </div>
-    );
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    const res = await fetch("/api/portal/request", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ service, city, message }),
+    });
+    const data = await res.json().catch(() => ({}));
+    setLoading(false);
+    if (!res.ok) {
+      setError(data.error || "Could not submit request");
+      return;
+    }
+    router.push(`/portal/projects/${data.jobId}`);
+    router.refresh();
   }
 
   return (
-    <form
-      className="mt-8 max-w-xl space-y-4 rounded-2xl border border-hm-line bg-white p-6"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSent(true);
-      }}
-    >
+    <form onSubmit={onSubmit} className="mx-auto max-w-xl space-y-4 rounded-2xl border border-hm-line bg-white p-6">
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-hm-muted">Service type</span>
-        <select className="h-12 w-full rounded-md border border-hm-line bg-hm-fog px-3">
-          <option>Maintenance</option>
-          <option>Repair</option>
-          <option>Second opinion</option>
-          <option>New install quote</option>
+        <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hm-muted">
+          Service
+        </span>
+        <select className="hm-input" value={service} onChange={(e) => setService(e.target.value)}>
+          {services.map((s) => (
+            <option key={s.slug} value={s.name}>
+              {s.name}
+            </option>
+          ))}
         </select>
       </label>
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-hm-muted">Preferred timing</span>
-        <input className="h-12 w-full rounded-md border border-hm-line bg-hm-fog px-3" />
+        <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hm-muted">
+          City
+        </span>
+        <input className="hm-input" value={city} onChange={(e) => setCity(e.target.value)} />
       </label>
       <label className="block">
-        <span className="mb-1.5 block text-sm font-medium text-hm-muted">Details</span>
+        <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hm-muted">
+          What do you need?
+        </span>
         <textarea
-          rows={4}
-          className="w-full rounded-md border border-hm-line bg-hm-fog px-3 py-3"
-          placeholder="What's going on with the system?"
+          className="hm-input min-h-[120px]"
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          required
         />
       </label>
-      <Button type="submit">Submit request</Button>
+      {error && <p className="text-sm text-hm-red">{error}</p>}
+      <Button type="submit" className="w-full" disabled={loading}>
+        {loading ? "Sending…" : "Submit request"}
+      </Button>
+      <p className="text-center text-sm text-hm-muted">
+        Or call{" "}
+        <a href={site.phones.direct.href} className="font-semibold text-hm-red">
+          {site.phones.direct.display}
+        </a>
+      </p>
     </form>
   );
 }

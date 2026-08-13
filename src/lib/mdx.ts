@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import readingTime from "reading-time";
+import { toIsoDate } from "@/lib/blog";
 
 const contentRoot = path.join(process.cwd(), "src/content");
 
@@ -15,6 +16,8 @@ export type MdxDoc = {
   modified?: string;
   category?: string;
   tags?: string[];
+  author?: string;
+  keyTakeaways?: string[];
   content: string;
   readingMinutes?: number;
   faqs?: MdxFaq[];
@@ -37,14 +40,14 @@ function readDir(dir: string): MdxDoc[] {
         slug,
         title: String(data.title ?? slug),
         description: String(data.description ?? ""),
-        date: data.date ? String(data.date) : undefined,
-        modified: data.modified
-          ? String(data.modified)
-          : data.date
-            ? String(data.date)
-            : undefined,
+        date: toIsoDate(data.date),
+        modified: toIsoDate(data.modified) ?? toIsoDate(data.date),
         category: data.category ? String(data.category) : undefined,
         tags: Array.isArray(data.tags) ? data.tags.map(String) : undefined,
+        author: data.author ? String(data.author) : "Andy",
+        keyTakeaways: Array.isArray(data.keyTakeaways)
+          ? data.keyTakeaways.map(String)
+          : undefined,
         content,
         readingMinutes: Math.max(1, Math.ceil(readingTime(content).minutes)),
         faqs,

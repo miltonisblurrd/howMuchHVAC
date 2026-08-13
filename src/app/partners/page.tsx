@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
@@ -17,7 +18,7 @@ export default function PartnersPage() {
         <Container>
           <Eyebrow className="text-hm-red">Partners</Eyebrow>
           <Heading as="h1" className="mt-3 text-white">
-            Brands we trust with your home
+            Brands We Trust With Your Home
           </Heading>
           <p className="mt-4 max-w-2xl text-lg text-white/70">
             We recommend equipment based on your home ? not a commission script. These partners
@@ -33,7 +34,16 @@ export default function PartnersPage() {
                 key={partner.name}
                 className="rounded-2xl border border-hm-line bg-hm-fog p-7"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-hm-red">
+                <div className="flex h-16 items-center">
+                  <Image
+                    src={partner.logo}
+                    alt={`${partner.name} logo`}
+                    width={180}
+                    height={64}
+                    className="h-12 w-auto max-w-[200px] object-contain"
+                  />
+                </div>
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-hm-red">
                   {partner.category}
                 </p>
                 <h2 className="mt-2 font-display text-2xl font-bold">{partner.name}</h2>

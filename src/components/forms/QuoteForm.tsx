@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle2, ShieldCheck } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
@@ -11,44 +12,63 @@ export function QuoteForm({
   compact = false,
   className,
   elevated = false,
+  sourceLabel = "Quote form",
 }: {
   compact?: boolean;
   className?: string;
   /** Stronger elevation for hero placement */
   elevated?: boolean;
+  sourceLabel?: string;
 }) {
-  const [submitted, setSubmitted] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  if (submitted) {
-    return (
-      <div
-        className={cn(
-          "rounded-2xl bg-white p-7 text-hm-charcoal md:p-8",
-          elevated ? "shadow-[0_32px_80px_-24px_rgba(0,0,0,0.55)] ring-1 ring-black/5" : "shadow-xl",
-          className,
-        )}
-      >
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-          <CheckCircle2 className="h-6 w-6" />
-        </div>
-        <p className="mt-4 font-display text-[11px] font-bold uppercase tracking-[0.22em] text-hm-red">
-          Request received
-        </p>
-        <h3 className="mt-2 font-display text-2xl font-bold tracking-tight">
-          Thanks — we&apos;ll be in touch.
-        </h3>
-        <p className="mt-3 text-sm leading-relaxed text-hm-muted">
-          Prefer to talk now? Call Andy direct at{" "}
-          <a href={site.phones.direct.href} className="font-semibold text-hm-charcoal underline">
-            {site.phones.direct.display}
-          </a>
-          .
-        </p>
-        <Button className="mt-6" onClick={() => setSubmitted(false)} variant="outline" tone="light">
-          Submit another
-        </Button>
-      </div>
-    );
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    const form = new FormData(e.currentTarget);
+    const firstName = String(form.get("firstName") || "").trim();
+    const lastName = String(form.get("lastName") || "").trim();
+    const name = [firstName, lastName].filter(Boolean).join(" ");
+
+    const params =
+      typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+
+    try {
+      const res = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email: form.get("email"),
+          phone: form.get("phone"),
+          city: form.get("city") || null,
+          service: form.get("service") || null,
+          message: form.get("message") || null,
+          sourcePath: pathname || "/",
+          sourceLabel,
+          utmSource: params?.get("utm_source"),
+          utmMedium: params?.get("utm_medium"),
+          utmCampaign: params?.get("utm_campaign"),
+        }),
+      });
+
+      const data = (await res.json()) as { ok?: boolean; error?: string };
+      if (!res.ok || !data.ok) {
+        setError(data.error || "Something went wrong. Please call us or try again.");
+        setLoading(false);
+        return;
+      }
+
+      router.push(`/thank-you?name=${encodeURIComponent(firstName || name)}`);
+    } catch {
+      setError("Something went wrong. Please call us or try again.");
+      setLoading(false);
+    }
   }
 
   return (
@@ -60,10 +80,7 @@ export function QuoteForm({
           : "shadow-xl ring-1 ring-black/5",
         className,
       )}
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSubmitted(true);
-      }}
+      onSubmit={onSubmit}
     >
       <div className="flex items-start justify-between gap-3">
         <div>
@@ -75,7 +92,7 @@ export function QuoteForm({
           </h3>
         </div>
         <div className="hidden shrink-0 items-center gap-1 rounded-full bg-hm-fog px-2.5 py-1 text-[11px] font-semibold text-hm-charcoal sm:flex">
-          <span className="text-amber-500">?</span> {site.google.rating}
+          <span className="text-amber-500">★</span> {site.google.rating}
         </div>
       </div>
 
@@ -91,12 +108,7 @@ export function QuoteForm({
               <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hm-muted">
                 Service needed
               </span>
-              <select
-                name="service"
-                className="hm-input"
-                defaultValue=""
-                required
-              >
+              <select name="service" className="hm-input" defaultValue="" required>
                 <option value="" disabled>
                   Select a service
                 </option>
@@ -124,13 +136,15 @@ export function QuoteForm({
         )}
       </div>
 
-      <Button type="submit" className="mt-5 w-full" size="lg" tone="light">
-        Get my quote
+      {error && <p className="mt-3 text-sm text-hm-red">{error}</p>}
+
+      <Button type="submit" className="mt-5 w-full" size="lg" tone="light" disabled={loading}>
+        {loading ? "Sending…" : "Get My Quote"}
       </Button>
 
       <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-hm-muted">
         <ShieldCheck className="h-3.5 w-3.5 text-hm-red" />
-        {site.license} ? No pressure — Same-day callbacks
+        {site.license} · No pressure — same-day callbacks
       </p>
     </form>
   );

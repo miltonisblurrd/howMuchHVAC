@@ -1,49 +1,79 @@
-import Image from "next/image";
 import Link from "next/link";
 import { PortalShell } from "@/components/portal/PortalShell";
 import { Button } from "@/components/ui/Button";
-import { getUserMessages, getUserProjects } from "@/lib/portal-data";
-import { requirePortalUser } from "@/lib/portal-session";
+import { requirePortalUser } from "@/lib/auth";
+import {
+  countUnreadForCustomer,
+  getCustomerDocuments,
+  getCustomerInvoices,
+  getCustomerJobs,
+  getNextAppointmentForCustomer,
+} from "@/lib/portal-queries";
+import { JOB_STATUS_LABELS, formatWhen, money, type JobStatus } from "@/lib/db-types";
+import { site } from "@/lib/site";
 
-const statusColor: Record<string, string> = {
-  Scheduled: "bg-sky-100 text-sky-800",
-  "In Progress": "bg-amber-100 text-amber-900",
-  Completed: "bg-emerald-100 text-emerald-800",
-  "Estimate Ready": "bg-red-100 text-red-800",
+const statusColor: Record<JobStatus, string> = {
+  quote_request: "bg-sky-100 text-sky-800",
+  estimate_ready: "bg-red-100 text-red-800",
+  scheduled: "bg-violet-100 text-violet-800",
+  in_progress: "bg-amber-100 text-amber-900",
+  completed: "bg-emerald-100 text-emerald-800",
+  cancelled: "bg-slate-100 text-slate-600",
 };
 
 export default async function PortalDashboardPage() {
   const user = await requirePortalUser();
-  const projects = getUserProjects(user.id);
-  const messages = getUserMessages(user.id);
-  const docs = projects.flatMap((p) => p.documents).length;
+  const [jobs, invoices, docs, unread, nextAppt] = await Promise.all([
+    getCustomerJobs(user.id),
+    getCustomerInvoices(user.id),
+    getCustomerDocuments(user.id),
+    countUnreadForCustomer(user.id),
+    getNextAppointmentForCustomer(user.id),
+  ]);
+
+  const unpaid = invoices.filter((i) => i.status === "unpaid" || i.status === "overdue");
+  const active = jobs.filter((j) => j.status !== "completed" && j.status !== "cancelled");
 
   return (
-    <PortalShell userName={user.name}>
+    <PortalShell userName={user.name || user.email}>
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-hm-red">
-            Client portal ? demo
+            Client portal
           </p>
           <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-hm-charcoal">
-            Welcome back, {user.name.split(" ")[0]}
+            Welcome back, {(user.name || "there").split(" ")[0]}
           </h1>
-          <p className="mt-2 text-hm-muted">{user.address}</p>
+          <p className="mt-2 text-hm-muted">
+            {user.address || "Your jobs, messages, and invoices in one place."}
+          </p>
         </div>
-        <Button href="/portal/request">Request service</Button>
+        <div className="flex flex-wrap gap-2">
+          <Button href="/portal/request">Request service</Button>
+          <Button href={site.phones.direct.href} variant="secondary" arrow={false}>
+            Call Andy
+          </Button>
+        </div>
       </div>
 
-      <div className="mt-8 grid gap-3 sm:grid-cols-3">
+      {nextAppt && (
+        <div className="mt-6 rounded-2xl border border-hm-red/25 bg-hm-red/5 px-5 py-4">
+          <p className="text-xs font-bold uppercase tracking-wide text-hm-red">Next visit</p>
+          <p className="mt-1 font-display text-lg font-bold text-hm-charcoal">
+            {formatWhen(nextAppt.starts_at)}
+          </p>
+        </div>
+      )}
+
+      <div className="mt-8 grid gap-3 sm:grid-cols-4">
         {[
+          { label: "Active jobs", value: String(active.length) },
+          { label: "Unread messages", value: String(unread) },
+          { label: "Documents", value: String(docs.length) },
           {
-            label: "Active projects",
-            value: String(projects.filter((p) => p.status !== "Completed").length),
+            label: "Amount due",
+            value: unpaid.length ? money(unpaid.reduce((s, i) => s + i.amount_cents, 0)) : "$0",
           },
-          {
-            label: "Messages",
-            value: String(messages.length),
-          },
-          { label: "Documents", value: String(docs) },
         ].map((stat) => (
           <div
             key={stat.label}
@@ -55,56 +85,58 @@ export default async function PortalDashboardPage() {
         ))}
       </div>
 
+      {unpaid.length > 0 && (
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4">
+          <p className="text-sm font-semibold text-amber-950">
+            You have {unpaid.length} open invoice{unpaid.length === 1 ? "" : "s"}.
+          </p>
+          <Button href="/portal/pay" size="sm">
+            Pay now →
+          </Button>
+        </div>
+      )}
+
       <section className="mt-10">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-xl font-bold text-hm-charcoal">Your projects</h2>
-        </div>
-        <div className="mt-4 grid gap-4">
-          {projects.map((project) => (
-            <Link
-              key={project.id}
-              href={`/portal/projects/${project.id}`}
-              className="group overflow-hidden rounded-2xl border border-hm-line bg-white shadow-sm transition hover:border-hm-red/35 hover:shadow-md"
-            >
-              <div className="flex flex-col md:flex-row">
-                {project.photos[0] && (
-                  <div className="relative h-40 w-full shrink-0 md:h-auto md:w-52">
-                    <Image
-                      src={project.photos[0].url}
-                      alt={project.photos[0].label}
-                      fill
-                      sizes="208px"
-                      className="object-cover"
-                    />
-                  </div>
-                )}
-                <div className="flex-1 p-5">
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div>
-                      <h3 className="font-display text-lg font-bold text-hm-charcoal group-hover:text-hm-red">
-                        {project.title}
-                      </h3>
-                      <p className="mt-1 text-sm text-hm-muted">
-                        {project.service} ? {project.city}
-                      </p>
-                    </div>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${statusColor[project.status]}`}
-                    >
-                      {project.status}
-                    </span>
-                  </div>
-                  <p className="mt-3 text-sm leading-relaxed text-hm-muted">{project.summary}</p>
-                  {project.nextAppointment && (
-                    <p className="mt-3 text-sm font-semibold text-hm-charcoal">
-                      Next: {project.nextAppointment}
+        <h2 className="font-display text-xl font-bold text-hm-charcoal">Your jobs</h2>
+        {jobs.length === 0 ? (
+          <div className="mt-4 rounded-2xl border border-dashed border-hm-line bg-white p-8 text-center">
+            <p className="text-hm-muted">No jobs yet. Request service or call Andy to get started.</p>
+            <Button href="/portal/request" className="mt-4">
+              Request service
+            </Button>
+          </div>
+        ) : (
+          <div className="mt-4 grid gap-4">
+            {jobs.map((job) => (
+              <Link
+                key={job.id}
+                href={`/portal/projects/${job.id}`}
+                className="group rounded-2xl border border-hm-line bg-white p-5 shadow-sm transition hover:border-hm-red/35 hover:shadow-md"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <h3 className="font-display text-lg font-bold text-hm-charcoal group-hover:text-hm-red">
+                      {job.title}
+                    </h3>
+                    <p className="mt-1 text-sm text-hm-muted">
+                      {[job.service, job.city].filter(Boolean).join(" · ")}
                     </p>
-                  )}
+                  </div>
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-bold ${statusColor[job.status]}`}
+                  >
+                    {JOB_STATUS_LABELS[job.status]}
+                  </span>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                {job.summary && (
+                  <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-hm-muted">
+                    {job.summary}
+                  </p>
+                )}
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
     </PortalShell>
   );

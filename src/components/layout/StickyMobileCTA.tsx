@@ -13,7 +13,7 @@ export function StickyMobileCTA() {
           Call
         </Button>
         <Button href="/booking" className="flex-[1.4]" size="md">
-          Get a quote
+          Get A Quote
         </Button>
       </div>
     </div>

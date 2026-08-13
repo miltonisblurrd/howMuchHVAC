@@ -1,51 +1,50 @@
 import { PortalShell } from "@/components/portal/PortalShell";
-import { getUserMessages } from "@/lib/portal-data";
-import { requirePortalUser } from "@/lib/portal-session";
-import { cn } from "@/lib/cn";
+import { MessagesClient } from "@/components/portal/MessagesClient";
+import { requirePortalUser } from "@/lib/auth";
+import { getCustomerJobs, getCustomerMessages } from "@/lib/portal-queries";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { site } from "@/lib/site";
+import { Button } from "@/components/ui/Button";
 
 export default async function PortalMessagesPage() {
   const user = await requirePortalUser();
-  const messages = getUserMessages(user.id);
+  const [jobs, messages] = await Promise.all([
+    getCustomerJobs(user.id),
+    getCustomerMessages(user.id),
+  ]);
+
+  // Mark admin messages as read
+  const unreadIds = messages
+    .filter((m) => m.from_role === "admin" && !m.read_at)
+    .map((m) => m.id);
+  if (unreadIds.length) {
+    const admin = getSupabaseAdmin();
+    await admin
+      .from("messages")
+      .update({ read_at: new Date().toISOString() })
+      .in("id", unreadIds);
+  }
 
   return (
-    <PortalShell userName={user.name}>
-      <h1 className="font-display text-3xl font-bold tracking-tight">Messages</h1>
-      <p className="mt-2 text-hm-muted">
-        Demo thread with Andy and the crew — scripted for walkthrough.
-      </p>
-      <div className="mt-8 space-y-4">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={cn(
-              "max-w-xl rounded-2xl px-5 py-4",
-              message.from === "client"
-                ? "ml-auto bg-hm-red text-white"
-                : "bg-white border border-hm-line",
-            )}
-          >
-            <p className="text-xs font-semibold opacity-70">{message.author}</p>
-            <p className="mt-2 text-sm leading-relaxed">{message.body}</p>
-            <p className="mt-3 text-[11px] opacity-60">
-              {new Date(message.at).toLocaleString()}
-            </p>
-          </div>
-        ))}
+    <PortalShell userName={user.name || user.email}>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-bold tracking-tight">Messages</h1>
+          <p className="mt-2 text-hm-muted">
+            Chat with Andy&apos;s team about your job. Prefer voice? Call anytime.
+          </p>
+        </div>
+        <Button href={site.phones.direct.href} variant="secondary" arrow={false}>
+          Call Andy
+        </Button>
       </div>
-      <form className="mt-8 flex gap-3">
-        <input
-          disabled
-          placeholder="Messaging is demo-only for now"
-          className="h-12 flex-1 rounded-md border border-hm-line bg-white px-3 text-sm"
+      <div className="mt-8">
+        <MessagesClient
+          initial={messages}
+          jobs={jobs.map((j) => ({ id: j.id, title: j.title }))}
+          customerId={user.id}
         />
-        <button
-          type="button"
-          disabled
-          className="h-12 rounded-md bg-hm-charcoal px-5 font-display text-sm font-semibold text-white opacity-60"
-        >
-          Send
-        </button>
-      </form>
+      </div>
     </PortalShell>
   );
 }

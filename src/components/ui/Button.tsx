@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { titleCaseWords } from "@/lib/titleCase";
 
 type Variant = "primary" | "secondary" | "ghost" | "outline";
 type Size = "sm" | "md" | "lg";
@@ -32,12 +33,22 @@ function variantClasses(variant: Variant, tone: Tone) {
     : "bg-transparent text-hm-charcoal hover:bg-hm-charcoal/[0.05]";
 }
 
+function shouldShowArrow(href: string | undefined, arrow: boolean | undefined) {
+  if (arrow === false) return false;
+  if (arrow === true) return true;
+  if (!href) return true; // form / action CTAs
+  if (href.startsWith("tel:") || href.startsWith("mailto:")) return false;
+  return true;
+}
+
 type BaseProps = {
   children: React.ReactNode;
   className?: string;
   variant?: Variant;
   size?: Size;
   tone?: Tone;
+  /** Trailing → on CTA buttons. Defaults on except tel/mailto. */
+  arrow?: boolean;
 };
 
 type ButtonAsButton = BaseProps &
@@ -50,15 +61,40 @@ type ButtonAsLink = BaseProps &
     href: string;
   };
 
+function formatLabel(children: React.ReactNode) {
+  if (typeof children === "string") return titleCaseWords(children.trim());
+  return children;
+}
+
+function withArrow(children: React.ReactNode, show: boolean) {
+  const label = formatLabel(children);
+  if (!show) return label;
+  return (
+    <span className="inline-flex items-center gap-2">
+      <span className="leading-none">{label}</span>
+      <span
+        aria-hidden
+        className="inline-flex h-[1em] w-[1em] shrink-0 items-center justify-center text-[1.1em] leading-none"
+      >
+        {"\u2192"}
+      </span>
+    </span>
+  );
+}
+
 export function Button({
   children,
   className,
   variant = "primary",
   size = "md",
   tone = "light",
+  arrow,
   href,
   ...props
 }: ButtonAsButton | ButtonAsLink) {
+  const showArrow = shouldShowArrow(href, arrow);
+  const content = withArrow(children, showArrow);
+
   const classes = cn(
     "inline-flex items-center justify-center gap-2 rounded-lg font-display font-semibold tracking-tight transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hm-red/45 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
     variantClasses(variant, tone),
@@ -80,7 +116,7 @@ export function Button({
           className={classes}
           {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         >
-          {children}
+          {content}
         </a>
       );
     }
@@ -88,14 +124,14 @@ export function Button({
     const { onClick, ...rest } = props as React.AnchorHTMLAttributes<HTMLAnchorElement>;
     return (
       <Link href={href} className={classes} onClick={onClick} {...rest}>
-        {children}
+        {content}
       </Link>
     );
   }
 
   return (
     <button className={classes} {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}>
-      {children}
+      {content}
     </button>
   );
 }

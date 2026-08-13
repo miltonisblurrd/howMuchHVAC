@@ -1,31 +1,33 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, CheckCircle2, Phone, Star } from "lucide-react";
+import { CheckCircle2, Phone, Star } from "lucide-react";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { TrustBar } from "@/components/home/TrustBar";
 import { QuoteForm } from "@/components/forms/QuoteForm";
 import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
-import { partners } from "@/lib/partners";
+import { PartnerLogos } from "@/components/brand/PartnerLogos";
+import { PartnerLogoStrip } from "@/components/brand/PartnerLogoStrip";
+import { GuideDownloadBand } from "@/components/home/GuideDownloadBand";
 import { projects } from "@/lib/projects";
-import { reviews } from "@/lib/reviews";
+import { getFeaturedReviews } from "@/lib/reviews";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
 
 const steps = [
   {
     num: "01",
-    title: "Tell us what’s going on",
+    title: "Tell Us What’s Going On",
     body: "Call or fill out the form. No scripts. No runaround.",
   },
   {
     num: "02",
-    title: "We diagnose & explain",
+    title: "We Diagnose & Explain",
     body: "Clear findings in plain English — photos included when it helps.",
   },
   {
     num: "03",
-    title: "Options first. Then a deal.",
+    title: "Options First. Then A Deal.",
     body: "Good / Better / Best when it matters. You decide. We deliver.",
   },
 ];
@@ -39,23 +41,26 @@ const pains = [
 
 export default function HomePage() {
   const featuredServices = services.filter((s) => s.featured).slice(0, 4);
-  const featuredReviews = reviews.filter((r) => r.featured);
+  const featuredReviews = getFeaturedReviews(3);
 
   return (
     <SiteShell headerTone="transparent">
       {/* ── Hero: conversion split ── */}
       <section className="relative overflow-hidden text-white">
-        <div className="absolute inset-0 hm-gradient-hero" />
-        <Image
-          src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=2400&q=80"
-          alt=""
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-[center_30%] opacity-[0.28]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-hm-ink via-hm-ink/75 to-hm-ink/40" />
-        <div className="absolute inset-0 hm-noise opacity-50" />
+        <video
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=2400&q=80"
+          aria-hidden
+        >
+          <source src="/videos/hero-hvac.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-br from-hm-ink/93 via-hm-ink/80 to-hm-ink/60" />
+        <div className="absolute inset-0 bg-hm-ink/30" />
+        <div className="absolute inset-0 hm-noise opacity-40" />
 
         {/* Oversized bubble watermark */}
         <div
@@ -73,7 +78,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="mt-6 font-display text-5xl font-extrabold tracking-[-0.04em] text-balance md:text-6xl lg:text-[4.25rem]">
-              So, how much?
+              So, How Much?
             </h1>
             <p className="mt-4 max-w-lg text-lg leading-relaxed text-white/75 md:text-xl">
               Honest HVAC for Orange County, LA & San Diego. Transparent pricing.
@@ -118,12 +123,14 @@ export default function HomePage() {
         <TrustBar dark />
       </section>
 
+      <PartnerLogoStrip />
+
       {/* ── Process ── */}
       <Section tone="white">
         <Container>
           <div className="max-w-xl">
-            <Eyebrow>How we work</Eyebrow>
-            <Heading className="mt-3 text-hm-charcoal">We make it easy for you</Heading>
+            <Eyebrow>How We Work</Eyebrow>
+            <Heading className="mt-3 text-hm-charcoal">We Make It Easy For You</Heading>
             <p className="mt-4 text-lg text-hm-muted">
               Integrity goes a long way — and it&apos;s the standard here.
             </p>
@@ -152,15 +159,15 @@ export default function HomePage() {
         <Container>
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div className="max-w-xl">
-              <Eyebrow>HVAC services</Eyebrow>
-              <Heading className="mt-3 text-hm-charcoal">Comfort systems done right</Heading>
+              <Eyebrow>HVAC Services</Eyebrow>
+              <Heading className="mt-3 text-hm-charcoal">Comfort Systems Done Right</Heading>
               <p className="mt-4 text-lg text-hm-muted">
                 From diagnostics to full installs — A/C, heating, heat pumps, ductless, ductwork,
                 and indoor air quality.
               </p>
             </div>
             <Button href="/services" variant="outline" tone="light">
-              View all services <ArrowRight className="h-4 w-4" />
+              View All Services
             </Button>
           </div>
 
@@ -228,7 +235,7 @@ export default function HomePage() {
               <Heading className="mt-3 text-white">
                 Established. Trustworthy.
                 <br />
-                100% legit.
+                100% Legit.
               </Heading>
               <p className="mt-4 text-lg leading-relaxed text-white/65">
                 We&apos;ve seen the best and worst of this industry. Our mission: put customers
@@ -249,10 +256,10 @@ export default function HomePage() {
               </ul>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button href="/about" tone="dark">
-                  About Andy & the team
+                  About Andy & The Team
                 </Button>
                 <Button href="/second-opinion" variant="outline" tone="dark">
-                  Request a second opinion
+                  Request A Second Opinion
                 </Button>
               </div>
             </div>
@@ -265,11 +272,11 @@ export default function HomePage() {
         <Container>
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <Eyebrow>Recent projects</Eyebrow>
-              <Heading className="mt-3 text-hm-charcoal">Proof in the work</Heading>
+              <Eyebrow>Recent Projects</Eyebrow>
+              <Heading className="mt-3 text-hm-charcoal">Proof In The Work</Heading>
             </div>
             <Button href="/projects" variant="outline" tone="light">
-              View projects
+              View Projects
             </Button>
           </div>
           <div className="mt-10 grid gap-5 md:grid-cols-3">
@@ -303,49 +310,40 @@ export default function HomePage() {
         </Container>
       </Section>
 
-      {/* ── Partners marquee-style ── */}
+      {/* ── Partners logos ── */}
       <Section tone="fog" className="!py-14">
         <Container>
           <p className="text-center font-display text-[11px] font-bold uppercase tracking-[0.22em] text-hm-muted">
-            Equipment partners we trust
+            Equipment Partners We Trust
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-x-10 gap-y-5">
-            {partners.map((partner) => (
-              <span
-                key={partner.name}
-                className="font-display text-sm font-bold tracking-wide text-hm-charcoal/55 md:text-base"
-              >
-                {partner.name}
-              </span>
-            ))}
-          </div>
+          <PartnerLogos className="mt-8" />
           <div className="mt-6 text-center">
             <Link
               href="/partners"
               className="font-display text-sm font-semibold text-hm-red hover:underline"
             >
-              Meet our partners →
+              Meet Our Partners →
             </Link>
           </div>
         </Container>
       </Section>
 
-      {/* ── Reviews editorial ── */}
+      {/* ── Reviews sticky scroll ── */}
       <Section tone="white">
         <Container>
           <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-start">
-            <div>
+            <div className="lg:sticky lg:top-28 lg:self-start">
               <Eyebrow>Reviews</Eyebrow>
               <Heading className="mt-3 text-hm-charcoal">
-                Rated 5 stars
+                Rated 5 Stars
                 <br />
-                for a reason
+                For A Reason
               </Heading>
               <p className="mt-4 text-hm-muted">
                 Real homeowners. Real Google reviews. No scripts.
               </p>
               <Button href="/reviews" variant="outline" tone="light" className="mt-8">
-                Read & leave a review
+                See All Reviews
               </Button>
             </div>
             <div className="space-y-4">
@@ -379,46 +377,20 @@ export default function HomePage() {
                   </figcaption>
                 </figure>
               ))}
+              <Button
+                href="/reviews"
+                variant="outline"
+                tone="light"
+                className="w-full rounded-2xl"
+              >
+                See All Reviews
+              </Button>
             </div>
           </div>
         </Container>
       </Section>
 
-      {/* ── Final CTA ── */}
-      <section className="relative overflow-hidden bg-hm-red text-white">
-        <div className="absolute inset-0 hm-noise opacity-30" />
-        <Container className="relative grid items-center gap-10 py-16 md:grid-cols-[1.2fr_0.8fr] md:py-20">
-          <div>
-            <p className="font-display text-[11px] font-bold uppercase tracking-[0.24em] text-white/70">
-              How Much?
-            </p>
-            <h2 className="mt-3 font-display text-4xl font-extrabold tracking-[-0.03em] md:text-5xl">
-              Curious on how much?
-            </h2>
-            <p className="mt-4 max-w-lg text-lg text-white/85">
-              Get a personalized quote — or call Andy direct. Options, not a hard sell.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button href="#quote" variant="secondary" tone="dark" size="lg">
-                Get Your Quick Quote
-              </Button>
-              <Button href={site.phones.direct.href} variant="outline" tone="dark" size="lg">
-                {site.phones.direct.display}
-              </Button>
-            </div>
-          </div>
-          <div className="hidden justify-end md:flex">
-            <div className="relative h-40 w-52 opacity-90">
-              <Image
-                src="/brand/whitelogo.svg"
-                alt=""
-                fill
-                className="object-contain object-right"
-              />
-            </div>
-          </div>
-        </Container>
-      </section>
+      <GuideDownloadBand />
     </SiteShell>
   );
 }

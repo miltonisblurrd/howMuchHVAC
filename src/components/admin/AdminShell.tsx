@@ -16,6 +16,7 @@ import { cn } from "@/lib/cn";
 
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin/jobs", label: "Jobs", icon: FileText },
   { href: "/admin/invoices", label: "Invoices", icon: FileText },
   { href: "/admin/schedule", label: "Schedule", icon: CalendarDays },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
@@ -47,14 +48,14 @@ export function AdminShell({
               <span className="rounded-full bg-hm-red/10 px-2.5 py-1 font-display text-[10px] font-bold uppercase tracking-[0.16em] text-hm-red">
                 Admin
               </span>
-              <span className="text-xs text-hm-muted">Demo ? not live data</span>
+              <span className="text-xs text-hm-muted">Live ops</span>
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <span className="hidden text-sm font-medium text-hm-muted md:inline">
               {userName}
             </span>
-            <Button type="button" variant="outline" size="sm" onClick={logout}>
+            <Button type="button" variant="outline" size="sm" arrow={false} onClick={logout}>
               Log out
             </Button>
           </div>

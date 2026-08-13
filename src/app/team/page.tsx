@@ -18,7 +18,7 @@ export default function TeamPage() {
         <Container>
           <Eyebrow className="text-hm-red">Team</Eyebrow>
           <Heading as="h1" className="mt-3 text-white">
-            The people behind How Much?
+            The People Behind How Much?
           </Heading>
           <p className="mt-4 max-w-2xl text-lg text-white/70">
             Corporate-level transparency: every team member has a page. Know who?s leading,

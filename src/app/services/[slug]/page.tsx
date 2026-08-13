@@ -16,6 +16,8 @@ import {
   QuoteAndReviewsSection,
   RelatedPosts,
 } from "@/components/content/PageExtras";
+import { PartnerLogoStrip } from "@/components/brand/PartnerLogoStrip";
+import { GuideDownloadBand } from "@/components/home/GuideDownloadBand";
 import { getBlogPosts } from "@/lib/mdx";
 import { getService, services } from "@/lib/services";
 
@@ -62,17 +64,17 @@ export default async function ServiceDetailPage({
           />
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div>
-              <Eyebrow className="text-hm-red">HVAC service</Eyebrow>
+              <Eyebrow className="text-hm-red">HVAC Service</Eyebrow>
               <Heading as="h1" className="mt-3 text-white">
                 {service.name}
               </Heading>
               <p className="mt-4 text-lg text-white/70">{service.description}</p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button href="#quote" tone="dark">
-                  Get a quote
+                  Get A Quote
                 </Button>
                 <Button href="/second-opinion" variant="outline" tone="dark">
-                  Need a second opinion?
+                  Need A Second Opinion?
                 </Button>
               </div>
             </div>
@@ -90,23 +92,25 @@ export default async function ServiceDetailPage({
         </Container>
       </Section>
 
+      <PartnerLogoStrip />
       <PainPointsSection items={service.painPoints} />
       <BenefitsListSection benefits={service.benefits} expect={service.expect} />
       <ProcessSection steps={service.process} />
 
       <CtaBand
-        title={`So, how much for ${service.shortName}?`}
+        title={`So, How Much For ${service.shortName}?`}
         body="Every home is different. We’ll diagnose, explain, and give you clear options — so you know exactly what you’re paying for."
       />
 
-      <RelatedPosts posts={posts} title="Helpful guides for this service" />
+      <RelatedPosts posts={posts} title="Helpful Guides For This Service" />
       <InlineFaqs faqs={service.faqs} />
 
       <div id="quote">
-        <QuoteAndReviewsSection heading={`Get pricing for ${service.shortName}`} />
+        <QuoteAndReviewsSection heading={`Get Pricing For ${service.shortName}`} />
       </div>
 
       <OtherServicesSection currentSlug={service.slug} />
+      <GuideDownloadBand />
     </SiteShell>
   );
 }

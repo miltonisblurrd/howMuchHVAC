@@ -176,7 +176,7 @@ export function AdminAssistant() {
             placeholder="Ask about cash, schedule, leads?"
             className="hm-input flex-1"
           />
-          <Button type="submit" disabled={typing || !input.trim()}>
+          <Button type="submit" arrow={false} disabled={typing || !input.trim()}>
             <Send className="h-4 w-4" />
           </Button>
         </form>

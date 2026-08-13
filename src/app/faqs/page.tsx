@@ -26,7 +26,7 @@ export default function FaqsPage() {
         <Container>
           <Eyebrow className="text-hm-red">FAQs</Eyebrow>
           <Heading as="h1" className="mt-3 text-white">
-            Questions homeowners actually ask
+            Questions Homeowners Actually Ask
           </Heading>
           <p className="mt-4 max-w-2xl text-lg text-white/70">
             Pillar pages built for search and AI answers — clear, quotable, and honest.

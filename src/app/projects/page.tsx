@@ -18,7 +18,7 @@ export default function ProjectsPage() {
         <Container>
           <Eyebrow className="text-hm-red">Projects</Eyebrow>
           <Heading as="h1" className="mt-3 text-white">
-            Recent work worth showing
+            Recent Work Worth Showing
           </Heading>
           <p className="mt-4 max-w-2xl text-lg text-white/70">
             Real jobs, clear outcomes. Stock photography stands in until Andy's project photos

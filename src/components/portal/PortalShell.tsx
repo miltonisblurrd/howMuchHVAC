@@ -10,6 +10,7 @@ const links = [
   { href: "/portal", label: "Dashboard" },
   { href: "/portal/messages", label: "Messages" },
   { href: "/portal/documents", label: "Documents" },
+  { href: "/portal/pay", label: "Pay" },
   { href: "/portal/request", label: "Request service" },
 ];
 
@@ -60,7 +61,14 @@ export function PortalShell({
             <span className="hidden text-sm font-medium text-hm-muted sm:inline">
               {userName}
             </span>
-            <Button type="button" variant="outline" tone="light" size="sm" onClick={logout}>
+            <Button
+              type="button"
+              variant="outline"
+              tone="light"
+              size="sm"
+              arrow={false}
+              onClick={logout}
+            >
               Log out
             </Button>
           </div>

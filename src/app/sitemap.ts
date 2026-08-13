@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/team",
     "/reviews",
     "/booking",
+    "/get-a-quote",
     "/blog",
     "/faqs",
     "/brand",

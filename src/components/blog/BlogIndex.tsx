@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { formatBlogDate } from "@/lib/blog";
 import { cn } from "@/lib/cn";
 
 export type BlogCard = {
@@ -87,8 +88,12 @@ export function BlogIndex({ posts }: { posts: BlogCard[] }) {
             </h2>
             <p className="mt-3 text-sm text-hm-muted">{post.description}</p>
             <p className="mt-4 text-xs text-hm-muted">
-              {post.readingMinutes} min read
-              {post.date ? ` ? ${post.date}` : ""}
+              {[
+                post.readingMinutes ? `${post.readingMinutes} min read` : null,
+                formatBlogDate(post.date) || null,
+              ]
+                .filter(Boolean)
+                .join(" · ")}
             </p>
           </Link>
         ))}

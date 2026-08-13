@@ -287,7 +287,7 @@ export default function BrandPage() {
               Original guideline PDFs live in the project&apos;s brand-kit folder for your team.
             </p>
           </div>
-          <Button href="/ads" variant="secondary" tone="dark" className="mt-6 md:mt-0">
+          <Button href="/get-a-quote" variant="secondary" tone="dark" className="mt-6 md:mt-0">
             View ad landing
           </Button>
         </Container>

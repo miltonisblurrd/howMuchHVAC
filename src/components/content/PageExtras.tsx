@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, ChevronRight } from "lucide-react";
+import { CheckCircle2, ChevronRight, Sparkles, Star } from "lucide-react";
 import { QuoteForm } from "@/components/forms/QuoteForm";
 import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
-import { reviews } from "@/lib/reviews";
+import { ReviewCard } from "@/components/content/ReviewCard";
+import { getFeaturedReviews } from "@/lib/reviews";
 import { services } from "@/lib/services";
+import { titleCaseWords } from "@/lib/titleCase";
 import type { MdxDoc } from "@/lib/mdx";
 
 export function Breadcrumbs({
@@ -35,7 +37,7 @@ export function Breadcrumbs({
 
 export function PainPointsSection({
   items,
-  title = "Sound familiar?",
+  title = "Sound Familiar?",
   subtitle = "These are the reasons homeowners call How Much?",
 }: {
   items: { title: string; body: string }[];
@@ -45,8 +47,8 @@ export function PainPointsSection({
   return (
     <Section tone="fog">
       <Container>
-        <Eyebrow>Pain points</Eyebrow>
-        <Heading className="mt-3 text-hm-charcoal">{title}</Heading>
+        <Eyebrow>Pain Points</Eyebrow>
+        <Heading className="mt-3 text-hm-charcoal">{titleCaseWords(title)}</Heading>
         <p className="mt-3 max-w-2xl text-hm-muted">{subtitle}</p>
         <div className="mt-10 grid gap-4 md:grid-cols-2">
           {items.map((item) => (
@@ -54,7 +56,9 @@ export function PainPointsSection({
               key={item.title}
               className="rounded-2xl border border-hm-line bg-white p-6 shadow-sm"
             >
-              <h3 className="font-display text-lg font-bold text-hm-charcoal">{item.title}</h3>
+              <h3 className="font-display text-lg font-bold text-hm-charcoal">
+                {titleCaseWords(item.title)}
+              </h3>
               <p className="mt-2 text-sm leading-relaxed text-hm-muted">{item.body}</p>
             </div>
           ))}
@@ -73,7 +77,7 @@ export function ProcessSection({
     <Section tone="white">
       <Container>
         <Eyebrow>Process</Eyebrow>
-        <Heading className="mt-3 text-hm-charcoal">How it works</Heading>
+        <Heading className="mt-3 text-hm-charcoal">How It Works</Heading>
         <ol className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((step, i) => (
             <li key={step.title} className="relative">
@@ -81,7 +85,7 @@ export function ProcessSection({
                 {String(i + 1).padStart(2, "0")}
               </span>
               <h3 className="mt-2 font-display text-lg font-bold text-hm-charcoal">
-                {step.title}
+                {titleCaseWords(step.title)}
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-hm-muted">{step.body}</p>
             </li>
@@ -95,19 +99,23 @@ export function ProcessSection({
 export function BenefitsListSection({
   benefits,
   expect,
+  title = "Why Homeowners Choose This Service",
+  subtitle,
 }: {
   benefits: string[];
   expect?: string[];
+  title?: string;
+  subtitle?: string;
 }) {
-  return (
-    <Section tone="white">
-      <Container>
-        <div className="grid gap-12 lg:grid-cols-2">
-          {expect && expect.length > 0 && (
+  if (expect && expect.length > 0) {
+    return (
+      <Section tone="white">
+        <Container>
+          <div className="grid gap-12 lg:grid-cols-2">
             <div>
-              <Eyebrow>What you can expect</Eyebrow>
+              <Eyebrow>What You Can Expect</Eyebrow>
               <Heading as="h2" className="mt-3 text-hm-charcoal">
-                Our standard on every job
+                Our Standard On Every Job
               </Heading>
               <ul className="mt-6 space-y-3">
                 {expect.map((item) => (
@@ -118,22 +126,49 @@ export function BenefitsListSection({
                 ))}
               </ul>
             </div>
-          )}
-          <div>
-            <Eyebrow>Benefits</Eyebrow>
-            <Heading as="h2" className="mt-3 text-hm-charcoal">
-              Why homeowners choose this service
-            </Heading>
-            <ul className="mt-6 space-y-3">
-              {benefits.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-hm-red" />
-                  <span className="text-hm-charcoal">{item}</span>
-                </li>
-              ))}
-            </ul>
+            <div>
+              <Eyebrow>Benefits</Eyebrow>
+              <Heading as="h2" className="mt-3 text-hm-charcoal">
+                {title}
+              </Heading>
+              <ul className="mt-6 space-y-3">
+                {benefits.map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-hm-red" />
+                    <span className="text-hm-charcoal">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
+        </Container>
+      </Section>
+    );
+  }
+
+  return (
+    <Section tone="white">
+      <Container>
+        <div className="max-w-2xl">
+          <Eyebrow>Benefits</Eyebrow>
+          <Heading as="h2" className="mt-3 text-hm-charcoal">
+            {title}
+          </Heading>
+          {subtitle ? <p className="mt-3 text-hm-muted">{subtitle}</p> : null}
         </div>
+        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
+          {benefits.map((item) => (
+            <li
+              key={item}
+              className="flex items-start gap-3 rounded-2xl border border-hm-line bg-hm-fog p-5"
+            >
+              <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-hm-red shadow-sm">
+                <Sparkles className="h-4 w-4" />
+              </span>
+              <span className="text-[15px] leading-relaxed text-hm-charcoal">{item}</span>
+            </li>
+          ))}
+        </ul>
       </Container>
     </Section>
   );
@@ -149,7 +184,7 @@ export function InlineFaqs({
     <Section tone="fog">
       <Container>
         <Eyebrow>FAQs</Eyebrow>
-        <Heading className="mt-3 text-hm-charcoal">Common questions</Heading>
+        <Heading className="mt-3 text-hm-charcoal">Common Questions</Heading>
         <div className="mt-8 divide-y divide-hm-line rounded-2xl border border-hm-line bg-white">
           {faqs.map((faq) => (
             <details key={faq.question} className="group px-6 py-5">
@@ -170,7 +205,7 @@ export function InlineFaqs({
 
 export function RelatedPosts({
   posts,
-  title = "Related articles",
+  title = "Related Articles",
 }: {
   posts: MdxDoc[];
   title?: string;
@@ -179,7 +214,7 @@ export function RelatedPosts({
   return (
     <Section tone="white">
       <Container>
-        <Eyebrow>Learn more</Eyebrow>
+        <Eyebrow>Learn More</Eyebrow>
         <Heading className="mt-3 text-hm-charcoal">{title}</Heading>
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           {posts.map((post) => (
@@ -204,22 +239,41 @@ export function RelatedPosts({
 }
 
 export function QuoteAndReviewsSection({
-  heading = "Ready for a clear answer?",
+  heading = "Ready For A Clear Answer?",
 }: {
   heading?: string;
 }) {
-  const featured = reviews.filter((r) => r.featured).slice(0, 3);
+  const featured = getFeaturedReviews(3);
+  const spotlight = featured[0];
   return (
     <>
       <Section tone="dark">
         <Container className="grid items-start gap-10 lg:grid-cols-2">
-          <div>
-            <Eyebrow className="text-hm-red">Get a quote</Eyebrow>
+          <div className="flex h-full flex-col">
+            <Eyebrow className="text-hm-red">Get A Quote</Eyebrow>
             <Heading className="mt-3 text-white">{heading}</Heading>
             <p className="mt-4 text-white/65">
-              Tell us what?s going on. We?ll follow up with next steps ? options first, no
+              Tell us what&apos;s going on. We&apos;ll follow up with next steps — options first, no
               pressure.
             </p>
+            {spotlight ? (
+              <figure className="mt-10 max-w-md border-l-2 border-hm-red pl-5 lg:mt-auto lg:pt-12">
+                <div className="flex gap-0.5 text-amber-400">
+                  {Array.from({ length: spotlight.rating }).map((_, i) => (
+                    <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                  ))}
+                </div>
+                <blockquote className="mt-4 text-lg leading-relaxed text-white/90">
+                  “{spotlight.quote}”
+                </blockquote>
+                <figcaption className="mt-5 font-display text-sm font-bold text-white">
+                  {spotlight.name}
+                  <span className="mt-1 block text-xs font-medium tracking-wide text-white/45">
+                    Google Review
+                  </span>
+                </figcaption>
+              </figure>
+            ) : null}
           </div>
           <QuoteForm elevated />
         </Container>
@@ -227,27 +281,14 @@ export function QuoteAndReviewsSection({
       <Section tone="white">
         <Container>
           <Eyebrow>Reviews</Eyebrow>
-          <Heading className="mt-3 text-hm-charcoal">What homeowners say</Heading>
+          <Heading className="mt-3 text-hm-charcoal">What Homeowners Say</Heading>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {featured.map((review) => (
-              <figure
-                key={review.id}
-                className="rounded-2xl border border-hm-line bg-hm-fog p-6"
-              >
-                <blockquote className="text-sm leading-relaxed text-hm-charcoal">
-                  ?{review.quote}?
-                </blockquote>
-                <figcaption className="mt-4 font-display text-sm font-bold">
-                  {review.name}
-                  <span className="mt-1 block text-xs font-medium text-hm-muted">
-                    Google Review ? 5.0
-                  </span>
-                </figcaption>
-              </figure>
+              <ReviewCard key={review.id} review={review} clamp />
             ))}
           </div>
           <Button href="/reviews" variant="outline" className="mt-8">
-            Read more reviews
+            Read More Reviews
           </Button>
         </Container>
       </Section>
@@ -269,8 +310,8 @@ export function OtherServicesSection({
   return (
     <Section tone="fog">
       <Container>
-        <Eyebrow>More services</Eyebrow>
-        <Heading className="mt-3 text-hm-charcoal">Explore other HVAC solutions</Heading>
+        <Eyebrow>More Services</Eyebrow>
+        <Heading className="mt-3 text-hm-charcoal">Explore Other HVAC Solutions</Heading>
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((service) => (
             <Link
@@ -295,7 +336,7 @@ export function OtherServicesSection({
           ))}
         </div>
         <Button href="/services" variant="outline" className="mt-8">
-          View all services
+          View All Services
         </Button>
       </Container>
     </Section>
@@ -306,7 +347,7 @@ export function CtaBand({
   title,
   body,
   primaryHref = "/booking",
-  primaryLabel = "Get a personalized quote",
+  primaryLabel = "Get A Personalized Quote",
 }: {
   title: string;
   body: string;

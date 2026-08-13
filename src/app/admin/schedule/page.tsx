@@ -1,68 +1,67 @@
 import { AdminShell } from "@/components/admin/AdminShell";
-import { schedule } from "@/lib/admin-data";
-import { requireAdmin } from "@/lib/admin-session";
-
-const statusStyles: Record<string, string> = {
-  Confirmed: "bg-emerald-100 text-emerald-800",
-  "En route": "bg-sky-100 text-sky-800",
-  "Needs confirm": "bg-amber-100 text-amber-900",
-};
-
-const typeStyles: Record<string, string> = {
-  Diagnostic: "text-sky-700",
-  Install: "text-hm-red",
-  Maintenance: "text-emerald-700",
-  "Follow-up": "text-violet-700",
-};
+import { AvailabilityForm } from "@/components/admin/AvailabilityForm";
+import { requireAdmin } from "@/lib/auth";
+import { getAdminSchedule } from "@/lib/admin-queries";
+import { formatWhen } from "@/lib/db-types";
+import Link from "next/link";
 
 export default async function AdminSchedulePage() {
   const admin = await requireAdmin();
+  const { appointments, windows } = await getAdminSchedule();
 
   return (
-    <AdminShell userName={admin.name}>
-      <h1 className="font-display text-3xl font-bold tracking-tight text-hm-charcoal">
-        Schedule
-      </h1>
+    <AdminShell userName={admin.name || admin.email}>
+      <h1 className="font-display text-3xl font-bold tracking-tight">Schedule</h1>
       <p className="mt-2 text-hm-muted">
-        Upcoming jobs, techs, and confirmation status ? demo board.
+        Publish open slots for customer self-booking, or assign visits from each job.
       </p>
 
-      <div className="mt-8 space-y-3">
-        {schedule.map((job) => (
-          <article
-            key={job.id}
-            className="rounded-2xl border border-hm-line bg-white p-5 shadow-sm"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className={`text-xs font-bold uppercase tracking-wide ${typeStyles[job.type]}`}>
-                  {job.type}
-                </p>
-                <h2 className="mt-1 font-display text-lg font-bold text-hm-charcoal">
-                  {job.title}
-                </h2>
-                <p className="mt-1 text-sm text-hm-muted">
-                  {job.client} ? {job.city}
-                </p>
-              </div>
-              <span
-                className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${statusStyles[job.status]}`}
-              >
-                {job.status}
-              </span>
-            </div>
-            <div className="mt-4 flex flex-wrap gap-4 text-sm">
-              <p>
-                <span className="text-hm-muted">When ? </span>
-                <span className="font-semibold text-hm-charcoal">{job.when}</span>
-              </p>
-              <p>
-                <span className="text-hm-muted">Tech ? </span>
-                <span className="font-semibold text-hm-charcoal">{job.tech}</span>
-              </p>
-            </div>
-          </article>
-        ))}
+      <div className="mt-8 grid gap-8 lg:grid-cols-2">
+        <section className="rounded-2xl border border-hm-line bg-white p-5">
+          <h2 className="font-display text-lg font-bold">Upcoming visits</h2>
+          <ul className="mt-4 space-y-3">
+            {appointments.map((row) => {
+              const a = row as {
+                id: string;
+                starts_at: string;
+                type: string;
+                status: string;
+                job_id: string;
+                jobs?: {
+                  title?: string;
+                  city?: string;
+                  profiles?: { name?: string; phone?: string } | null;
+                } | null;
+              };
+              return (
+                <li key={a.id} className="rounded-xl bg-hm-fog px-4 py-3 text-sm">
+                  <p className="font-semibold">{formatWhen(a.starts_at)}</p>
+                  <p className="text-hm-muted">
+                    {a.jobs?.profiles?.name || "Customer"} · {a.jobs?.title} · {a.type}
+                  </p>
+                  <Link href={`/admin/jobs/${a.job_id}`} className="mt-1 inline-block text-hm-red">
+                    Open job →
+                  </Link>
+                </li>
+              );
+            })}
+            {!appointments.length && <p className="text-sm text-hm-muted">No upcoming visits.</p>}
+          </ul>
+        </section>
+
+        <section className="rounded-2xl border border-hm-line bg-white p-5">
+          <h2 className="font-display text-lg font-bold">Open slots (customer bookable)</h2>
+          <AvailabilityForm />
+          <ul className="mt-4 space-y-2 text-sm">
+            {windows.map((w) => (
+              <li key={w.id} className="rounded-lg bg-hm-fog px-3 py-2">
+                {formatWhen(w.starts_at)}
+                {w.label ? ` — ${w.label}` : ""}
+              </li>
+            ))}
+            {!windows.length && <p className="text-hm-muted">No open slots published.</p>}
+          </ul>
+        </section>
       </div>
     </AdminShell>
   );

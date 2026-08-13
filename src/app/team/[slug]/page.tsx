@@ -126,7 +126,7 @@ export default async function TeamMemberPage({
       <Section tone="fog">
         <Container>
           <Heading as="h2" className="text-hm-charcoal">
-            More from the team
+            More From The Team
           </Heading>
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {others.map((m) => (
