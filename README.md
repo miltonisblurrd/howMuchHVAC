@@ -32,9 +32,11 @@ In Supabase Auth settings, add redirect URLs:
 
 ## Portal & admin
 
-- **Customer portal:** `/portal/login` — magic link (auto-invited on quote submit)
-- **Admin:** `/admin/login` — magic link; requires `profiles.role = 'admin'`
-- Andy can **resend invites** from Leads or a Job (especially after scheduling)
+- **Customer portal:** `/portal/login` — magic link (paused until Resend SMTP + `SUPABASE_AUTH_EMAILS=true`)
+- **Admin:** `/admin/login` — same; requires `profiles.role = 'admin'`
+- Andy can **resend invites** from Leads or a Job once auth email is on
+
+Auth emails stay **off** by default so local tests don’t bounce on Supabase’s shared sender. After custom SMTP is Resend, set `SUPABASE_AUTH_EMAILS=true`.
 
 ## Content
 

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, getProfile } from "@/lib/auth";
+import { supabaseAuthEmailsEnabled } from "@/lib/auth-email";
 import { sendPortalInvite } from "@/lib/portal-provision";
 
 const schema = z.object({
@@ -13,6 +14,16 @@ export async function POST(request: Request) {
   const profile = await getProfile(user.id);
   if (!profile || profile.role !== "admin") {
     return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+  }
+
+  if (!supabaseAuthEmailsEnabled()) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "Portal invites are paused until Resend SMTP is connected.",
+      },
+      { status: 503 },
+    );
   }
 
   const parsed = schema.safeParse(await request.json());
