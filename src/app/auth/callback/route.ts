@@ -8,9 +8,11 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+    if (supabase) {
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (!error) {
+        return NextResponse.redirect(`${origin}${next}`);
+      }
     }
   }
 
@@ -19,12 +21,14 @@ export async function GET(request: Request) {
   const type = searchParams.get("type");
   if (token_hash && type) {
     const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.verifyOtp({
-      type: type as "magiclink" | "email",
-      token_hash,
-    });
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+    if (supabase) {
+      const { error } = await supabase.auth.verifyOtp({
+        type: type as "magiclink" | "email",
+        token_hash,
+      });
+      if (!error) {
+        return NextResponse.redirect(`${origin}${next}`);
+      }
     }
   }
 

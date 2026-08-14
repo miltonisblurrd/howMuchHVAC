@@ -5,6 +5,7 @@ import type { Profile } from "@/lib/db-types";
 
 export async function getSessionUser() {
   const supabase = await createSupabaseServerClient();
+  if (!supabase) return null;
   const {
     data: { user },
   } = await supabase.auth.getUser();

@@ -27,6 +27,9 @@ export async function POST(request: Request) {
 
   const origin = new URL(request.url).origin;
   const supabase = await createSupabaseServerClient();
+  if (!supabase) {
+    return NextResponse.json({ ok: false, error: "Supabase is not configured" }, { status: 503 });
+  }
   const { error } = await supabase.auth.signInWithOtp({
     email: parsed.data.email.toLowerCase(),
     options: {

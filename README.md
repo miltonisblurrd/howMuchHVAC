@@ -38,6 +38,15 @@ In Supabase Auth settings, add redirect URLs:
 
 Auth emails stay **off** by default so local tests don’t bounce on Supabase’s shared sender. After custom SMTP is Resend, set `SUPABASE_AUTH_EMAILS=true`.
 
+## Vercel env vars
+
+Set these in the Vercel project (Settings → Environment Variables) or the production build of portal/admin will have no database:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_SITE_URL` (production URL)
+
 ## Content
 
 - Blog MDX: `src/content/blog`
