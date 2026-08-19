@@ -11,6 +11,7 @@ import type {
   Message,
   Profile,
 } from "@/lib/db-types";
+import { parseMessagePhoto } from "@/lib/uploads";
 
 export async function getCustomerJobs(customerId: string) {
   const admin = getSupabaseAdmin();
@@ -130,6 +131,18 @@ export async function getSignedUrl(bucket: string, path: string, expiresIn = 360
   return data.signedUrl;
 }
 
+export async function decorateMessagePhotos<T extends Message>(messages: T[]) {
+  const out = [];
+  for (const m of messages) {
+    const parsed = parseMessagePhoto(m.body);
+    const photoUrl = parsed.photoPath
+      ? await getSignedUrl("job-photos", parsed.photoPath)
+      : null;
+    out.push({ ...m, photoUrl, displayBody: parsed.text });
+  }
+  return out;
+}
+
 export async function countUnreadForCustomer(customerId: string) {
   const messages = await getCustomerMessages(customerId);
   return messages.filter((m) => m.from_role === "admin" && !m.read_at).length;
@@ -145,7 +158,7 @@ export async function getNextAppointmentForCustomer(customerId: string) {
     .from("appointments")
     .select("*")
     .in("job_id", ids)
-    .eq("status", "confirmed")
+    .in("status", ["confirmed", "pending"])
     .gte("starts_at", now)
     .order("starts_at", { ascending: true })
     .limit(1)

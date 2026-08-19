@@ -1,55 +1,82 @@
 import Link from "next/link";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { AdminEmpty } from "@/components/admin/AdminUi";
 import { requireAdmin } from "@/lib/auth";
-import { getAdminMessages } from "@/lib/admin-queries";
+import { getAdminInbox } from "@/lib/admin-queries";
 import { formatWhen } from "@/lib/db-types";
+import { parseMessagePhoto } from "@/lib/uploads";
+import { cn } from "@/lib/cn";
 
-export default async function AdminMessagesPage() {
+export default async function AdminMessagesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ job?: string; q?: string }>;
+}) {
   const admin = await requireAdmin();
-  const messages = await getAdminMessages();
+  const { job: highlightJob, q: qParam } = await searchParams;
+  const q = (qParam || "").trim().toLowerCase();
+  const threads = (await getAdminInbox()).filter((thread) => {
+    if (!q) return true;
+    const last = thread.last as { body?: string };
+    const preview = parseMessagePhoto(last.body || "").text || "";
+    return [thread.customerName, thread.title, preview].join(" ").toLowerCase().includes(q);
+  });
 
   return (
-    <AdminShell userName={admin.name || admin.email}>
-      <h1 className="font-display text-3xl font-bold tracking-tight">Messages</h1>
-      <p className="mt-2 text-hm-muted">Portal threads across jobs. Reply from the job page.</p>
-
-      <ul className="mt-8 space-y-3">
-        {messages.map((row) => {
-          const m = row as {
-            id: string;
-            body: string;
-            from_role: string;
-            created_at: string;
-            job_id: string;
-            jobs?: {
-              title?: string;
-              profiles?: { name?: string; email?: string } | null;
-            } | null;
-          };
-          return (
-            <li key={m.id} className="rounded-2xl border border-hm-line bg-white px-5 py-4">
-              <div className="flex flex-wrap items-start justify-between gap-2">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wide text-hm-muted">
-                    {m.from_role === "admin" ? "You" : m.jobs?.profiles?.name || "Customer"} ·{" "}
-                    {formatWhen(m.created_at)}
-                  </p>
-                  <p className="mt-1 font-semibold">{m.jobs?.title || "Job"}</p>
-                  <p className="mt-1 line-clamp-2 text-sm text-hm-muted">{m.body}</p>
-                </div>
-                <Link href={`/admin/jobs/${m.job_id}`} className="text-sm font-semibold text-hm-red">
-                  Open →
+    <AdminShell
+      userName={admin.name || admin.email}
+      title="Messages"
+      description="One conversation per job. Unread notes are highlighted."
+    >
+      {threads.length === 0 ? (
+        <AdminEmpty>{q ? "No threads match that search." : "No portal messages yet."}</AdminEmpty>
+      ) : (
+        <ul className="space-y-2.5">
+          {threads.map((thread) => {
+            const last = thread.last as {
+              body?: string;
+              from_role?: string;
+              created_at?: string;
+            };
+            const preview = parseMessagePhoto(last.body || "").text || "Photo attached";
+            const active = highlightJob === thread.jobId;
+            return (
+              <li key={thread.jobId}>
+                <Link
+                  href={`/admin/jobs/${thread.jobId}`}
+                  className={cn(
+                    "hm-admin-card hm-admin-click block px-5 py-4",
+                    active && "border-hm-red/50 ring-2 ring-hm-red/15",
+                    !active && thread.unreadFromCustomer > 0 && "border-amber-200/80 bg-amber-50/60",
+                  )}
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-[11px] font-semibold uppercase tracking-wide text-hm-muted">
+                        {thread.customerName}
+                        {last.created_at ? ` · ${formatWhen(last.created_at)}` : ""}
+                      </p>
+                      <p className="mt-1 font-display text-[15px] font-bold text-hm-charcoal">
+                        {thread.title}
+                      </p>
+                      <p className="mt-1 line-clamp-2 text-sm text-hm-muted">
+                        {last.from_role === "admin" ? "You: " : ""}
+                        {preview}
+                      </p>
+                      {thread.unreadFromCustomer > 0 && (
+                        <p className="mt-2 text-xs font-bold text-amber-800">
+                          {thread.unreadFromCustomer} unread
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-sm font-semibold text-hm-red">Open thread</span>
+                  </div>
                 </Link>
-              </div>
-            </li>
-          );
-        })}
-        {!messages.length && (
-          <p className="rounded-2xl border border-dashed border-hm-line bg-white p-8 text-center text-hm-muted">
-            No portal messages yet.
-          </p>
-        )}
-      </ul>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </AdminShell>
   );
 }

@@ -19,8 +19,12 @@ export type Profile = {
   name: string;
   phone: string | null;
   address: string | null;
+  city?: string | null;
   invited_at: string | null;
   invite_count: number;
+  onboarding_completed_at?: string | null;
+  avatar_path?: string | null;
+  avatar_bucket?: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -79,6 +83,8 @@ export type Appointment = {
   status: AppointmentStatus;
   booked_by: "customer" | "admin";
   notes: string | null;
+  tech_name: string | null;
+  customer_note: string | null;
   created_at: string;
 };
 

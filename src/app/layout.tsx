@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Lato } from "next/font/google";
 import { LocalBusinessJsonLd } from "@/components/seo/JsonLd";
+import { ContactProvider } from "@/components/contact/ContactProvider";
+import { getPublicContact } from "@/lib/business";
 import { site } from "@/lib/site";
 import "./globals.css";
 
@@ -41,7 +43,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const contact = await getPublicContact();
   return (
     <html
       lang="en"
@@ -49,8 +52,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${lato.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-hm-fog text-hm-charcoal">
-        <LocalBusinessJsonLd />
-        {children}
+        <ContactProvider contact={contact}>
+          <LocalBusinessJsonLd telephone={contact.directDisplay} email={contact.publicEmail} />
+          {children}
+        </ContactProvider>
       </body>
     </html>
   );

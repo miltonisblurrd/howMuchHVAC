@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { CheckCircle2, Phone, Star } from "lucide-react";
+import { CheckCircle2, Star } from "lucide-react";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { TrustBar } from "@/components/home/TrustBar";
 import { QuoteForm } from "@/components/forms/QuoteForm";
@@ -9,6 +9,7 @@ import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { PartnerLogos } from "@/components/brand/PartnerLogos";
 import { PartnerLogoStrip } from "@/components/brand/PartnerLogoStrip";
 import { GuideDownloadBand } from "@/components/home/GuideDownloadBand";
+import { CallAndyHero } from "@/components/contact/CallAndy";
 import { projects } from "@/lib/projects";
 import { getFeaturedReviews } from "@/lib/reviews";
 import { services } from "@/lib/services";
@@ -98,20 +99,7 @@ export default function HomePage() {
             </ul>
 
             <div className="mt-8 flex flex-wrap items-center gap-4">
-              <a
-                href={site.phones.direct.href}
-                className="inline-flex items-center gap-2.5 font-display text-lg font-bold text-white transition hover:text-hm-red"
-              >
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-hm-red text-white shadow-[0_8px_24px_-8px_rgba(255,29,37,0.8)]">
-                  <Phone className="h-5 w-5" />
-                </span>
-                <span>
-                  <span className="block text-[11px] font-semibold uppercase tracking-[0.18em] text-white/50">
-                    Call Andy direct
-                  </span>
-                  {site.phones.direct.display}
-                </span>
-              </a>
+              <CallAndyHero />
             </div>
           </div>
 

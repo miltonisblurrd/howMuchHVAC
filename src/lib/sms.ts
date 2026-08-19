@@ -1,5 +1,5 @@
 import twilio from "twilio";
-import { site } from "@/lib/site";
+import { getBusinessSettings, toE164 } from "@/lib/business";
 
 function getTwilio() {
   const sid = process.env.TWILIO_ACCOUNT_SID;
@@ -17,7 +17,11 @@ export async function sendLeadSmsAlert(input: {
   service?: string | null;
 }) {
   const tw = getTwilio();
-  const to = process.env.LEAD_NOTIFY_PHONE || process.env.TWILIO_TO_NUMBER;
+  const settings = await getBusinessSettings();
+  const to =
+    toE164(settings.notifyPhone) ||
+    process.env.LEAD_NOTIFY_PHONE ||
+    process.env.TWILIO_TO_NUMBER;
   if (!tw || !to) {
     console.warn("[sms] Twilio not fully configured — skipping");
     return { sent: false as const, reason: "not_configured" as const };
@@ -28,7 +32,7 @@ export async function sendLeadSmsAlert(input: {
     input.phone ? `Phone: ${input.phone}` : null,
     input.city ? `City: ${input.city}` : null,
     input.service ? `Service: ${input.service}` : null,
-    `Call: ${site.phones.direct.display}`,
+    `Call: ${settings.directDisplay}`,
   ]
     .filter(Boolean)
     .join(" · ");
@@ -52,7 +56,7 @@ export async function sendAppointmentSms(input: {
     `How Much? visit confirmed`,
     input.jobTitle,
     input.whenLabel,
-    `Questions: ${site.phones.direct.display}`,
+    `Questions: ${(await getBusinessSettings()).directDisplay}`,
   ].join(" · ");
 
   try {

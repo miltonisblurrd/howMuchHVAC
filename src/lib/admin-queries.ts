@@ -2,8 +2,11 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import type {
   Appointment,
   AvailabilityWindow,
+  DocumentRow,
   Invoice,
   Job,
+  JobEvent,
+  JobOption,
   Message,
   Profile,
 } from "@/lib/db-types";
@@ -109,9 +112,9 @@ export async function getAdminJob(jobId: string) {
 
   return {
     job: job as Job & { profiles: Profile },
-    options: options.data || [],
-    events: events.data || [],
-    documents: docs.data || [],
+    options: (options.data || []) as JobOption[],
+    events: (events.data || []) as JobEvent[],
+    documents: (docs.data || []) as DocumentRow[],
     appointments: (appts.data || []) as Appointment[],
     invoices: (invoices.data || []) as Invoice[],
     messages: (messages.data || []) as Message[],
@@ -160,8 +163,48 @@ export async function getAdminMessages() {
     .from("messages")
     .select("*, jobs(title, customer_id, profiles!customer_id(name, email))")
     .order("created_at", { ascending: false })
-    .limit(80);
+    .limit(200);
   return data || [];
+}
+
+export async function getAdminInbox() {
+  const messages = await getAdminMessages();
+  const threads = new Map<
+    string,
+    {
+      jobId: string;
+      title: string;
+      customerName: string;
+      last: (typeof messages)[number];
+      unreadFromCustomer: number;
+    }
+  >();
+
+  for (const row of messages) {
+    const m = row as {
+      id: string;
+      job_id: string;
+      from_role: string;
+      read_at: string | null;
+      body: string;
+      created_at: string;
+      jobs?: { title?: string; profiles?: { name?: string; email?: string } | null } | null;
+    };
+    const existing = threads.get(m.job_id);
+    if (!existing) {
+      threads.set(m.job_id, {
+        jobId: m.job_id,
+        title: m.jobs?.title || "Job",
+        customerName: m.jobs?.profiles?.name || m.jobs?.profiles?.email || "Customer",
+        last: row,
+        unreadFromCustomer: m.from_role === "customer" && !m.read_at ? 1 : 0,
+      });
+    } else if (m.from_role === "customer" && !m.read_at) {
+      existing.unreadFromCustomer += 1;
+    }
+  }
+
+  return [...threads.values()];
 }
 
 export async function getCustomers() {

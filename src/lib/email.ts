@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { site } from "@/lib/site";
+import { getBusinessSettings } from "@/lib/business";
 
 type LeadEmailInput = {
   name: string;
@@ -22,7 +23,8 @@ function getResend() {
 export async function sendLeadEmails(lead: LeadEmailInput) {
   const resend = getResend();
   const from = process.env.RESEND_FROM_EMAIL;
-  const notify = process.env.LEAD_NOTIFY_EMAIL || site.email;
+  const settings = await getBusinessSettings();
+  const notify = settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email;
 
   if (!resend || !from) {
     console.warn("[email] Resend not configured — skipping send");
@@ -56,17 +58,17 @@ export async function sendLeadEmails(lead: LeadEmailInput) {
   const customerHtml = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
       <p>Hi ${escapeHtml(lead.name.split(" ")[0] || "there")},</p>
-      <p>Thanks for reaching out to <strong>How Much? Air &amp; Home Improvements</strong>. We got your request and Andy’s team will follow up soon.</p>
+      <p>Thanks for reaching out to <strong>How Much? Air &amp; Home Improvements</strong>. We got your request and ${escapeHtml(settings.displayName)}’s team will follow up soon.</p>
       <p><strong>Your client portal is ready</strong></p>
       ${inviteBlock}
       <p><strong>What happens next</strong></p>
       <ol>
         <li>We’ll review what you sent and call or email you with clear next steps.</li>
         <li>In your portal you can message us, see pricing options, pick a visit time when slots are open, and pay invoices.</li>
-        <li>Prefer the phone? Call Andy anytime — that route always stays open.</li>
+        <li>Prefer the phone? Call ${escapeHtml(settings.displayName)} anytime — that route always stays open.</li>
       </ol>
-      <p>Need us sooner? Call Andy direct at <a href="${site.phones.direct.href}">${site.phones.direct.display}</a>.</p>
-      <p style="margin-top:24px">— How Much? Air &amp; Home Improvements<br/>${site.license}</p>
+      <p>Need us sooner? Call ${escapeHtml(settings.displayName)} direct at <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home Improvements<br/>${site.license}</p>
     </div>
   `;
 
@@ -108,20 +110,21 @@ export async function sendPortalInviteEmail(input: {
     return { sent: false as const, reason: "not_configured" as const };
   }
 
+  const settings = await getBusinessSettings();
   const first = input.name.split(" ")[0] || "there";
   const html = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
       <p>Hi ${escapeHtml(first)},</p>
       <p>${
         input.isNew
-          ? "Your How Much? client portal is ready."
-          : "Here’s a fresh link to your How Much? client portal."
+          ? `Your How Much? client portal is ready. ${escapeHtml(settings.displayName)} set it up so you can track the job in one place.`
+          : `Here’s a fresh link to your How Much? client portal.`
       }</p>
-      <p>Inside you can track your job, message the team, review options, schedule a visit, and pay invoices.</p>
+      <p>Inside you can track your job, message ${escapeHtml(settings.displayName)}, review options, schedule a visit, and pay invoices.</p>
       <p style="margin:24px 0"><a href="${escapeHtml(input.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Open your portal</a></p>
       <p style="font-size:13px;color:#555">Link: ${escapeHtml(input.inviteUrl)}</p>
-      <p>Prefer to talk? Call Andy at <a href="${site.phones.direct.href}">${site.phones.direct.display}</a>.</p>
-      <p style="margin-top:24px">— How Much? Air &amp; Home Improvements</p>
+      <p>Prefer to talk? Call ${escapeHtml(settings.displayName)} at <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home Improvements</p>
     </div>
   `;
 
@@ -148,6 +151,7 @@ export async function sendAppointmentEmail(input: {
   const resend = getResend();
   const from = process.env.RESEND_FROM_EMAIL;
   if (!resend || !from) return { sent: false as const, reason: "not_configured" as const };
+  const settings = await getBusinessSettings();
 
   const html = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
@@ -155,7 +159,8 @@ export async function sendAppointmentEmail(input: {
       <p>Your visit for <strong>${escapeHtml(input.jobTitle)}</strong> is confirmed.</p>
       <p style="font-size:18px;font-weight:700">${escapeHtml(input.whenLabel)}</p>
       <p>You can review details anytime in your <a href="${site.url}/portal">client portal</a>.</p>
-      <p>Questions? Call Andy at <a href="${site.phones.direct.href}">${site.phones.direct.display}</a>.</p>
+      <p>Questions? Call ${escapeHtml(settings.displayName)} at <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}</p>
     </div>
   `;
 
@@ -180,6 +185,7 @@ export async function sendInvoiceEmail(input: {
   const from = process.env.RESEND_FROM_EMAIL;
   if (!resend || !from) return { sent: false as const, reason: "not_configured" as const };
 
+  const settings = await getBusinessSettings();
   const html = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
       <p>Hi ${escapeHtml(input.name.split(" ")[0] || "there")},</p>
@@ -188,6 +194,8 @@ export async function sendInvoiceEmail(input: {
       <p style="font-size:22px;font-weight:700">${escapeHtml(input.amountLabel)}</p>
       <p style="margin:24px 0"><a href="${escapeHtml(input.payUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Pay securely</a></p>
       <p>Or open your <a href="${site.url}/portal/pay">portal payments</a> page.</p>
+      <p>Questions? Call ${escapeHtml(settings.displayName)} at <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}</p>
     </div>
   `;
 

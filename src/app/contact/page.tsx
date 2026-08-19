@@ -3,14 +3,18 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { QuoteForm } from "@/components/forms/QuoteForm";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { site } from "@/lib/site";
+import { getPublicContact } from "@/lib/business";
 
-export const metadata: Metadata = {
-  title: "Contact How Much? | Call Andy or Request a Quote",
-  description:
-    "Contact How Much? Air & Home Improvements. Call Andy direct at (714) 333-5953, office (562) 612-8961, or request a quote online for HVAC service in OC, LA, and San Diego.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const contact = await getPublicContact();
+  return {
+    title: `Contact How Much? | Call ${contact.displayName} or Request a Quote`,
+    description: `Contact How Much? Air & Home Improvements. Call ${contact.displayName} direct at ${contact.directDisplay}, office ${contact.officeDisplay}, or request a quote online for HVAC service in OC, LA, and San Diego.`,
+  };
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const contact = await getPublicContact();
   return (
     <SiteShell>
       <Section tone="dark" className="!pt-16 md:!pt-24">
@@ -22,36 +26,43 @@ export default function ContactPage() {
             </Heading>
             <p className="mt-4 max-w-xl text-lg leading-relaxed text-white/70">
               Real people. Clear answers. Whether your AC failed today or you want a second opinion
-              on a big quote, reach Andy&apos;s team the way that works for you.
+              on a big quote, reach {contact.displayName}&apos;s team the way that works for you.
             </p>
             <div className="mt-8 space-y-5 text-white/80">
               <p>
-                <span className="text-white/50">Direct (Andy)</span>
+                <span className="text-white/50">Direct ({contact.displayName})</span>
                 <br />
                 <a
-                  href={site.phones.direct.href}
+                  href={contact.directHref}
                   className="font-display text-2xl font-bold text-white"
                 >
-                  {site.phones.direct.display}
+                  {contact.directDisplay}
                 </a>
               </p>
               <p>
                 <span className="text-white/50">Office</span>
                 <br />
                 <a
-                  href={site.phones.office.href}
+                  href={contact.officeHref}
                   className="font-display text-2xl font-bold text-white"
                 >
-                  {site.phones.office.display}
+                  {contact.officeDisplay}
                 </a>
               </p>
               <p>
                 <span className="text-white/50">Email</span>
                 <br />
-                <a href={`mailto:${site.email}`} className="text-lg text-white">
-                  {site.email}
+                <a href={`mailto:${contact.publicEmail}`} className="text-lg text-white">
+                  {contact.publicEmail}
                 </a>
               </p>
+              {contact.officeAddress ? (
+                <p>
+                  <span className="text-white/50">Shop</span>
+                  <br />
+                  <span className="text-white">{contact.officeAddress}</span>
+                </p>
+              ) : null}
               <p className="text-sm text-white/50">{site.license} · Family-owned HVAC</p>
             </div>
             <div className="mt-8 rounded-2xl border border-white/15 bg-white/5 p-5 text-sm leading-relaxed text-white/65">

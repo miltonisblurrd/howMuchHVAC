@@ -1,14 +1,20 @@
 import { site } from "@/lib/site";
 
-export function LocalBusinessJsonLd() {
+export function LocalBusinessJsonLd({
+  telephone,
+  email,
+}: {
+  telephone?: string;
+  email?: string;
+}) {
   const data = {
     "@context": "https://schema.org",
     "@type": "HVACBusiness",
     name: site.legalName,
     description: site.description,
     url: site.url,
-    telephone: site.phones.direct.display,
-    email: site.email,
+    telephone: telephone || site.phones.direct.display,
+    email: email || site.email,
     areaServed: ["Orange County", "Los Angeles", "San Diego"],
     priceRange: "$$",
     aggregateRating: {

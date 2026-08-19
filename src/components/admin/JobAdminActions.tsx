@@ -49,6 +49,7 @@ export function JobAdminActions({
   const [invoiceAmount, setInvoiceAmount] = useState("500");
   const [invoiceDesc, setInvoiceDesc] = useState("Deposit");
   const [apptStart, setApptStart] = useState("");
+  const [techName, setTechName] = useState("");
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -101,6 +102,7 @@ export function JobAdminActions({
         startsAt: start.toISOString(),
         endsAt: end.toISOString(),
         type: "diagnostic",
+        techName: techName.trim() || undefined,
       }),
     });
     setLoading(false);
@@ -114,7 +116,7 @@ export function JobAdminActions({
   }
 
   return (
-    <div className="space-y-4 rounded-2xl border border-hm-line bg-white p-5">
+    <div className="hm-admin-card space-y-4 p-5">
       <h2 className="font-display text-lg font-bold">Edit job</h2>
 
       <label className="block text-sm">
@@ -234,6 +236,12 @@ export function JobAdminActions({
             className="hm-input"
             value={apptStart}
             onChange={(e) => setApptStart(e.target.value)}
+          />
+          <input
+            className="hm-input w-40"
+            placeholder="Tech name (optional)"
+            value={techName}
+            onChange={(e) => setTechName(e.target.value)}
           />
           <Button type="button" variant="secondary" onClick={scheduleVisit} disabled={loading} arrow={false}>
             Schedule

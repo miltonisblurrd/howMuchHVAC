@@ -3,6 +3,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { BookingWizard } from "@/components/forms/BookingWizard";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { site } from "@/lib/site";
+import { AndyName, DirectPhone } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "Book HVAC Service / Get a Quote | How Much?",
@@ -25,10 +26,8 @@ export default function BookingPage() {
             your client portal so you can track the visit and keep documents in one place.
           </p>
           <p className="mt-4 text-white/60">
-            Prefer to talk now? Call Andy direct at{" "}
-            <a href={site.phones.direct.href} className="font-semibold text-white underline">
-              {site.phones.direct.display}
-            </a>
+            Prefer to talk now? Call <AndyName /> direct at{" "}
+            <DirectPhone className="font-semibold text-white underline" />
             .
           </p>
         </Container>

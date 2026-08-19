@@ -96,6 +96,63 @@ body {
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--hm-red) 18%, transparent);
 }
 
+.hm-admin-card {
+  border: 1px solid var(--hm-line);
+  background: white;
+  border-radius: 1.05rem;
+  box-shadow: 0 1px 2px rgba(18, 21, 26, 0.035);
+}
+
+.hm-admin-click {
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.hm-admin-click:hover {
+  border-color: color-mix(in oklab, var(--hm-red) 58%, white);
+  box-shadow:
+    0 0 0 1px color-mix(in oklab, var(--hm-red) 32%, transparent),
+    0 16px 34px -16px rgba(255, 29, 37, 0.5),
+    0 8px 18px -12px rgba(18, 21, 26, 0.14);
+  transform: translateY(-1px);
+}
+
+.hm-skel {
+  background: linear-gradient(90deg, #e8eaee 0%, #f6f7f9 45%, #e8eaee 100%);
+  background-size: 200% 100%;
+  animation: hm-skel 1.35s ease infinite;
+  border-radius: 0.5rem;
+}
+
+@keyframes hm-skel {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.hm-search {
+  height: 2.5rem;
+  width: 100%;
+  border-radius: 999px;
+  border: 1px solid var(--hm-line);
+  background: white;
+  padding: 0 0.95rem 0 2.35rem;
+  color: var(--hm-charcoal);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.hm-search:focus {
+  border-color: color-mix(in oklab, var(--hm-red) 40%, white);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--hm-red) 14%, transparent);
+}
+
 .hm-card-lift {
   transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
 }
@@ -130,5 +187,19 @@ body {
   .hm-card-lift {
     animation: none;
     transition: none;
+    transform: none;
+  }
+
+  .hm-admin-click {
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    transform: none;
+  }
+
+  .hm-admin-click:hover {
+    transform: none;
+  }
+
+  .hm-skel {
+    animation: none;
   }
 }

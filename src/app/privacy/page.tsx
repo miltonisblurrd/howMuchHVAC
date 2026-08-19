@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { Container, Heading, Section } from "@/components/ui/Section";
 import { site } from "@/lib/site";
+import { DirectPhone, PublicEmail } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
@@ -87,20 +88,15 @@ export default function PrivacyPage() {
               <p className="mt-3">
                 California residents may request access to or deletion of personal information we
                 hold, subject to legal exceptions. Contact us at{" "}
-                <a href={`mailto:${site.email}`} className="font-semibold text-hm-red">
-                  {site.email}
-                </a>{" "}
-                or call {site.phones.direct.display}.
+                <PublicEmail className="font-semibold text-hm-red" /> or call{" "}
+                <DirectPhone className="font-semibold text-hm-red" />.
               </p>
             </div>
 
             <div>
               <h2 className="font-display text-xl font-bold text-hm-charcoal">Contact</h2>
               <p className="mt-3">
-                Questions about this policy:{" "}
-                <a href={`mailto:${site.email}`} className="font-semibold text-hm-red">
-                  {site.email}
-                </a>
+                Questions about this policy: <PublicEmail className="font-semibold text-hm-red" />
                 <br />
                 {site.legalName} · {site.license}
               </p>

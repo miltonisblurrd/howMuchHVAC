@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { services } from "@/lib/services";
-import { site } from "@/lib/site";
+import { AndyName, DirectPhone } from "@/components/contact/CallAndy";
 
 export function RequestForm() {
   const router = useRouter();
@@ -34,7 +34,7 @@ export function RequestForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mx-auto max-w-xl space-y-4 rounded-2xl border border-hm-line bg-white p-6">
+    <form onSubmit={onSubmit} className="hm-admin-card mx-auto max-w-xl space-y-4 p-6">
       <label className="block">
         <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hm-muted">
           Service
@@ -69,10 +69,8 @@ export function RequestForm() {
         {loading ? "Sending…" : "Submit request"}
       </Button>
       <p className="text-center text-sm text-hm-muted">
-        Or call{" "}
-        <a href={site.phones.direct.href} className="font-semibold text-hm-red">
-          {site.phones.direct.display}
-        </a>
+        Or call <AndyName /> at{" "}
+        <DirectPhone className="font-semibold text-hm-red" />
       </p>
     </form>
   );

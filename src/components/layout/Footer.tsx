@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { serviceAreas } from "@/lib/areas";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
+import { getPublicContact } from "@/lib/business";
 
 const companyLinks = [
   { href: "/about", label: "About" },
@@ -41,7 +42,8 @@ const locationGroups = [
   },
 ] as const;
 
-export function Footer() {
+export async function Footer() {
+  const contact = await getPublicContact();
   return (
     <footer className="bg-hm-ink text-white">
       <div className="mx-auto max-w-6xl px-5 py-16 md:px-8 md:py-20">
@@ -55,26 +57,29 @@ export function Footer() {
               <p>
                 <span className="text-white/45">Direct</span>{" "}
                 <a
-                  href={site.phones.direct.href}
+                  href={contact.directHref}
                   className="font-semibold text-white transition hover:text-hm-red"
                 >
-                  {site.phones.direct.display}
+                  {contact.directDisplay}
                 </a>
               </p>
               <p>
                 <span className="text-white/45">Office</span>{" "}
                 <a
-                  href={site.phones.office.href}
+                  href={contact.officeHref}
                   className="font-semibold text-white transition hover:text-hm-red"
                 >
-                  {site.phones.office.display}
+                  {contact.officeDisplay}
                 </a>
               </p>
               <p>
-                <a href={`mailto:${site.email}`} className="transition hover:text-hm-red">
-                  {site.email}
+                <a href={`mailto:${contact.publicEmail}`} className="transition hover:text-hm-red">
+                  {contact.publicEmail}
                 </a>
               </p>
+              {contact.officeAddress ? (
+                <p className="pt-1 text-white/55">{contact.officeAddress}</p>
+              ) : null}
               <p className="pt-2 text-white/40">{site.license}</p>
             </div>
             <div className="mt-8">

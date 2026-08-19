@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { Metadata } from "next";
-import { CheckCircle2, Phone, ShieldCheck, Star, XCircle } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Star, XCircle } from "lucide-react";
 import { QuoteForm } from "@/components/forms/QuoteForm";
 import { PartnerLogoStrip } from "@/components/brand/PartnerLogoStrip";
 import { Logo } from "@/components/ui/Logo";
@@ -10,6 +10,7 @@ import { FaqJsonLd } from "@/components/seo/JsonLd";
 import { getFeaturedReviews } from "@/lib/reviews";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
+import { CallAndy, CallAndyPhone, AndyName, DirectPhone } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "Get a Free HVAC Quote | How Much? Air & Home",
@@ -86,10 +87,7 @@ export default function GetAQuotePage() {
                 Google {site.google.rating} ({site.google.reviewCount})
               </span>
             </div>
-            <Button href={site.phones.direct.href} size="sm" tone="dark" arrow={false}>
-              <Phone className="h-3.5 w-3.5" />
-              {site.phones.direct.display}
-            </Button>
+            <CallAndyPhone size="sm" tone="dark" arrow={false} />
           </div>
         </Container>
       </header>
@@ -343,10 +341,8 @@ export default function GetAQuotePage() {
                 ))}
               </ol>
               <p className="mt-6 text-sm text-hm-muted">
-                Prefer to talk now? Call Andy direct at{" "}
-                <a href={site.phones.direct.href} className="font-semibold text-hm-red">
-                  {site.phones.direct.display}
-                </a>
+                Prefer to talk now? Call <AndyName /> direct at{" "}
+                <DirectPhone className="font-semibold text-hm-red" />
                 .
               </p>
             </div>
@@ -429,15 +425,9 @@ export default function GetAQuotePage() {
 
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-hm-ink/95 p-3 backdrop-blur md:hidden">
         <div className="flex gap-2">
-          <Button
-            href={site.phones.direct.href}
-            className="flex-1"
-            size="sm"
-            tone="dark"
-            arrow={false}
-          >
+          <CallAndy className="flex-1" size="sm" tone="dark" arrow={false}>
             Call Now
-          </Button>
+          </CallAndy>
           <Button href="#quote" variant="secondary" tone="dark" className="flex-1" size="sm">
             Get Quote
           </Button>

@@ -31,6 +31,7 @@ import { getArea, getNearbyAreas, serviceAreas } from "@/lib/areas";
 import { getBlogPosts } from "@/lib/mdx";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
+import { AndyName, DirectPhone } from "@/components/contact/CallAndy";
 
 const highlightIcons = [MapPin, Wrench, ShieldCheck];
 
@@ -103,7 +104,7 @@ export default async function CityPage({
                 </li>
                 <li className="flex gap-2">
                   <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-hm-red" />
-                  Call Andy direct {site.phones.direct.display}
+                  Call <AndyName /> direct <DirectPhone className="font-semibold text-white" />
                 </li>
               </ul>
               <div className="mt-8 flex flex-wrap gap-3">

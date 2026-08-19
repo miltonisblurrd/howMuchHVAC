@@ -32,6 +32,9 @@ export const site = {
   social: {
     hashtag: "#howmuch",
   },
+  /** Drop `public/videos/andy-welcome.mp4` or set NEXT_PUBLIC_PORTAL_INTRO_VIDEO */
+  portalIntroVideo:
+    process.env.NEXT_PUBLIC_PORTAL_INTRO_VIDEO || "/videos/andy-welcome.mp4",
 } as const;
 
 export const navPrimary = [

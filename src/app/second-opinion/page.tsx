@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { CheckCircle2, Search, Scale, MessageSquareWarning } from "lucide-react";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { QuoteForm } from "@/components/forms/QuoteForm";
-import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { CtaBand } from "@/components/content/PageExtras";
-import { site } from "@/lib/site";
+import { CallAndy, DirectPhone } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "Second Opinion | Honest HVAC Quote Reviews",
@@ -43,7 +42,8 @@ export default function SecondOpinionPage() {
             </Heading>
             <p className="mt-4 text-lg text-white/70">
               Bring us the quote. We will tell you what is fair, what is inflated, and whether you
-              actually need a replacement. Call direct at {site.phones.direct.display}.
+              actually need a replacement. Call direct at{" "}
+              <DirectPhone className="font-semibold text-white underline" />.
             </p>
             <ul className="mt-8 space-y-3 text-white/85">
               {[
@@ -57,9 +57,7 @@ export default function SecondOpinionPage() {
                 </li>
               ))}
             </ul>
-            <Button href={site.phones.direct.href} className="mt-8" tone="dark">
-              Call Andy Direct
-            </Button>
+            <CallAndy className="mt-8" tone="dark" />
           </div>
           <QuoteForm elevated />
         </Container>

@@ -4,6 +4,7 @@ import { getSessionUser, getProfile } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { sendNewMessageEmail } from "@/lib/email";
 import { site } from "@/lib/site";
+import { getBusinessSettings } from "@/lib/business";
 
 const schema = z.object({
   jobId: z.string().uuid(),
@@ -46,10 +47,11 @@ export async function POST(request: Request) {
 
   const customer = job.profiles as { name?: string; email?: string } | null;
   if (customer?.email) {
+    const settings = await getBusinessSettings();
     await sendNewMessageEmail({
       toEmail: customer.email,
       toName: customer.name || "there",
-      fromLabel: "How Much?",
+      fromLabel: settings.displayName,
       preview: parsed.data.body.slice(0, 280),
       portalUrl: `${site.url}/portal/messages`,
     });

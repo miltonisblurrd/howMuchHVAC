@@ -4,9 +4,9 @@ import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { GuideDownloadBand } from "@/components/home/GuideDownloadBand";
 import { Button } from "@/components/ui/Button";
+import { CallAndy } from "@/components/contact/CallAndy";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { services } from "@/lib/services";
-import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "HVAC Services | A/C, Heating, Heat Pumps & More",
@@ -33,9 +33,7 @@ export default function ServicesPage() {
             <Button href="/booking" tone="dark">
               Get a quote
             </Button>
-            <Button href={site.phones.direct.href} variant="outline" tone="dark">
-              Call {site.phones.direct.display}
-            </Button>
+            <CallAndy variant="outline" tone="dark" />
           </div>
         </Container>
       </Section>

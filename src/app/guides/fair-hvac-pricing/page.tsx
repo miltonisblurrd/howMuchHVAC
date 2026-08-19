@@ -3,7 +3,7 @@ import { PrintButton } from "@/components/content/PrintButton";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
-import { site } from "@/lib/site";
+import { CallAndy } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "Fair HVAC Pricing Guide | So, How Much?",
@@ -31,7 +31,7 @@ const sections = [
   },
   {
     title: "How To Use This Guide With How Much?",
-    body: `Save this page, then call Andy direct at ${site.phones.direct.display} or request a quote online. Share any prior proposals. We will tell you what is fair, what is optional, and what can wait ? with zero pressure to hire us afterward.`,
+    body: "Save this page, then call or request a quote online. Share any prior proposals. We will tell you what is fair, what is optional, and what can wait — with zero pressure to hire us afterward.",
   },
 ];
 
@@ -84,9 +84,7 @@ export default function FairHvacPricingGuidePage() {
             </p>
             <div className="mt-6 flex flex-wrap gap-3 print:hidden">
               <Button href="/booking">Request A Quote</Button>
-              <Button href={site.phones.direct.href} variant="outline">
-                Call {site.phones.direct.display}
-              </Button>
+              <CallAndy variant="outline" />
             </div>
           </div>
         </Container>

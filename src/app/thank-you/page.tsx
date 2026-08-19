@@ -11,7 +11,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { getFeaturedReviews } from "@/lib/reviews";
-import { site } from "@/lib/site";
+import { CallAndy, AndyName, DirectPhone } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "Request received",
@@ -76,10 +76,8 @@ export default async function ThankYouPage({
             </div>
           </div>
           <p className="mt-4 text-white/60">
-            Need us sooner? Call Andy direct at{" "}
-            <a href={site.phones.direct.href} className="font-semibold text-white underline">
-              {site.phones.direct.display}
-            </a>
+            Need us sooner? Call <AndyName /> direct at{" "}
+            <DirectPhone className="font-semibold text-white underline" />
             .
           </p>
         </Container>
@@ -111,9 +109,7 @@ export default async function ThankYouPage({
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button href="/portal/login">Already have the link? Sign in →</Button>
-                <Button href={site.phones.direct.href} variant="secondary" arrow={false}>
-                  Call Andy
-                </Button>
+                <CallAndy variant="secondary" arrow={false} />
               </div>
             </div>
             <div className="rounded-2xl border border-hm-line bg-white p-6 shadow-sm">

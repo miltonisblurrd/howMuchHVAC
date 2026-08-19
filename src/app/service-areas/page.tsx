@@ -4,7 +4,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { getAreasByRegion } from "@/lib/areas";
-import { site } from "@/lib/site";
+import { CallAndy, AndyName, DirectPhone } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "HVAC Service Areas | Orange County, Los Angeles & San Diego",
@@ -42,7 +42,7 @@ export default function ServiceAreasPage() {
           <p className="mt-4 max-w-2xl text-lg text-white/70">
             Family-owned How Much? serves major Southern California cities with licensed HVAC
             repair, installation, maintenance, and second opinions. Pick your city for local
-            details — or call Andy direct at {site.phones.direct.display}.
+            details — or call <AndyName /> direct at <DirectPhone className="font-semibold text-white" />.
           </p>
           <Button href="/booking" className="mt-8" tone="dark">
             Book service in your city
@@ -109,9 +109,7 @@ export default function ServiceAreasPage() {
               we will confirm coverage and timing.
             </p>
           </div>
-          <Button href={site.phones.direct.href} tone="dark">
-            Call {site.phones.direct.display}
-          </Button>
+          <CallAndy tone="dark" />
         </Container>
       </Section>
     </SiteShell>

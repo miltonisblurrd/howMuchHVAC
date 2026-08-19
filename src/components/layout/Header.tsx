@@ -10,7 +10,7 @@ import { NavMegaMenu } from "@/components/layout/NavMegaMenu";
 import { getNavFeaturedAreas } from "@/lib/areas";
 import { projects } from "@/lib/projects";
 import { services } from "@/lib/services";
-import { site } from "@/lib/site";
+import { useContact } from "@/components/contact/ContactProvider";
 import { cn } from "@/lib/cn";
 
 const simpleNav = [
@@ -20,6 +20,7 @@ const simpleNav = [
 ] as const;
 
 export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transparent" }) {
+  const contact = useContact();
   const pathname = usePathname();
   const shellRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -91,14 +92,14 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
 
           <div className="hidden items-center gap-3 lg:flex">
             <a
-              href={site.phones.direct.href}
+              href={contact.directHref}
               className={cn(
                 "inline-flex h-10 items-center gap-2 font-display text-sm font-bold",
                 dark ? "text-white" : "text-hm-charcoal",
               )}
             >
               <Phone className="h-4 w-4 text-hm-red" />
-              {site.phones.direct.display}
+              {contact.directDisplay}
             </a>
             <Button href="/booking" size="sm" tone={dark ? "dark" : "light"}>
               Get A Quote
@@ -226,10 +227,10 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
             </Link>
             <div className="mt-2 flex flex-col gap-2 px-3 pb-3">
               <a
-                href={site.phones.direct.href}
+                href={contact.directHref}
                 className="font-display text-sm font-bold text-hm-red"
               >
-                Direct {site.phones.direct.display}
+                Direct {contact.directDisplay}
               </a>
               <Button href="/booking" onClick={() => setOpen(false)}>
                 Get A Quote

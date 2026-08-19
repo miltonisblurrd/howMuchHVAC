@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { Container, Heading, Section } from "@/components/ui/Section";
 import { site } from "@/lib/site";
+import { DirectPhone, PublicEmail } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "Terms of Use",
@@ -80,11 +81,8 @@ export default function TermsPage() {
             <div>
               <h2 className="font-display text-xl font-bold text-hm-charcoal">Contact</h2>
               <p className="mt-3">
-                Questions:{" "}
-                <a href={`mailto:${site.email}`} className="font-semibold text-hm-red">
-                  {site.email}
-                </a>{" "}
-                · Direct {site.phones.direct.display}
+                Questions: <PublicEmail className="font-semibold text-hm-red" /> · Direct{" "}
+                <DirectPhone className="font-semibold text-hm-red" />
                 <br />
                 {site.legalName}
               </p>

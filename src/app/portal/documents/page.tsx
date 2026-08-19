@@ -1,4 +1,5 @@
-import { PortalShell } from "@/components/portal/PortalShell";
+import { PortalChrome } from "@/components/portal/PortalChrome";
+import { AdminEmpty } from "@/components/admin/AdminUi";
 import { requirePortalUser } from "@/lib/auth";
 import { getCustomerDocuments, getSignedUrl } from "@/lib/portal-queries";
 
@@ -13,44 +14,47 @@ export default async function PortalDocumentsPage() {
   );
 
   return (
-    <PortalShell userName={user.name || user.email}>
-      <h1 className="font-display text-3xl font-bold tracking-tight">Documents</h1>
-      <p className="mt-2 text-hm-muted">Quotes, scopes, warranties, and paperwork for your jobs.</p>
-
+    <PortalChrome
+      userId={user.id}
+      userName={user.name || user.email}
+      title="Documents"
+      description="Quotes, scopes, warranties, and paperwork for your jobs."
+    >
       {withUrls.length === 0 ? (
-        <p className="mt-8 rounded-2xl border border-dashed border-hm-line bg-white p-8 text-center text-hm-muted">
-          No documents yet. They&apos;ll appear here when Andy uploads them.
-        </p>
+        <AdminEmpty>No documents yet. They'll appear here when Andy uploads them.</AdminEmpty>
       ) : (
-        <ul className="mt-8 space-y-3">
+        <ul className="space-y-2.5">
           {withUrls.map((d) => (
-            <li
-              key={d.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hm-line bg-white px-5 py-4"
-            >
-              <div>
-                <p className="font-semibold text-hm-charcoal">{d.name}</p>
-                <p className="text-sm text-hm-muted">
-                  {d.doc_type}
-                  {d.job_title ? ` · ${d.job_title}` : ""}
-                </p>
-              </div>
+            <li key={d.id}>
               {d.url ? (
                 <a
                   href={d.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-sm font-semibold text-hm-red hover:underline"
+                  className="hm-admin-card hm-admin-click flex flex-wrap items-center justify-between gap-3 px-5 py-4"
                 >
-                  Download →
+                  <div>
+                    <p className="font-display text-[15px] font-bold text-hm-charcoal">{d.name}</p>
+                    <p className="mt-0.5 text-sm text-hm-muted">
+                      {d.doc_type}
+                      {d.job_title ? ` · ${d.job_title}` : ""}
+                    </p>
+                  </div>
+                  <span className="text-sm font-semibold text-hm-red">Download →</span>
                 </a>
               ) : (
-                <span className="text-sm text-hm-muted">Unavailable</span>
+                <div className="hm-admin-card flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+                  <div>
+                    <p className="font-display text-[15px] font-bold text-hm-charcoal">{d.name}</p>
+                    <p className="mt-0.5 text-sm text-hm-muted">{d.doc_type}</p>
+                  </div>
+                  <span className="text-sm text-hm-muted">Unavailable</span>
+                </div>
               )}
             </li>
           ))}
         </ul>
       )}
-    </PortalShell>
+    </PortalChrome>
   );
 }

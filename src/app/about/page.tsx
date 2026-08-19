@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
+import { CallAndy } from "@/components/contact/CallAndy";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { getFeaturedReviews } from "@/lib/reviews";
 import { ReviewCard } from "@/components/content/ReviewCard";
@@ -210,9 +211,7 @@ export default function AboutPage() {
             <Button href="/booking" tone="dark">
               Get a quote
             </Button>
-            <Button href={site.phones.direct.href} variant="outline" tone="dark">
-              Call {site.phones.direct.display}
-            </Button>
+            <CallAndy variant="outline" tone="dark" />
           </div>
         </Container>
       </Section>

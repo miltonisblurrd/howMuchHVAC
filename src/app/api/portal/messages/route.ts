@@ -1,15 +1,11 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { getSessionUser, getProfile } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { sendNewMessageEmail } from "@/lib/email";
 import { sendLeadSmsAlert } from "@/lib/sms";
 import { site } from "@/lib/site";
-
-const schema = z.object({
-  jobId: z.string().uuid(),
-  body: z.string().trim().min(1).max(4000),
-});
+import { getBusinessSettings } from "@/lib/business";
+import { uploadJobFile, withPhotoMarker } from "@/lib/uploads";
 
 export async function POST(request: Request) {
   const user = await getSessionUser();
@@ -17,20 +13,59 @@ export async function POST(request: Request) {
   const profile = await getProfile(user.id);
   if (!profile) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
 
-  const parsed = schema.safeParse(await request.json());
-  if (!parsed.success) {
-    return NextResponse.json({ ok: false, error: "Invalid message" }, { status: 400 });
+  const contentType = request.headers.get("content-type") || "";
+  let jobId = "";
+  let body = "";
+  let photo: File | null = null;
+
+  if (contentType.includes("multipart/form-data")) {
+    const form = await request.formData();
+    jobId = String(form.get("jobId") || "");
+    body = String(form.get("body") || "").trim();
+    const file = form.get("photo");
+    photo = file instanceof File && file.size > 0 ? file : null;
+  } else {
+    const json = (await request.json().catch(() => null)) as { jobId?: string; body?: string } | null;
+    jobId = json?.jobId || "";
+    body = (json?.body || "").trim();
+  }
+
+  if (!jobId || (!body && !photo)) {
+    return NextResponse.json({ ok: false, error: "Write a message or attach a photo" }, { status: 400 });
+  }
+  if (body.length > 4000) {
+    return NextResponse.json({ ok: false, error: "Message is too long" }, { status: 400 });
   }
 
   const admin = getSupabaseAdmin();
   const { data: job } = await admin
     .from("jobs")
     .select("*")
-    .eq("id", parsed.data.jobId)
+    .eq("id", jobId)
     .eq("customer_id", profile.id)
     .maybeSingle();
 
   if (!job) return NextResponse.json({ ok: false, error: "Job not found" }, { status: 404 });
+
+  let storedBody = body || "Photo attached";
+  if (photo) {
+    const uploaded = await uploadJobFile({
+      bucket: "job-photos",
+      jobId: job.id,
+      file: photo,
+      kind: "photo",
+    });
+    if (!uploaded.ok) {
+      return NextResponse.json({ ok: false, error: uploaded.error }, { status: 400 });
+    }
+    await admin.from("job_photos").insert({
+      job_id: job.id,
+      label: photo.name || "Customer photo",
+      storage_path: uploaded.path,
+      bucket: "job-photos",
+    });
+    storedBody = withPhotoMarker(uploaded.path, body);
+  }
 
   const { data: message, error } = await admin
     .from("messages")
@@ -38,7 +73,7 @@ export async function POST(request: Request) {
       job_id: job.id,
       sender_id: profile.id,
       from_role: "customer",
-      body: parsed.data.body,
+      body: storedBody,
     })
     .select("*")
     .single();
@@ -47,13 +82,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
 
-  const notify = process.env.LEAD_NOTIFY_EMAIL || site.email;
+  const settings = await getBusinessSettings();
+  const notify = settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email;
+  const preview = (body || "Sent a photo").slice(0, 280);
   await Promise.allSettled([
     sendNewMessageEmail({
       toEmail: notify,
-      toName: "Andy",
+      toName: settings.displayName,
       fromLabel: profile.name || profile.email,
-      preview: parsed.data.body.slice(0, 280),
+      preview,
       portalUrl: `${site.url}/admin/messages?job=${job.id}`,
     }),
     sendLeadSmsAlert({

@@ -4,7 +4,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { CtaBand, QuoteAndReviewsSection } from "@/components/content/PageExtras";
-import { site } from "@/lib/site";
+import { CallAndy } from "@/components/contact/CallAndy";
 
 export const metadata: Metadata = {
   title: "Warranty | What We Stand Behind",
@@ -52,9 +52,7 @@ export default function WarrantyPage() {
             <Button href="/booking" tone="dark">
               Ask About Coverage
             </Button>
-            <Button href={site.phones.direct.href} variant="outline" tone="dark">
-              Call {site.phones.direct.display}
-            </Button>
+            <CallAndy variant="outline" tone="dark" />
           </div>
         </Container>
       </Section>

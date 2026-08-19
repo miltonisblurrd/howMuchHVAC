@@ -7,22 +7,35 @@ import { sendPortalInvite } from "@/lib/portal-provision";
 import { sendAppointmentSms } from "@/lib/sms";
 import { formatWhen } from "@/lib/db-types";
 
-const schema = z.object({
+const createSchema = z.object({
   jobId: z.string().uuid(),
   startsAt: z.string(),
   endsAt: z.string(),
   type: z.enum(["diagnostic", "install", "maintenance", "follow_up"]).default("diagnostic"),
+  techName: z.string().trim().max(80).optional(),
 });
 
-export async function POST(request: Request) {
+const patchSchema = z.object({
+  appointmentId: z.string().uuid(),
+  action: z.enum(["confirm", "decline"]),
+  techName: z.string().trim().max(80).optional(),
+});
+
+async function requireAdminProfile() {
   const user = await getSessionUser();
-  if (!user) return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+  if (!user) return { error: NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 }) };
   const profile = await getProfile(user.id);
   if (!profile || profile.role !== "admin") {
-    return NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 });
+    return { error: NextResponse.json({ ok: false, error: "Forbidden" }, { status: 403 }) };
   }
+  return { profile };
+}
 
-  const parsed = schema.safeParse(await request.json());
+export async function POST(request: Request) {
+  const auth = await requireAdminProfile();
+  if ("error" in auth) return auth.error;
+
+  const parsed = createSchema.safeParse(await request.json());
   if (!parsed.success) {
     return NextResponse.json({ ok: false, error: "Invalid appointment" }, { status: 400 });
   }
@@ -35,20 +48,32 @@ export async function POST(request: Request) {
     .maybeSingle();
   if (!job) return NextResponse.json({ ok: false, error: "Job not found" }, { status: 404 });
 
-  const { data: appt, error } = await admin
-    .from("appointments")
-    .insert({
-      job_id: job.id,
-      type: parsed.data.type,
-      starts_at: parsed.data.startsAt,
-      ends_at: parsed.data.endsAt,
-      status: "confirmed",
-      booked_by: "admin",
-    })
-    .select("*")
-    .single();
+  const insert = {
+    job_id: job.id,
+    type: parsed.data.type,
+    starts_at: parsed.data.startsAt,
+    ends_at: parsed.data.endsAt,
+    status: "confirmed",
+    booked_by: "admin",
+    tech_name: parsed.data.techName || null,
+  };
 
-  if (error) return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+  let { data: appt, error } = await admin.from("appointments").insert(insert).select("*").single();
+  if (error) {
+    const fallback = {
+      job_id: insert.job_id,
+      type: insert.type,
+      starts_at: insert.starts_at,
+      ends_at: insert.ends_at,
+      status: insert.status,
+      booked_by: insert.booked_by,
+    };
+    const retry = await admin.from("appointments").insert(fallback).select("*").single();
+    if (retry.error) {
+      return NextResponse.json({ ok: false, error: retry.error.message }, { status: 500 });
+    }
+    appt = retry.data;
+  }
 
   await admin
     .from("jobs")
@@ -58,25 +83,104 @@ export async function POST(request: Request) {
   await admin.from("job_events").insert({
     job_id: job.id,
     title: "Visit scheduled by Andy",
-    detail: formatWhen(parsed.data.startsAt),
+    detail: `${formatWhen(parsed.data.startsAt)}${parsed.data.techName ? ` · ${parsed.data.techName}` : ""}`,
   });
 
-  const customer = job.profiles as {
-      id: string;
-      name?: string;
-      email?: string;
-      phone?: string | null;
-    } | null;
+  await notifyCustomer(
+    admin,
+    {
+      title: String(job.title ?? "Job"),
+      customer_id: String(job.customer_id),
+      profiles: job.profiles as {
+        name?: string;
+        email?: string;
+        phone?: string | null;
+      } | null,
+    },
+    parsed.data.startsAt,
+  );
+  return NextResponse.json({ ok: true, appointment: appt, invitePrompted: true });
+}
+
+export async function PATCH(request: Request) {
+  const auth = await requireAdminProfile();
+  if ("error" in auth) return auth.error;
+
+  const parsed = patchSchema.safeParse(await request.json());
+  if (!parsed.success) {
+    return NextResponse.json({ ok: false, error: "Invalid update" }, { status: 400 });
+  }
+
+  const admin = getSupabaseAdmin();
+  const { data: appt } = await admin
+    .from("appointments")
+    .select("*, jobs(*, profiles!customer_id(name, email, phone))")
+    .eq("id", parsed.data.appointmentId)
+    .maybeSingle();
+  if (!appt) return NextResponse.json({ ok: false, error: "Appointment not found" }, { status: 404 });
+
+  const job = appt.jobs as {
+    id: string;
+    title: string;
+    customer_id: string;
+    profiles?: { name?: string; email?: string; phone?: string | null } | null;
+  } | null;
+  if (!job) return NextResponse.json({ ok: false, error: "Job not found" }, { status: 404 });
+
+  if (parsed.data.action === "decline") {
+    await admin.from("appointments").update({ status: "cancelled" }).eq("id", appt.id);
+    await admin.from("job_events").insert({
+      job_id: job.id,
+      title: "Requested time declined",
+      detail: formatWhen(appt.starts_at),
+    });
+    return NextResponse.json({ ok: true });
+  }
+
+  const update: Record<string, string | null> = { status: "confirmed" };
+  if (parsed.data.techName) update.tech_name = parsed.data.techName;
+
+  const { error } = await admin.from("appointments").update(update).eq("id", appt.id);
+  if (error && parsed.data.techName) {
+    await admin.from("appointments").update({ status: "confirmed" }).eq("id", appt.id);
+  }
+
+  await admin
+    .from("jobs")
+    .update({ status: "scheduled", updated_at: new Date().toISOString() })
+    .eq("id", job.id);
+
+  await admin.from("job_events").insert({
+    job_id: job.id,
+    title: "Visit confirmed",
+    detail: `${formatWhen(appt.starts_at)}${parsed.data.techName ? ` · ${parsed.data.techName}` : ""}`,
+  });
+
+  await notifyCustomer(admin, { ...job, profiles: job.profiles }, appt.starts_at);
+  return NextResponse.json({ ok: true });
+}
+
+async function notifyCustomer(
+  admin: ReturnType<typeof getSupabaseAdmin>,
+  job: {
+    id?: string;
+    title: string;
+    customer_id: string;
+    profiles?: { name?: string; email?: string; phone?: string | null } | null;
+  },
+  startsAt: string,
+) {
+  const customer = job.profiles;
   if (customer?.email) {
     await sendAppointmentEmail({
       name: customer.name || "there",
       email: customer.email,
-      whenLabel: formatWhen(parsed.data.startsAt),
+      whenLabel: formatWhen(startsAt),
       jobTitle: job.title,
     });
     await sendAppointmentSms({
       toPhone: customer.phone,
-      whenLabel: formatWhen(parsed.data.startsAt),
+      whenLabel: formatWhen(startsAt),
       jobTitle: job.title,
     });
 
@@ -89,6 +193,4 @@ export async function POST(request: Request) {
       }
     }
   }
-
-  return NextResponse.json({ ok: true, appointment: appt, invitePrompted: true });
 }

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
+import { DirectPhone } from "@/components/contact/CallAndy";
 
 const steps = ["Your info", "Services", "Schedule", "Confirm"];
 
@@ -177,7 +178,9 @@ export function BookingWizard() {
               <li>· {info.name || "Your name"} · {info.phone || "Phone"} · {info.email || "Email"}</li>
               <li>· Services: {selected.length ? selected.join(", ") : "None selected"}</li>
               <li>· Timing: {info.timing}</li>
-              <li>· Direct line: {site.phones.direct.display}</li>
+              <li>
+                · Direct line: <DirectPhone className="font-semibold text-hm-charcoal" />
+              </li>
               <li>· {site.license}</li>
             </ul>
           </div>
