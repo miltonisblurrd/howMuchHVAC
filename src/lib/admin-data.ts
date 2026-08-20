@@ -51,7 +51,7 @@ export type Lead = {
 
 export const adminUser: AdminUser = {
   id: "admin1",
-  email: "andy@trusthowmuch.com",
+  email: "howmuchandy@gmail.com",
   password: "howmuch",
   name: "Andy",
 };

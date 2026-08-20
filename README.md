@@ -22,7 +22,7 @@ Run migrations in the Supabase SQL Editor (in order):
 Then promote Andy to admin after his first magic-link sign-in:
 
 ```sql
-update public.profiles set role = 'admin' where email = 'andy@trusthowmuch.com';
+update public.profiles set role = 'admin' where email = 'howmuchandy@gmail.com';
 ```
 
 In Supabase Auth settings, add redirect URLs:

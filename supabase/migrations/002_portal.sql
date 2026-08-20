@@ -458,4 +458,4 @@ create policy job_photos_write_storage on storage.objects
   );
 
 -- Seed note: promote Andy to admin after he signs in once, e.g.:
--- update public.profiles set role = 'admin' where email = 'andy@trusthowmuch.com';
+-- update public.profiles set role = 'admin' where email = 'howmuchandy@gmail.com';

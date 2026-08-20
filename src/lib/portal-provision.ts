@@ -2,7 +2,6 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { site } from "@/lib/site";
 import type { Profile } from "@/lib/db-types";
 import { sendPortalInviteEmail } from "@/lib/email";
-import { supabaseAuthEmailsEnabled } from "@/lib/auth-email";
 
 const siteUrl = () => process.env.NEXT_PUBLIC_SITE_URL || site.url;
 
@@ -117,16 +116,15 @@ export async function provisionPortalFromLead(input: ProvisionLeadInput) {
     })
     .eq("id", input.leadId);
 
-  // Invite if never signed in (or newly created)
+  // Invite if never signed in. generateLink does not send mail — Resend sends the URL.
   const { data: authUser } = await admin.auth.admin.getUserById(profile.id);
   const hasSignedIn = Boolean(authUser.user?.last_sign_in_at);
 
-  if (!hasSignedIn && supabaseAuthEmailsEnabled()) {
+  if (!hasSignedIn) {
     const link = await generateMagicLink(email);
     inviteLink = link;
     if (link) {
       // Link is included in the lead confirmation email (caller sends it).
-      // Mark invited now so Andy can see status; count bumps when email actually sends.
       await admin
         .from("profiles")
         .update({
@@ -162,18 +160,6 @@ export async function sendPortalInvite(customerId: string, reason = "manual") {
 
   if (!profile) throw new Error("Customer not found");
 
-  if (!supabaseAuthEmailsEnabled()) {
-    return {
-      sent: false,
-      reason,
-      inviteUrl: null,
-      email: {
-        sent: false as const,
-        reason: "auth_emails_paused" as const,
-      },
-    };
-  }
-
   const link = await generateMagicLink(profile.email);
   if (!link) throw new Error("Could not generate invite link");
 
@@ -198,7 +184,6 @@ export async function sendPortalInvite(customerId: string, reason = "manual") {
 }
 
 async function generateMagicLink(email: string) {
-  if (!supabaseAuthEmailsEnabled()) return null;
   const admin = getSupabaseAdmin();
   const redirectTo = `${siteUrl()}/auth/callback?next=/portal`;
   const { data, error } = await admin.auth.admin.generateLink({

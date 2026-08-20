@@ -14,7 +14,7 @@ export function AdminLoginForm({
   devLoginEnabled: boolean;
 }) {
   const params = useSearchParams();
-  const [email, setEmail] = useState("andy@trusthowmuch.com");
+  const [email, setEmail] = useState("howmuchandy@gmail.com");
   const [error, setError] = useState(
     params.get("error") ? "Sign-in link expired or you are not an admin." : "",
   );

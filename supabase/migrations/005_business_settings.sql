@@ -13,7 +13,7 @@ create table if not exists public.business_settings (
 );
 
 insert into public.business_settings (id, display_name, public_email, direct_phone)
-values (1, 'Andy', 'andy@trusthowmuch.com', '(714) 333-5953')
+values (1, 'Andy', 'howmuchandy@gmail.com', '(714) 333-5953')
 on conflict (id) do nothing;
 
 alter table public.business_settings enable row level security;

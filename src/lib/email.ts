@@ -83,6 +83,7 @@ export async function sendLeadEmails(lead: LeadEmailInput) {
     resend.emails.send({
       from,
       to: lead.email,
+      replyTo: notify,
       subject: "Your How Much? portal + request received",
       html: customerHtml,
     }),
@@ -131,6 +132,7 @@ export async function sendPortalInviteEmail(input: {
   const result = await resend.emails.send({
     from,
     to: input.email,
+    replyTo: settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email,
     subject: "Open your How Much? client portal",
     html,
   });
@@ -167,6 +169,7 @@ export async function sendAppointmentEmail(input: {
   const result = await resend.emails.send({
     from,
     to: input.email,
+    replyTo: settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email,
     subject: `Visit confirmed — ${input.whenLabel}`,
     html,
   });
@@ -202,6 +205,7 @@ export async function sendInvoiceEmail(input: {
   const result = await resend.emails.send({
     from,
     to: input.email,
+    replyTo: settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email,
     subject: `Invoice ${input.invoiceNumber} — ${input.amountLabel}`,
     html,
   });

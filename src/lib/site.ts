@@ -5,7 +5,7 @@ export const site = {
   description:
     "Licensed, insured HVAC experts serving Orange County, Los Angeles, and San Diego. Fair options, no pressure — just trustworthy service for your family.",
   url: "https://www.trusthowmuch.com",
-  email: "andy@trusthowmuch.com",
+  email: "howmuchandy@gmail.com",
   phones: {
     direct: {
       display: "(714) 333-5953",
