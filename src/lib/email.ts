@@ -10,7 +10,9 @@ type LeadEmailInput = {
   service?: string | null;
   message?: string | null;
   sourcePath?: string | null;
-  /** When set, customer confirmation includes the portal CTA */
+  /** Login page for the client portal */
+  portalLoginUrl?: string | null;
+  /** When set, customer confirmation includes a one-time password setup CTA */
   inviteUrl?: string | null;
 };
 
@@ -50,10 +52,12 @@ export async function sendLeadEmails(lead: LeadEmailInput) {
     </div>
   `;
 
+  const portalUrl = lead.portalLoginUrl || `${site.url}/portal/login`;
   const inviteBlock = lead.inviteUrl
-    ? `<p style="margin:20px 0"><a href="${escapeHtml(lead.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Open your client portal</a></p>
+    ? `<p style="margin:20px 0"><a href="${escapeHtml(lead.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Set your portal password</a></p>
        <p style="font-size:13px;color:#555">Or copy this link: ${escapeHtml(lead.inviteUrl)}</p>`
-    : `<p>Check your email for a link to open your <strong>client portal</strong> — track your visit, messages, documents, and options in one place.</p>`;
+    : `<p style="margin:20px 0"><a href="${escapeHtml(portalUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Sign in to your portal</a></p>
+       <p>Use the email and password you created on the quote form. Forgot it? Use “Forgot password” on the sign-in page.</p>`;
 
   const customerHtml = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
@@ -103,6 +107,7 @@ export async function sendPortalInviteEmail(input: {
   email: string;
   inviteUrl: string;
   isNew?: boolean;
+  isPasswordSetup?: boolean;
 }) {
   const resend = getResend();
   const from = process.env.RESEND_FROM_EMAIL;
@@ -117,12 +122,14 @@ export async function sendPortalInviteEmail(input: {
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
       <p>Hi ${escapeHtml(first)},</p>
       <p>${
-        input.isNew
-          ? `Your How Much? client portal is ready. ${escapeHtml(settings.displayName)} set it up so you can track the job in one place.`
-          : `Here’s a fresh link to your How Much? client portal.`
+        input.isPasswordSetup
+          ? `Use this link once to set (or reset) your portal password. After that, sign in at ${escapeHtml(site.url)}/portal/login with your email and password.`
+          : input.isNew
+            ? `Your How Much? client portal is ready. ${escapeHtml(settings.displayName)} set it up so you can track the job in one place.`
+            : `Sign in to your How Much? client portal with the email and password you created.`
       }</p>
       <p>Inside you can track your job, message ${escapeHtml(settings.displayName)}, review options, schedule a visit, and pay invoices.</p>
-      <p style="margin:24px 0"><a href="${escapeHtml(input.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Open your portal</a></p>
+      <p style="margin:24px 0"><a href="${escapeHtml(input.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">${input.isPasswordSetup ? "Set your password" : "Sign in to your portal"}</a></p>
       <p style="font-size:13px;color:#555">Link: ${escapeHtml(input.inviteUrl)}</p>
       <p>Prefer to talk? Call ${escapeHtml(settings.displayName)} at <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
       <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home Improvements</p>
@@ -133,7 +140,7 @@ export async function sendPortalInviteEmail(input: {
     from,
     to: input.email,
     replyTo: settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email,
-    subject: "Open your How Much? client portal",
+    subject: input.isPasswordSetup ? "Set your How Much? portal password" : "Your How Much? client portal",
     html,
   });
 

@@ -7,6 +7,8 @@ import { services } from "@/lib/services";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { DirectPhone } from "@/components/contact/CallAndy";
+import { MIN_PASSWORD_LENGTH, validateNewPassword } from "@/lib/passwords";
+import { markSkipPortalSkeleton } from "@/lib/admin-dashboard-skel";
 
 const steps = ["Your info", "Services", "Schedule", "Confirm"];
 
@@ -21,6 +23,8 @@ export function BookingWizard() {
     phone: "",
     email: "",
     city: "",
+    password: "",
+    confirmPassword: "",
     timing: "As soon as possible",
     notes: "",
   });
@@ -28,6 +32,14 @@ export function BookingWizard() {
   async function confirm() {
     setLoading(true);
     setError("");
+
+    const passwordError = validateNewPassword(info.password, info.confirmPassword);
+    if (passwordError) {
+      setError(passwordError);
+      setLoading(false);
+      setStep(0);
+      return;
+    }
 
     try {
       const res = await fetch("/api/leads", {
@@ -40,6 +52,7 @@ export function BookingWizard() {
           city: info.city,
           service: selected.join(", "),
           message: [`Preferred timing: ${info.timing}`, info.notes].filter(Boolean).join("\n\n"),
+          password: info.password,
           sourcePath: "/booking",
           sourceLabel: "Booking wizard",
         }),
@@ -51,6 +64,17 @@ export function BookingWizard() {
         setLoading(false);
         return;
       }
+
+      const login = await fetch("/api/auth/password-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: info.email.trim().toLowerCase(),
+          password: info.password,
+          next: "/portal",
+        }),
+      });
+      if (login.ok) markSkipPortalSkeleton();
 
       const first = info.name.trim().split(/\s+/)[0] || "";
       router.push(`/thank-you?name=${encodeURIComponent(first)}`);
@@ -104,6 +128,20 @@ export function BookingWizard() {
               label="City / ZIP"
               value={info.city}
               onChange={(v) => setInfo((s) => ({ ...s, city: v }))}
+            />
+            <Field
+              label="Portal password"
+              type="password"
+              value={info.password}
+              onChange={(v) => setInfo((s) => ({ ...s, password: v }))}
+              minLength={MIN_PASSWORD_LENGTH}
+            />
+            <Field
+              label="Confirm password"
+              type="password"
+              value={info.confirmPassword}
+              onChange={(v) => setInfo((s) => ({ ...s, confirmPassword: v }))}
+              minLength={MIN_PASSWORD_LENGTH}
             />
           </div>
         )}
@@ -200,7 +238,12 @@ export function BookingWizard() {
             type="button"
             onClick={() => setStep((s) => s + 1)}
             disabled={
-              (step === 0 && (!info.name || !info.email || !info.phone)) ||
+              (step === 0 &&
+                (!info.name ||
+                  !info.email ||
+                  !info.phone ||
+                  info.password.length < MIN_PASSWORD_LENGTH ||
+                  info.password !== info.confirmPassword)) ||
               (step === 1 && selected.length === 0)
             }
           >
@@ -221,11 +264,13 @@ function Field({
   type = "text",
   value,
   onChange,
+  minLength,
 }: {
   label: string;
   type?: string;
   value: string;
   onChange: (value: string) => void;
+  minLength?: number;
 }) {
   return (
     <label className="block">
@@ -233,6 +278,7 @@ function Field({
       <input
         type={type}
         required
+        minLength={minLength}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         className="hm-input"

@@ -19,7 +19,7 @@ Run migrations in the Supabase SQL Editor (in order):
 1. `supabase/migrations/001_leads.sql`
 2. `supabase/migrations/002_portal.sql`
 
-Then promote Andy to admin after his first magic-link sign-in:
+Then promote Andy to admin after he has a profile:
 
 ```sql
 update public.profiles set role = 'admin' where email = 'howmuchandy@gmail.com';
@@ -32,11 +32,12 @@ In Supabase Auth settings, add redirect URLs:
 
 ## Portal & admin
 
-- **Customer portal:** `/portal/login` — magic link (paused until Resend SMTP + `SUPABASE_AUTH_EMAILS=true`)
+- **Customer portal:** `/portal/login` — email + password (created on the quote form)
 - **Admin:** `/admin/login` — same; requires `profiles.role = 'admin'`
-- Andy can **resend invites** from Leads or a Job once auth email is on
+- Forgot password emails a one-time reset link (needs Resend SMTP + `SUPABASE_AUTH_EMAILS=true`)
+- Andy can email a password-setup link from Leads or a Job
 
-Auth emails stay **off** by default so local tests don’t bounce on Supabase’s shared sender. After custom SMTP is Resend, set `SUPABASE_AUTH_EMAILS=true`.
+Quote forms create the portal account with the password the customer chose. Returning visits are email + password — no magic link.
 
 ## Vercel env vars
 

@@ -12,32 +12,33 @@ export type ProvisionLeadInput = {
   city?: string | null;
   service?: string | null;
   message?: string | null;
+  password?: string;
   leadId: string;
 };
 
 /**
- * Upsert auth user + profile, create a quote_request job, send magic-link invite.
- * If the customer already has an account, attach a new job and skip invite when they've signed in.
+ * Upsert auth user + profile and create a quote_request job.
+ * New customers get the password they chose on the quote form.
  */
 export async function provisionPortalFromLead(input: ProvisionLeadInput) {
   const admin = getSupabaseAdmin();
   const email = input.email.trim().toLowerCase();
   const name = input.name.trim();
+  const loginUrl = `${siteUrl()}/portal/login`;
 
   let profile = await findProfileByEmail(email);
   let createdUser = false;
   let inviteSent = false;
-  let inviteLink: string | null = null;
 
   if (!profile) {
     const { data: created, error } = await admin.auth.admin.createUser({
       email,
+      ...(input.password ? { password: input.password } : {}),
       email_confirm: true,
       user_metadata: { name, role: "customer" },
     });
 
     if (error || !created.user) {
-      // Race: user may already exist in auth but profile missing
       const listed = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
       const existing = listed.data.users.find((u) => u.email?.toLowerCase() === email);
       if (!existing) {
@@ -75,12 +76,10 @@ export async function provisionPortalFromLead(input: ProvisionLeadInput) {
   if (!profile) throw new Error("Profile missing after provision");
 
   const serviceLabel = input.service?.trim() || "HVAC service";
-  const title = input.city
-    ? `${serviceLabel} ? ${input.city}`
-    : `${serviceLabel} request`;
+  const title = input.city ? `${serviceLabel} — ${input.city}` : `${serviceLabel} request`;
 
   const summaryParts = [
-    "We received your request. Andy?s team will follow up with clear next steps.",
+    "We received your request. Andy's team will follow up with clear next steps.",
     input.message?.trim() ? `Your notes: ${input.message.trim()}` : null,
   ].filter(Boolean);
 
@@ -104,7 +103,8 @@ export async function provisionPortalFromLead(input: ProvisionLeadInput) {
   await admin.from("job_events").insert({
     job_id: job.id,
     title: "Request received",
-    detail: "Your quote request is in Andy?s queue. Open your portal anytime to message us or add details.",
+    detail:
+      "Your quote request is in Andy's queue. Open your portal anytime to message us or add details.",
     event_at: new Date().toISOString(),
   });
 
@@ -116,28 +116,19 @@ export async function provisionPortalFromLead(input: ProvisionLeadInput) {
     })
     .eq("id", input.leadId);
 
-  // Invite if never signed in. generateLink does not send mail — Resend sends the URL.
-  const { data: authUser } = await admin.auth.admin.getUserById(profile.id);
-  const hasSignedIn = Boolean(authUser.user?.last_sign_in_at);
-
-  if (!hasSignedIn) {
-    const link = await generateMagicLink(email);
-    inviteLink = link;
-    if (link) {
-      // Link is included in the lead confirmation email (caller sends it).
-      await admin
-        .from("profiles")
-        .update({
-          invited_at: new Date().toISOString(),
-          invite_count: (profile.invite_count || 0) + 1,
-        })
-        .eq("id", profile.id);
-      await admin
-        .from("leads")
-        .update({ portal_invited_at: new Date().toISOString() })
-        .eq("id", input.leadId);
-      inviteSent = true;
-    }
+  if (createdUser) {
+    await admin
+      .from("profiles")
+      .update({
+        invited_at: new Date().toISOString(),
+        invite_count: (profile.invite_count || 0) + 1,
+      })
+      .eq("id", profile.id);
+    await admin
+      .from("leads")
+      .update({ portal_invited_at: new Date().toISOString() })
+      .eq("id", input.leadId);
+    inviteSent = true;
   }
 
   return {
@@ -145,29 +136,26 @@ export async function provisionPortalFromLead(input: ProvisionLeadInput) {
     job,
     createdUser,
     inviteSent,
-    inviteLink,
-    hasSignedIn,
+    loginUrl,
+    inviteLink: loginUrl,
   };
 }
 
+/** Andy resend: email a password-reset link so the customer can set or recover access. */
 export async function sendPortalInvite(customerId: string, reason = "manual") {
   const admin = getSupabaseAdmin();
-  const { data: profile } = await admin
-    .from("profiles")
-    .select("*")
-    .eq("id", customerId)
-    .single();
+  const { data: profile } = await admin.from("profiles").select("*").eq("id", customerId).single();
 
   if (!profile) throw new Error("Customer not found");
 
-  const link = await generateMagicLink(profile.email);
-  if (!link) throw new Error("Could not generate invite link");
-
+  const link = await generateRecoveryLink(profile.email);
+  const loginUrl = `${siteUrl()}/portal/login`;
   const emailResult = await sendPortalInviteEmail({
     name: profile.name || "there",
     email: profile.email,
-    inviteUrl: link,
+    inviteUrl: link || loginUrl,
     isNew: !profile.invited_at,
+    isPasswordSetup: Boolean(link),
   });
 
   if (emailResult.sent) {
@@ -180,33 +168,26 @@ export async function sendPortalInvite(customerId: string, reason = "manual") {
       .eq("id", customerId);
   }
 
-  return { sent: emailResult.sent, reason, inviteUrl: link, email: emailResult };
+  return { sent: emailResult.sent, reason, inviteUrl: link || loginUrl, email: emailResult };
 }
 
-async function generateMagicLink(email: string) {
+async function generateRecoveryLink(email: string) {
   const admin = getSupabaseAdmin();
-  const redirectTo = `${siteUrl()}/auth/callback?next=/portal`;
+  const redirectTo = `${siteUrl()}/auth/callback?next=/auth/reset-password`;
   const { data, error } = await admin.auth.admin.generateLink({
-    type: "magiclink",
+    type: "recovery",
     email,
     options: { redirectTo },
   });
   if (error) {
-    console.error("[portal] generateLink failed", error);
+    console.error("[portal] generate recovery link failed", error);
     return null;
   }
-  // Prefer action_link from Supabase; falls back to constructing from hashed_token
-  const actionLink = data.properties?.action_link;
-  if (actionLink) return actionLink;
-  return null;
+  return data.properties?.action_link || null;
 }
 
 async function findProfileByEmail(email: string): Promise<Profile | null> {
   const admin = getSupabaseAdmin();
-  const { data } = await admin
-    .from("profiles")
-    .select("*")
-    .eq("email", email)
-    .maybeSingle();
+  const { data } = await admin.from("profiles").select("*").eq("email", email).maybeSingle();
   return (data as Profile | null) ?? null;
 }

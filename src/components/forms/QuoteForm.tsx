@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
+import { MIN_PASSWORD_LENGTH, validateNewPassword } from "@/lib/passwords";
+import { markSkipPortalSkeleton } from "@/lib/admin-dashboard-skel";
 
 export function QuoteForm({
   compact = false,
@@ -35,6 +37,15 @@ export function QuoteForm({
     const lastName = String(form.get("lastName") || "").trim();
     const name = [firstName, lastName].filter(Boolean).join(" ");
 
+    const password = String(form.get("password") || "");
+    const confirm = String(form.get("confirmPassword") || "");
+    const passwordError = validateNewPassword(password, confirm);
+    if (passwordError) {
+      setError(passwordError);
+      setLoading(false);
+      return;
+    }
+
     const params =
       typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
 
@@ -49,6 +60,7 @@ export function QuoteForm({
           city: form.get("city") || null,
           service: form.get("service") || null,
           message: form.get("message") || null,
+          password,
           sourcePath: pathname || "/",
           sourceLabel,
           utmSource: params?.get("utm_source"),
@@ -63,6 +75,17 @@ export function QuoteForm({
         setLoading(false);
         return;
       }
+
+      const login = await fetch("/api/auth/password-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: String(form.get("email") || "").trim().toLowerCase(),
+          password,
+          next: "/portal",
+        }),
+      });
+      if (login.ok) markSkipPortalSkeleton();
 
       router.push(`/thank-you?name=${encodeURIComponent(firstName || name)}`);
     } catch {
@@ -101,6 +124,22 @@ export function QuoteForm({
         <Field label="Last name" name="lastName" required autoComplete="family-name" />
         <Field label="Phone" name="phone" type="tel" required autoComplete="tel" />
         <Field label="Email" name="email" type="email" required autoComplete="email" />
+        <Field
+          label="Portal password"
+          name="password"
+          type="password"
+          required
+          autoComplete="new-password"
+          minLength={MIN_PASSWORD_LENGTH}
+        />
+        <Field
+          label="Confirm password"
+          name="confirmPassword"
+          type="password"
+          required
+          autoComplete="new-password"
+          minLength={MIN_PASSWORD_LENGTH}
+        />
         {!compact && (
           <>
             <Field label="City" name="city" autoComplete="address-level2" />
@@ -136,6 +175,11 @@ export function QuoteForm({
         )}
       </div>
 
+      <p className="mt-3 text-xs text-hm-muted">
+        Already a customer? Use the portal password you already have. New here? Pick one you can
+        remember — you&apos;ll use it to sign in next time, no email link.
+      </p>
+
       {error && <p className="mt-3 text-sm text-hm-red">{error}</p>}
 
       <Button type="submit" className="mt-5 w-full" size="lg" tone="light" disabled={loading}>
@@ -144,7 +188,7 @@ export function QuoteForm({
 
       <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-hm-muted">
         <ShieldCheck className="h-3.5 w-3.5 text-hm-red" />
-        {site.license} · No pressure — same-day callbacks
+        {site.license} · Creates your portal login · No pressure — same-day callbacks
       </p>
     </form>
   );
@@ -156,12 +200,14 @@ function Field({
   type = "text",
   required,
   autoComplete,
+  minLength,
 }: {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
   autoComplete?: string;
+  minLength?: number;
 }) {
   return (
     <label className="block">
@@ -173,6 +219,7 @@ function Field({
         type={type}
         required={required}
         autoComplete={autoComplete}
+        minLength={minLength}
         className="hm-input"
       />
     </label>

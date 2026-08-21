@@ -21,13 +21,13 @@ export function InviteButton({ customerId }: { customerId: string }) {
       setMsg(data.error || "Failed");
       return;
     }
-    setMsg(data.sent ? "Invite sent" : "Link generated (email not configured)");
+    setMsg(data.sent ? "Email sent" : "Could not send email");
   }
 
   return (
     <div>
       <Button type="button" size="sm" variant="outline" onClick={send} disabled={loading} arrow={false}>
-        {loading ? "Sending?" : "Send portal invite"}
+        {loading ? "Sending…" : "Email password setup"}
       </Button>
       {msg && <p className="mt-1 text-xs text-hm-muted">{msg}</p>}
     </div>

@@ -68,10 +68,10 @@ export default async function ThankYouPage({
           <div className="mt-6 flex items-start gap-3 rounded-2xl border border-white/15 bg-white/5 p-4 text-white/85">
             <Mail className="mt-0.5 h-5 w-5 shrink-0 text-hm-red" />
             <div>
-              <p className="font-semibold text-white">Check your inbox to open your portal</p>
+              <p className="font-semibold text-white">Your portal is ready</p>
               <p className="mt-1 text-sm text-white/70">
-                We emailed you a secure link to your client portal. Use it to track your visit,
-                message us, see pricing, and pay when invoices are ready.
+                Sign in with the email and password you just created. You&apos;re already signed in
+                on this device if the quote went through.
               </p>
             </div>
           </div>
@@ -92,8 +92,8 @@ export default async function ThankYouPage({
                 Everything In One Place
               </Heading>
               <p className="mt-4 text-hm-muted">
-                Open the link in your email anytime. Prefer the phone? Andy&apos;s number stays on
-                every screen — you&apos;re never locked into the app.
+                Open your portal anytime with your email and password. Prefer the phone? Andy&apos;s
+                number stays on every screen — you&apos;re never locked into the app.
               </p>
               <div className="mt-8 grid gap-4 sm:grid-cols-2">
                 {portalPerks.map((perk) => (
@@ -108,7 +108,7 @@ export default async function ThankYouPage({
                 ))}
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button href="/portal/login">Already have the link? Sign in →</Button>
+                <Button href="/portal">Open your portal →</Button>
                 <CallAndy variant="secondary" arrow={false} />
               </div>
             </div>

@@ -4,6 +4,7 @@ import { sendLeadEmails } from "@/lib/email";
 import { sendLeadSmsAlert } from "@/lib/sms";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { provisionPortalFromLead } from "@/lib/portal-provision";
+import { MIN_PASSWORD_LENGTH } from "@/lib/passwords";
 
 const leadSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -12,6 +13,7 @@ const leadSchema = z.object({
   city: z.string().trim().max(120).optional().nullable(),
   service: z.string().trim().max(120).optional().nullable(),
   message: z.string().trim().max(4000).optional().nullable(),
+  password: z.string().min(MIN_PASSWORD_LENGTH).max(72).optional(),
   sourcePath: z.string().trim().max(300).optional().nullable(),
   sourceLabel: z.string().trim().max(120).optional().nullable(),
   utmSource: z.string().trim().max(120).optional().nullable(),
@@ -76,25 +78,28 @@ export async function POST(request: Request) {
 
     let inviteUrl: string | null = null;
     let portal: { inviteSent: boolean; jobId?: string } = { inviteSent: false };
+    const skipPortal = lead.sourceLabel === "Pricing guide download";
 
-    try {
-      const provisioned = await provisionPortalFromLead({
-        name: lead.name,
-        email: lead.email,
-        phone: lead.phone,
-        city: lead.city,
-        service: lead.service,
-        message: lead.message,
-        leadId: data.id,
-      });
-      inviteUrl = provisioned.inviteLink;
-      portal = {
-        inviteSent: provisioned.inviteSent,
-        jobId: provisioned.job.id,
-      };
-    } catch (provisionError) {
-      console.error("[leads] portal provision failed", provisionError);
-      // Lead is saved; portal invite can be resent from admin
+    if (!skipPortal) {
+      try {
+        const provisioned = await provisionPortalFromLead({
+          name: lead.name,
+          email: lead.email,
+          phone: lead.phone,
+          city: lead.city,
+          service: lead.service,
+          message: lead.message,
+          password: lead.password,
+          leadId: data.id,
+        });
+        inviteUrl = provisioned.loginUrl;
+        portal = {
+          inviteSent: provisioned.inviteSent,
+          jobId: provisioned.job.id,
+        };
+      } catch (provisionError) {
+        console.error("[leads] portal provision failed", provisionError);
+      }
     }
 
     const [emailResult, smsResult] = await Promise.allSettled([
@@ -106,7 +111,7 @@ export async function POST(request: Request) {
         service: lead.service,
         message: lead.message,
         sourcePath: lead.sourcePath,
-        inviteUrl,
+        portalLoginUrl: inviteUrl,
       }),
       sendLeadSmsAlert({
         name: lead.name,
