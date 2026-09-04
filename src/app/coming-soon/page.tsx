@@ -16,11 +16,8 @@ export default async function ComingSoonPage() {
   const contact = await getPublicContact();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-hm-ink px-5 py-12 text-white md:py-16">
-      <div className="absolute inset-0 hm-gradient-hero" />
-      <div className="absolute inset-0 hm-noise opacity-40" />
-
-      <div className="relative mx-auto flex w-full max-w-xl flex-col items-center">
+    <div className="min-h-screen bg-white px-5 py-12 text-hm-charcoal md:py-16">
+      <div className="mx-auto flex w-full max-w-xl flex-col items-center">
         <Logo height={168} href={null} priority />
 
         <p className="mt-6 font-display text-[11px] font-bold uppercase tracking-[0.22em] text-hm-red">
@@ -29,11 +26,11 @@ export default async function ComingSoonPage() {
         <h1 className="mt-3 text-center font-display text-3xl font-bold tracking-tight md:text-4xl">
           Our Website Is Being Rebuilt
         </h1>
-        <p className="mt-4 max-w-md text-center text-base leading-relaxed text-white/75 md:text-lg">
+        <p className="mt-4 max-w-md text-center text-base leading-relaxed text-hm-charcoal md:text-lg">
           We&apos;re updating trusthowmuch.com for a better customer experience: clearer
           info, an easier way to reach Andy, and a smoother path from quote to visit.
         </p>
-        <p className="mt-2 text-center text-sm text-white/55">
+        <p className="mt-2 text-center text-sm text-hm-charcoal/70">
           In the meantime, call or send the form. Same-day callbacks. No pressure.
         </p>
 
@@ -41,7 +38,7 @@ export default async function ComingSoonPage() {
           <QuoteForm elevated portalSignup={false} stayOnSuccess sourceLabel="Coming soon" />
         </div>
 
-        <div className="mt-10 w-full rounded-2xl border border-white/15 bg-white/5 p-6 text-center">
+        <div className="mt-10 w-full rounded-2xl bg-hm-ink p-6 text-center text-white">
           <div className="flex justify-center">
             <Logo height={72} href={null} />
           </div>
