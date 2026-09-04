@@ -8,8 +8,8 @@ export const site = {
   email: "howmuchandy@gmail.com",
   phones: {
     direct: {
-      display: "(714) 333-5953",
-      href: "tel:+17143335953",
+      display: "(562) 612-8961",
+      href: "tel:+15626128961",
       label: "Direct",
     },
     office: {

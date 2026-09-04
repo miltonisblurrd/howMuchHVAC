@@ -78,7 +78,8 @@ export async function POST(request: Request) {
 
     let inviteUrl: string | null = null;
     let portal: { inviteSent: boolean; jobId?: string } = { inviteSent: false };
-    const skipPortal = lead.sourceLabel === "Pricing guide download";
+    const skipPortal =
+      lead.sourceLabel === "Pricing guide download" || lead.sourceLabel === "Coming soon";
 
     if (!skipPortal) {
       try {

@@ -138,6 +138,9 @@ export default function BrandPage() {
             </div>
           </div>
           <div className="mt-6 flex flex-wrap gap-3">
+            <Button href="/brand/NEWREDLOGO.png" variant="outline">
+              Download 3D bubble PNG
+            </Button>
             <Button href="/brand/regularLogo.svg" variant="outline">
               Download regular SVG
             </Button>

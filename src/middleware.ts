@@ -1,7 +1,15 @@
-import { type NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
+import { comingSoonEnabled, isComingSoonExemptPath } from "@/lib/coming-soon";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (comingSoonEnabled() && !isComingSoonExemptPath(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/coming-soon";
+    return NextResponse.rewrite(url);
+  }
+
   return updateSession(request);
 }
 

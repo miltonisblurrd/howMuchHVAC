@@ -71,7 +71,7 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
           <Logo
             variant={dark ? "white" : "regular"}
             priority
-            height={dark ? 44 : 48}
+            height={dark ? 52 : 56}
           />
 
           <div className="hidden lg:block lg:translate-x-6 xl:translate-x-8">

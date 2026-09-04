@@ -15,17 +15,23 @@ export function QuoteForm({
   className,
   elevated = false,
   sourceLabel = "Quote form",
+  portalSignup = true,
+  stayOnSuccess = false,
 }: {
   compact?: boolean;
   className?: string;
   /** Stronger elevation for hero placement */
   elevated?: boolean;
   sourceLabel?: string;
+  /** When false, capture the lead only — no portal password. */
+  portalSignup?: boolean;
+  stayOnSuccess?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [done, setDone] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -37,13 +43,15 @@ export function QuoteForm({
     const lastName = String(form.get("lastName") || "").trim();
     const name = [firstName, lastName].filter(Boolean).join(" ");
 
-    const password = String(form.get("password") || "");
-    const confirm = String(form.get("confirmPassword") || "");
-    const passwordError = validateNewPassword(password, confirm);
-    if (passwordError) {
-      setError(passwordError);
-      setLoading(false);
-      return;
+    const password = portalSignup ? String(form.get("password") || "") : "";
+    const confirm = portalSignup ? String(form.get("confirmPassword") || "") : "";
+    if (portalSignup) {
+      const passwordError = validateNewPassword(password, confirm);
+      if (passwordError) {
+        setError(passwordError);
+        setLoading(false);
+        return;
+      }
     }
 
     const params =
@@ -60,7 +68,7 @@ export function QuoteForm({
           city: form.get("city") || null,
           service: form.get("service") || null,
           message: form.get("message") || null,
-          password,
+          ...(portalSignup ? { password } : {}),
           sourcePath: pathname || "/",
           sourceLabel,
           utmSource: params?.get("utm_source"),
@@ -76,22 +84,49 @@ export function QuoteForm({
         return;
       }
 
-      const login = await fetch("/api/auth/password-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: String(form.get("email") || "").trim().toLowerCase(),
-          password,
-          next: "/portal",
-        }),
-      });
-      if (login.ok) markSkipPortalSkeleton();
+      if (portalSignup) {
+        const login = await fetch("/api/auth/password-login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: String(form.get("email") || "").trim().toLowerCase(),
+            password,
+            next: "/portal",
+          }),
+        });
+        if (login.ok) markSkipPortalSkeleton();
+      }
+
+      if (stayOnSuccess) {
+        setDone(true);
+        setLoading(false);
+        return;
+      }
 
       router.push(`/thank-you?name=${encodeURIComponent(firstName || name)}`);
     } catch {
       setError("Something went wrong. Please call us or try again.");
       setLoading(false);
     }
+  }
+
+  if (done) {
+    return (
+      <div
+        className={cn(
+          "rounded-2xl bg-white p-8 text-center text-hm-charcoal",
+          elevated
+            ? "shadow-[0_32px_80px_-24px_rgba(0,0,0,0.55)] ring-1 ring-black/5"
+            : "shadow-xl ring-1 ring-black/5",
+          className,
+        )}
+      >
+        <p className="font-display text-xl font-bold">Got it — Andy will follow up</p>
+        <p className="mt-2 text-sm text-hm-muted">
+          Same-day callback. Prefer the phone? Call {site.phones.direct.display}.
+        </p>
+      </div>
+    );
   }
 
   return (
@@ -124,22 +159,26 @@ export function QuoteForm({
         <Field label="Last name" name="lastName" required autoComplete="family-name" />
         <Field label="Phone" name="phone" type="tel" required autoComplete="tel" />
         <Field label="Email" name="email" type="email" required autoComplete="email" />
-        <Field
-          label="Portal password"
-          name="password"
-          type="password"
-          required
-          autoComplete="new-password"
-          minLength={MIN_PASSWORD_LENGTH}
-        />
-        <Field
-          label="Confirm password"
-          name="confirmPassword"
-          type="password"
-          required
-          autoComplete="new-password"
-          minLength={MIN_PASSWORD_LENGTH}
-        />
+        {portalSignup && (
+          <>
+            <Field
+              label="Portal password"
+              name="password"
+              type="password"
+              required
+              autoComplete="new-password"
+              minLength={MIN_PASSWORD_LENGTH}
+            />
+            <Field
+              label="Confirm password"
+              name="confirmPassword"
+              type="password"
+              required
+              autoComplete="new-password"
+              minLength={MIN_PASSWORD_LENGTH}
+            />
+          </>
+        )}
         {!compact && (
           <>
             <Field label="City" name="city" autoComplete="address-level2" />
@@ -175,10 +214,12 @@ export function QuoteForm({
         )}
       </div>
 
-      <p className="mt-3 text-xs text-hm-muted">
-        Already a customer? Use the portal password you already have. New here? Pick one you can
-        remember — you&apos;ll use it to sign in next time, no email link.
-      </p>
+      {portalSignup && (
+        <p className="mt-3 text-xs text-hm-muted">
+          Already a customer? Use the portal password you already have. New here? Pick one you can
+          remember — you&apos;ll use it to sign in next time, no email link.
+        </p>
+      )}
 
       {error && <p className="mt-3 text-sm text-hm-red">{error}</p>}
 
@@ -188,7 +229,8 @@ export function QuoteForm({
 
       <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-hm-muted">
         <ShieldCheck className="h-3.5 w-3.5 text-hm-red" />
-        {site.license} · Creates your portal login · No pressure — same-day callbacks
+        {site.license} · {portalSignup ? "Creates your portal login · " : ""}No pressure — same-day
+        callbacks
       </p>
     </form>
   );

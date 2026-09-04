@@ -12,37 +12,28 @@ type LogoProps = {
   href?: string | null;
 };
 
-const intrinsic = {
-  regular: { w: 665, h: 400 },
-  white: { w: 258, h: 155 },
-  mark: { w: 256, h: 256 },
-} as const;
+const SRC = "/brand/NEWREDLOGO.png";
+/** Cropped 3D bubble, transparent background */
+const INTRINSIC = { w: 717, h: 512 };
 
 export function Logo({
-  variant = "regular",
+  variant: _variant = "regular",
   height = 56,
   className,
   priority,
   href = "/",
 }: LogoProps) {
-  const src =
-    variant === "white"
-      ? "/brand/whitelogo.svg"
-      : variant === "mark"
-        ? "/brand/blackSubLogo.svg"
-        : "/brand/regularLogo.svg";
-
-  const { w, h } = intrinsic[variant];
-  const width = Math.round((height * w) / h);
+  const width = Math.round((height * INTRINSIC.w) / INTRINSIC.h);
 
   const image = (
     <Image
-      src={src}
+      src={SRC}
       alt="How Much? Air & Home Improvements"
       width={width}
       height={height}
       priority={priority}
-      className={cn("object-contain object-left", className)}
+      unoptimized
+      className={cn("object-contain object-center", className)}
       style={{ width, height }}
     />
   );
