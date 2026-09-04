@@ -27,7 +27,7 @@ export default async function ComingSoonPage() {
           How Much? Air & Home Improvements
         </p>
         <h1 className="mt-3 text-center font-display text-3xl font-bold tracking-tight md:text-4xl">
-          Our website is being rebuilt
+          Our Website Is Being Rebuilt
         </h1>
         <p className="mt-4 max-w-md text-center text-base leading-relaxed text-white/75 md:text-lg">
           We&apos;re updating trusthowmuch.com for a better customer experience: clearer

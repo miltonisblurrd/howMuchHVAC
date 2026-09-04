@@ -13,5 +13,6 @@ export function isComingSoonExemptPath(pathname: string) {
     return true;
   }
   if (pathname === "/coming-soon" || pathname === "/thank-you") return true;
+  if (pathname === "/manifest.webmanifest" || pathname === "/manifest") return true;
   return false;
 }

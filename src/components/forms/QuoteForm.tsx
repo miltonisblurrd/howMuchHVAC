@@ -146,7 +146,7 @@ export function QuoteForm({
             Free quote
           </p>
           <h3 className="mt-1.5 font-display text-xl font-bold tracking-tight md:text-2xl">
-            So, how much for your home?
+            What Can We Help You With Today?
           </h3>
         </div>
         <div className="hidden shrink-0 items-center gap-1 rounded-full bg-hm-fog px-2.5 py-1 text-[11px] font-semibold text-hm-charcoal sm:flex">
