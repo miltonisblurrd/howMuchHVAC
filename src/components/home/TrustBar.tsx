@@ -8,7 +8,7 @@ const items = [
   { icon: Clock, label: `${site.yearsExperience}+ Years Experience` },
   {
     icon: Star,
-    label: `Google ${site.google.rating} ? ${site.google.reviewCount} Reviews`,
+    label: `Google ${site.google.rating} · ${site.google.reviewCount} Reviews`,
   },
 ];
 

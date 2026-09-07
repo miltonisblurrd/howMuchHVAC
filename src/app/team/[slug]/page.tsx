@@ -21,7 +21,7 @@ export async function generateMetadata({
   const member = getTeamMember(slug);
   if (!member) return {};
   return {
-    title: `${member.name} ? ${member.role}`,
+    title: `${member.name} — ${member.role}`,
     description: member.shortBio,
   };
 }

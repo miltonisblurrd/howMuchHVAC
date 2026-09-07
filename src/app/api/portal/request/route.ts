@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
   const admin = getSupabaseAdmin();
   const title = parsed.data.city
-    ? `${parsed.data.service} ? ${parsed.data.city}`
+    ? `${parsed.data.service} — ${parsed.data.city}`
     : `${parsed.data.service} request`;
 
   const { data: job, error } = await admin

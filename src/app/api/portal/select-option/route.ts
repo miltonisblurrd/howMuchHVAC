@@ -69,7 +69,7 @@ export async function POST(request: Request) {
       job_id: job.id,
       customer_id: profile.id,
       number,
-      description: `Deposit ? ${option.name} (${job.title})`,
+      description: `Deposit — ${option.name} (${job.title})`,
       amount_cents: deposit,
       status: "unpaid",
       due_at: new Date(Date.now() + 7 * 86400000).toISOString(),

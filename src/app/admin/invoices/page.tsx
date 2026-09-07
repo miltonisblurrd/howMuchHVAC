@@ -5,6 +5,7 @@ import { formatWhen, money } from "@/lib/db-types";
 import { InvoiceAdminActions } from "@/components/admin/InvoiceAdminActions";
 import Link from "next/link";
 import { cn } from "@/lib/cn";
+import { INVOICE_STATUS_LABELS } from "@/lib/job-stages";
 
 export default async function AdminInvoicesPage({
   searchParams,
@@ -53,6 +54,7 @@ export default async function AdminInvoicesPage({
               const inv = row as {
                 id: string;
                 number: string;
+                description: string;
                 amount_cents: number;
                 status: string;
                 due_at: string | null;
@@ -62,7 +64,10 @@ export default async function AdminInvoicesPage({
               };
               return (
                 <tr key={inv.id} className="border-t border-hm-line/80">
-                  <td className="px-5 py-3.5 font-semibold">{inv.number}</td>
+                  <td className="px-5 py-3.5">
+                    <p className="font-display font-bold text-hm-charcoal">{inv.description || "Payment"}</p>
+                    <p className="text-xs text-hm-muted">{inv.number}</p>
+                  </td>
                   <td className="px-5 py-3.5 text-hm-muted">
                     {inv.profiles?.name || inv.profiles?.email || "—"}
                   </td>
@@ -75,7 +80,7 @@ export default async function AdminInvoicesPage({
                   <td className="px-5 py-3.5">
                     <span
                       className={cn(
-                        "rounded-full px-2.5 py-1 text-[11px] font-bold capitalize",
+                        "rounded-full px-2.5 py-1 text-[11px] font-bold",
                         inv.status === "paid"
                           ? "bg-emerald-500/12 text-emerald-800"
                           : inv.status === "overdue"
@@ -83,7 +88,7 @@ export default async function AdminInvoicesPage({
                             : "bg-amber-500/12 text-amber-900",
                       )}
                     >
-                      {inv.status}
+                      {INVOICE_STATUS_LABELS[inv.status] ?? inv.status}
                     </span>
                   </td>
                   <td className="px-5 py-3.5 text-hm-muted">

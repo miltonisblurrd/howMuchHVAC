@@ -114,7 +114,7 @@ async function afterRequest(
       toEmail: notify,
       toName: settings.displayName,
       fromLabel: profile.name || profile.email,
-      preview: `Requested visit: ${formatWhen(start.toISOString())} ? ${job.title}`,
+      preview: `Requested visit: ${formatWhen(start.toISOString())} · ${job.title}`,
       portalUrl: `${site.url}/admin/schedule`,
     }),
     sendLeadSmsAlert({
