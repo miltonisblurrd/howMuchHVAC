@@ -151,6 +151,60 @@ export async function sendPortalInviteEmail(input: {
   };
 }
 
+/** Phone-call intake: thank them for talking with Andy and send portal access. */
+export async function sendPhoneIntakeEmail(input: {
+  name: string;
+  email: string;
+  service?: string | null;
+  city?: string | null;
+  whenLabel?: string | null;
+  inviteUrl: string;
+}) {
+  const resend = getResend();
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (!resend || !from) {
+    console.warn("[email] Resend not configured — skipping phone intake email");
+    return { sent: false as const, reason: "not_configured" as const };
+  }
+
+  const settings = await getBusinessSettings();
+  const first = input.name.split(" ")[0] || "there";
+  const visitBlock = input.whenLabel
+    ? `<p>Your visit is on the calendar: <strong>${escapeHtml(input.whenLabel)}</strong>.</p>`
+    : `<p>Andy has you in the system. He’ll follow up with a visit time if one isn’t already set.</p>`;
+  const serviceLine = [input.service, input.city].filter(Boolean).join(" — ");
+
+  const html = `
+    <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
+      <p>Hi ${escapeHtml(first)},</p>
+      <p>Thank you for talking with <strong>How Much? Air &amp; Home Improvements</strong>. We’re glad you called.</p>
+      ${visitBlock}
+      ${serviceLine ? `<p>What we noted: <strong>${escapeHtml(serviceLine)}</strong>.</p>` : ""}
+      <p>To view your appointment and access your portal — pricing, messages, documents, and pay — click the button below. You’ll set a password on the next screen, then you’re in.</p>
+      <p style="margin:24px 0"><a href="${escapeHtml(input.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Open your portal</a></p>
+      <p style="font-size:13px;color:#555">Or copy this link: ${escapeHtml(input.inviteUrl)}</p>
+      <p>Need Andy again? Call <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home Improvements<br/>${site.license}</p>
+    </div>
+  `;
+
+  const result = await resend.emails.send({
+    from,
+    to: input.email,
+    replyTo: settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email,
+    subject: input.whenLabel
+      ? `Thanks for talking with How Much? — your visit + portal`
+      : `Thanks for talking with How Much? — your portal is ready`,
+    html,
+  });
+
+  return {
+    sent: !result.error,
+    id: result.data?.id ?? null,
+    error: result.error?.message ?? null,
+  };
+}
+
 export async function sendAppointmentEmail(input: {
   name: string;
   email: string;

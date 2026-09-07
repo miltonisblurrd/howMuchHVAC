@@ -35,6 +35,11 @@ export const site = {
   /** Drop `public/videos/andy-welcome.mp4` or set NEXT_PUBLIC_PORTAL_INTRO_VIDEO */
   portalIntroVideo:
     process.env.NEXT_PUBLIC_PORTAL_INTRO_VIDEO || "/videos/andy-welcome.mp4",
+  /** Andy's dealer-prefilled Synchrony application (same as the booth QR). */
+  synchrony: {
+    applyUrl: "https://www.synchrony.com/mmc/S6223632100?sitecode=acewel402",
+    label: "Finance with Synchrony",
+  },
 } as const;
 
 export const navPrimary = [

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { CtaBand, QuoteAndReviewsSection } from "@/components/content/PageExtras";
 import { CallAndy } from "@/components/contact/CallAndy";
+import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Financing | Comfort Upgrades On Your Timeline",
@@ -49,8 +50,8 @@ export default function FinancingPage() {
             We keep the numbers clear — no fine-print surprises in the conversation.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button href="/booking" tone="dark">
-              Talk Through Options
+            <Button href={site.synchrony.applyUrl} tone="dark">
+              Apply With Synchrony
             </Button>
             <CallAndy variant="outline" tone="dark" />
           </div>

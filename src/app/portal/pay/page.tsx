@@ -1,5 +1,6 @@
 import { PortalChrome } from "@/components/portal/PortalChrome";
 import { PayInvoiceButton } from "@/components/portal/PayInvoiceButton";
+import { SynchronyFinanceButton } from "@/components/portal/SynchronyFinanceButton";
 import { AdminEmpty } from "@/components/admin/AdminUi";
 import { CountUp } from "@/components/admin/CountUp";
 import { requirePortalUser } from "@/lib/auth";
@@ -20,8 +21,18 @@ export default async function PortalPayPage({
       userId={user.id}
       userName={user.name || user.email}
       title="Payments"
-      description="Review invoices and pay securely online."
+      description="Pay in full with card or Cash App, or apply for Synchrony financing — same app as Andy's booth QR."
     >
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hm-line bg-white px-5 py-4">
+        <div>
+          <p className="font-display text-sm font-bold text-hm-charcoal">Rather finance?</p>
+          <p className="mt-0.5 text-sm text-hm-muted">
+            Opens Andy&apos;s Synchrony application with his dealer info already filled in.
+          </p>
+        </div>
+        <SynchronyFinanceButton />
+      </div>
+
       {success && (
         <p className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
           Payment received — thank you. A receipt will show as Paid below once Stripe confirms.

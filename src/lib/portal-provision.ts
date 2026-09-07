@@ -148,7 +148,7 @@ export async function sendPortalInvite(customerId: string, reason = "manual") {
 
   if (!profile) throw new Error("Customer not found");
 
-  const link = await generateRecoveryLink(profile.email);
+  const link = await createPortalSetupLink(profile.email);
   const loginUrl = `${siteUrl()}/portal/login`;
   const emailResult = await sendPortalInviteEmail({
     name: profile.name || "there",
@@ -171,7 +171,7 @@ export async function sendPortalInvite(customerId: string, reason = "manual") {
   return { sent: emailResult.sent, reason, inviteUrl: link || loginUrl, email: emailResult };
 }
 
-async function generateRecoveryLink(email: string) {
+export async function createPortalSetupLink(email: string) {
   const admin = getSupabaseAdmin();
   const redirectTo = `${siteUrl()}/auth/callback?next=/auth/reset-password`;
   const { data, error } = await admin.auth.admin.generateLink({

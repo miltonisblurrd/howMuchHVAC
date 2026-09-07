@@ -12,6 +12,7 @@ import {
 } from "@/lib/portal-queries";
 import { JOB_STATUS_LABELS, formatWhen, money, type JobStatus } from "@/lib/db-types";
 import { cn } from "@/lib/cn";
+import { site } from "@/lib/site";
 
 const statusColor: Record<JobStatus, string> = {
   quote_request: "bg-sky-500/12 text-sky-800",
@@ -173,22 +174,35 @@ export async function PortalDashboardHome({ userId }: { userId: string }) {
           )}
         </section>
 
-        <Link href="/portal/pay" className="hm-admin-card hm-admin-click flex flex-col p-5">
+        <div className="hm-admin-card flex flex-col p-5">
           <h2 className="font-display text-[15px] font-bold tracking-tight text-hm-charcoal">
             {dueCents > 0 ? "Amount due" : "Payments"}
           </h2>
           <p className="mt-6 font-display text-4xl font-bold tracking-tight text-hm-charcoal sm:text-5xl">
             <CountUp value={money(dueCents)} />
           </p>
-          <p
-            className={cn(
-              "mt-3 text-base font-semibold",
-              dueCents > 0 ? "text-hm-red" : "text-emerald-700",
-            )}
-          >
-            {dueCents > 0 ? "Pay now ?" : "You're all caught up"}
-          </p>
-        </Link>
+          {dueCents > 0 ? (
+            <p className="mt-3 text-base font-semibold text-hm-red">Open balance</p>
+          ) : (
+            <p className="mt-3 text-base font-semibold text-emerald-700">You&apos;re all caught up</p>
+          )}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              href="/portal/pay"
+              className="inline-flex h-10 items-center rounded-lg bg-hm-red px-4 font-display text-sm font-semibold text-white"
+            >
+              {dueCents > 0 ? "Pay in full" : "View payments"}
+            </Link>
+            <a
+              href={site.synchrony.applyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-10 items-center rounded-lg border border-hm-charcoal/20 px-4 font-display text-sm font-semibold text-hm-charcoal hover:bg-hm-fog"
+            >
+              Finance with Synchrony
+            </a>
+          </div>
+        </div>
       </div>
     </>
   );
