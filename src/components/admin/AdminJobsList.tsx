@@ -19,8 +19,8 @@ export type AdminJobRow = {
 const filters: { id: "all" | JobStatus; label: string }[] = [
   { id: "all", label: "All" },
   { id: "quote_request", label: JOB_STATUS_LABELS.quote_request },
-  { id: "estimate_ready", label: JOB_STATUS_LABELS.estimate_ready },
   { id: "scheduled", label: JOB_STATUS_LABELS.scheduled },
+  { id: "estimate_ready", label: JOB_STATUS_LABELS.estimate_ready },
   { id: "in_progress", label: JOB_STATUS_LABELS.in_progress },
   { id: "completed", label: JOB_STATUS_LABELS.completed },
 ];

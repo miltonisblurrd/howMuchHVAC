@@ -13,6 +13,7 @@ import {
   getSignedUrl,
 } from "@/lib/portal-queries";
 import { JOB_STATUS_LABELS, formatWhen, money } from "@/lib/db-types";
+import { APPOINTMENT_TYPE_LABELS } from "@/lib/job-stages";
 import { DirectPhone } from "@/components/contact/CallAndy";
 import { cn } from "@/lib/cn";
 
@@ -139,8 +140,16 @@ export default async function PortalProjectPage({
 
         <AdminCard>
           <AdminCardHeader
-            title="Schedule a visit"
-            caption="Book an open slot instantly, or request any day and time."
+            title={
+              job.status === "in_progress" || job.status === "estimate_ready"
+                ? "Install / project date"
+                : "First visit"
+            }
+            caption={
+              job.status === "in_progress" || job.status === "estimate_ready"
+                ? "This is the day Andy comes back to do the work."
+                : "Andy looks at the job first. Pricing comes after that visit."
+            }
           />
           {bundle.appointments.length > 0 && (
             <div className="mt-4 space-y-2">
@@ -154,8 +163,8 @@ export default async function PortalProjectPage({
                   }
                 >
                   <p className="font-semibold text-hm-charcoal">{formatWhen(a.starts_at)}</p>
-                  <p className="capitalize text-hm-muted">
-                    {a.type.replace("_", " ")} · {a.status}
+                  <p className="text-hm-muted">
+                    {APPOINTMENT_TYPE_LABELS[a.type] ?? a.type} · {a.status}
                     {a.tech_name ? ` · ${a.tech_name}` : ""}
                   </p>
                   {a.status === "pending" && (

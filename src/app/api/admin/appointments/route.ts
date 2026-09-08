@@ -75,14 +75,17 @@ export async function POST(request: Request) {
     appt = retry.data;
   }
 
-  await admin
-    .from("jobs")
-    .update({ status: "scheduled", updated_at: new Date().toISOString() })
-    .eq("id", job.id);
+  const nextStatus = nextStatusForVisit(String(job.status ?? ""), parsed.data.type);
+  if (nextStatus) {
+    await admin
+      .from("jobs")
+      .update({ status: nextStatus, updated_at: new Date().toISOString() })
+      .eq("id", job.id);
+  }
 
   await admin.from("job_events").insert({
     job_id: job.id,
-    title: "Visit scheduled by Andy",
+    title: parsed.data.type === "install" ? "Install / project date set" : "First visit scheduled by Andy",
     detail: `${formatWhen(parsed.data.startsAt)}${parsed.data.techName ? ` · ${parsed.data.techName}` : ""}`,
   });
 
@@ -122,6 +125,7 @@ export async function PATCH(request: Request) {
   const job = appt.jobs as {
     id: string;
     title: string;
+    status?: string;
     customer_id: string;
     profiles?: { name?: string; email?: string; phone?: string | null } | null;
   } | null;
@@ -145,19 +149,30 @@ export async function PATCH(request: Request) {
     await admin.from("appointments").update({ status: "confirmed" }).eq("id", appt.id);
   }
 
-  await admin
-    .from("jobs")
-    .update({ status: "scheduled", updated_at: new Date().toISOString() })
-    .eq("id", job.id);
+  const apptType = (appt.type as "diagnostic" | "install" | "maintenance" | "follow_up") || "diagnostic";
+  const nextStatus = nextStatusForVisit(job.status ?? "", apptType);
+  if (nextStatus) {
+    await admin
+      .from("jobs")
+      .update({ status: nextStatus, updated_at: new Date().toISOString() })
+      .eq("id", job.id);
+  }
 
   await admin.from("job_events").insert({
     job_id: job.id,
-    title: "Visit confirmed",
+    title: apptType === "install" ? "Install / project date confirmed" : "First visit confirmed",
     detail: `${formatWhen(appt.starts_at)}${parsed.data.techName ? ` · ${parsed.data.techName}` : ""}`,
   });
 
   await notifyCustomer(admin, { ...job, profiles: job.profiles }, appt.starts_at);
   return NextResponse.json({ ok: true });
+}
+
+function nextStatusForVisit(current: string, type: "diagnostic" | "install" | "maintenance" | "follow_up") {
+  if (current === "completed" || current === "cancelled") return null;
+  if (type === "install") return "in_progress";
+  if (current === "quote_request") return "scheduled";
+  return null;
 }
 
 async function notifyCustomer(

@@ -52,8 +52,21 @@ export function customerNextAction(input: {
 
   if (nextAppt?.status === "confirmed") {
     return {
-      title: "You're on the calendar",
-      body: "We'll see you at the time below. Add questions or photos in messages anytime.",
+      title: primary?.status === "in_progress" ? "Install day is set" : "Andy is coming out to look",
+      body:
+        primary?.status === "in_progress"
+          ? "Your project date is on the calendar. Add questions or photos in messages anytime."
+          : "This first visit is to look at the job. Pricing comes after Andy has seen it.",
+      href: primary ? `/portal/projects/${primary.id}` : "/portal/messages",
+      cta: "View job",
+      tone: "wait",
+    };
+  }
+
+  if (primary?.status === "scheduled") {
+    return {
+      title: "Visit is booked",
+      body: "Andy will come look first, then send clear pricing options in your portal.",
       href: primary ? `/portal/projects/${primary.id}` : "/portal/messages",
       cta: "View job",
       tone: "wait",
@@ -101,6 +114,7 @@ export function jobCardCta(
   if (status === "estimate_ready") {
     return { href: `/portal/projects/${jobId}`, label: "Review options" };
   }
+  if (status === "scheduled") return { href: `/portal/projects/${jobId}`, label: "See visit" };
   if (status === "quote_request") return { href: "/portal/messages", label: "Add details" };
   return { href: `/portal/projects/${jobId}`, label: "Open job" };
 }

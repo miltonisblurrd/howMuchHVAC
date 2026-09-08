@@ -100,7 +100,7 @@ export function JobPricingCard({
         <div>
           <h2 className="font-display text-lg font-bold">Pricing options</h2>
           <p className="mt-1 text-sm text-hm-muted">
-            Good / Better / Best. Star the one you recommend. The customer picks one in their portal.
+            After the first visit. Star the one you recommend. The customer picks one in their portal.
           </p>
         </div>
         {options.length < 4 && (

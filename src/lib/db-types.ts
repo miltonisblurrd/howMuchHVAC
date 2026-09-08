@@ -135,9 +135,9 @@ export type Invoice = {
 
 export const JOB_STATUS_LABELS: Record<JobStatus, string> = {
   quote_request: "New request",
+  scheduled: "Appointment scheduled",
   estimate_ready: "Pricing ready",
-  scheduled: "Visit scheduled",
-  in_progress: "Work started",
+  in_progress: "Install / Project Date",
   completed: "Done",
   cancelled: "Cancelled",
 };

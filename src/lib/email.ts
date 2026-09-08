@@ -170,8 +170,8 @@ export async function sendPhoneIntakeEmail(input: {
   const settings = await getBusinessSettings();
   const first = input.name.split(" ")[0] || "there";
   const visitBlock = input.whenLabel
-    ? `<p>Your visit is on the calendar: <strong>${escapeHtml(input.whenLabel)}</strong>.</p>`
-    : `<p>Andy has you in the system. He’ll follow up with a visit time if one isn’t already set.</p>`;
+    ? `<p>Your first visit is on the calendar: <strong>${escapeHtml(input.whenLabel)}</strong>. Andy will look at the job, then send pricing.</p>`
+    : `<p>Andy has you in the system. He’ll call to set a day to come look before he prices the job.</p>`;
   const serviceLine = [input.service, input.city].filter(Boolean).join(" — ");
 
   const html = `
@@ -193,7 +193,7 @@ export async function sendPhoneIntakeEmail(input: {
     to: input.email,
     replyTo: settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email,
     subject: input.whenLabel
-      ? `Thanks for talking with How Much? — your visit + portal`
+      ? `Thanks for talking with How Much? — your first visit + portal`
       : `Thanks for talking with How Much? — your portal is ready`,
     html,
   });

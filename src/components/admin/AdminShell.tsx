@@ -11,7 +11,6 @@ import {
   MessageSquare,
   Users,
   BarChart3,
-  Phone,
   PanelLeftClose,
   PanelLeftOpen,
   Menu,
@@ -25,7 +24,6 @@ import { cn } from "@/lib/cn";
 
 const links = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/intake", label: "Add from a call", icon: Phone, emphasize: true },
   { href: "/admin/jobs", label: "Jobs", icon: FileText },
   { href: "/admin/invoices", label: "Invoices", icon: Receipt },
   { href: "/admin/schedule", label: "Schedule", icon: CalendarDays },
@@ -88,7 +86,6 @@ export function AdminShell({
               active
                 ? "bg-[color-mix(in_oklab,var(--hm-red)_10%,white)] text-hm-charcoal"
                 : "text-hm-muted hover:bg-hm-fog hover:text-hm-charcoal",
-              !active && link.emphasize && "text-hm-red hover:text-hm-red",
               collapsed && "justify-center px-0",
             )}
           >
@@ -201,7 +198,6 @@ export function AdminShell({
                       active
                         ? "bg-[color-mix(in_oklab,var(--hm-red)_10%,white)] text-hm-charcoal"
                         : "text-hm-muted hover:bg-hm-fog",
-                      !active && link.emphasize && "text-hm-red",
                     )}
                   >
                     <Icon

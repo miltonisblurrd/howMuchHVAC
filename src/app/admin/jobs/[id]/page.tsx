@@ -98,6 +98,8 @@ export default async function AdminJobDetailPage({
             customerSignedIn={hasSignedIn}
           />
 
+          <JobVisitCard jobId={job.id} customerFirstName={firstName} appointments={appointments} />
+
           <JobPricingCard
             jobId={job.id}
             selectedOptionId={job.selected_option_id}
@@ -109,8 +111,6 @@ export default async function AdminJobDetailPage({
               recommended: o.recommended,
             }))}
           />
-
-          <JobVisitCard jobId={job.id} customerFirstName={firstName} appointments={appointments} />
 
           <JobPaymentCard
             jobId={job.id}

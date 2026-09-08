@@ -14,25 +14,25 @@ export const JOB_STAGES: {
     status: "quote_request",
     label: "New request",
     short: "Request",
-    hint: "Customer asked for help. Send them pricing.",
+    hint: "They're in. Set a day to go look before you price it.",
+  },
+  {
+    status: "scheduled",
+    label: "Appointment scheduled",
+    short: "Look",
+    hint: "First visit is booked. You'll price it after you've seen the job.",
   },
   {
     status: "estimate_ready",
     label: "Pricing ready",
     short: "Pricing",
-    hint: "They can see Good / Better / Best in their portal.",
-  },
-  {
-    status: "scheduled",
-    label: "Visit scheduled",
-    short: "Scheduled",
-    hint: "Date is on the calendar. Customer got an email.",
+    hint: "Good / Better / Best is in their portal. Next: set the install date.",
   },
   {
     status: "in_progress",
-    label: "Work started",
-    short: "Working",
-    hint: "You're on site or the install is underway.",
+    label: "Install / Project Date",
+    short: "Install",
+    hint: "Install day is set, or you're on site.",
   },
   {
     status: "completed",
@@ -47,8 +47,8 @@ export function stageIndex(status: JobStatus) {
 }
 
 export const APPOINTMENT_TYPE_LABELS: Record<AppointmentType, string> = {
-  diagnostic: "Diagnostic / estimate visit",
-  install: "Install",
+  diagnostic: "Look / estimate visit",
+  install: "Install / project",
   maintenance: "Maintenance",
   follow_up: "Follow-up",
 };

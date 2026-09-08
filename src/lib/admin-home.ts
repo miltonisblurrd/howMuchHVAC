@@ -38,8 +38,8 @@ export async function getAdminHomeSnapshot() {
 
   const jobStatusOrder: JobStatus[] = [
     "quote_request",
-    "estimate_ready",
     "scheduled",
+    "estimate_ready",
     "in_progress",
     "completed",
   ];

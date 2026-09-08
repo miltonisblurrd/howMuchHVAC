@@ -6,9 +6,9 @@ import { JOB_STATUS_LABELS, type JobStatus } from "@/lib/db-types";
 
 const STATUS_EVENT_TITLES: Record<JobStatus, string> = {
   quote_request: "Back to new request",
+  scheduled: "First visit booked",
   estimate_ready: "Pricing sent",
-  scheduled: "Marked as scheduled",
-  in_progress: "Work started",
+  in_progress: "Install / project date set",
   completed: "Job completed",
   cancelled: "Job cancelled",
 };
@@ -93,7 +93,7 @@ export async function PATCH(request: Request) {
         .from("jobs")
         .update({ status: "estimate_ready" })
         .eq("id", parsed.data.jobId)
-        .eq("status", "quote_request");
+        .in("status", ["quote_request", "scheduled"]);
     }
     await admin.from("job_events").insert({
       job_id: parsed.data.jobId,

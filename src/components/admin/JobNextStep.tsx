@@ -20,9 +20,6 @@ type Props = {
   customerSignedIn: boolean;
 };
 
-/**
- * One card that answers "what do I do next on this job?"
- */
 export function JobNextStep(p: Props) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -60,8 +57,9 @@ export function JobNextStep(p: Props) {
 
       {p.pendingVisitCount > 0 && (
         <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-semibold text-amber-950">
-          {p.customerFirstName} requested {p.pendingVisitCount === 1 ? "a time" : `${p.pendingVisitCount} times`}.
-          Confirm or decline it in the Visit section below.
+          {p.customerFirstName} requested{" "}
+          {p.pendingVisitCount === 1 ? "a time" : `${p.pendingVisitCount} times`}. Confirm or
+          decline it in Appointments below.
         </p>
       )}
 
@@ -110,67 +108,59 @@ function pickStep(p: Props, setStatus: (s: JobStatus) => void): Step | null {
 
   if (p.status === "quote_request") {
     return {
-      title: p.hasOptions ? `Pricing is ready — send it to ${name}` : `Send ${name} pricing`,
+      title: `Set a day to go look at ${name}'s place`,
+      body: "Andy prices after he's seen the job. Book the first visit, then write Good / Better / Best when you know what they need.",
+      primary: { label: "Schedule first visit", href: "#visit" },
+    };
+  }
+
+  if (p.status === "scheduled") {
+    return {
+      title: p.hasOptions
+        ? `Send ${name} the pricing from the visit`
+        : `After the look-over, set ${name}'s pricing`,
       body: p.hasOptions
-        ? "You already have options on this job. Saving them moves the job to “Pricing ready” and shows them in the portal."
-        : "Fill in Good / Better / Best below and hit Save. The customer picks one in their portal — no PDF, no back-and-forth.",
+        ? "Options are drafted. Save them so they show in the portal, then book the install."
+        : "Once you've seen the unit, fill in Good / Better / Best. That's when the real quote goes out.",
       primary: { label: p.hasOptions ? "Review pricing" : "Set pricing", href: "#pricing" },
-      secondary: { label: "Schedule a visit first", href: "#visit" },
+      secondary: { label: "Change first visit", href: "#visit" },
     };
   }
 
   if (p.status === "estimate_ready") {
     if (p.selectedOption) {
       return {
-        title: `${name} picked “${p.selectedOption.name}” (${money(p.selectedOption.price_cents)})`,
-        body: "Lock in the date and take a deposit so the job is real on both sides.",
-        primary: { label: "Schedule the visit", href: "#visit" },
+        title: `${name} picked "${p.selectedOption.name}" (${money(p.selectedOption.price_cents)})`,
+        body: "Lock the install / project date and take a deposit so the job is real on both sides.",
+        primary: { label: "Set install date", href: "#install" },
         secondary: { label: "Request a deposit", href: "#payments" },
       };
     }
     return {
-      title: `Waiting on ${name} to pick an option`,
+      title: `Set the install / project date`,
       body: p.customerSignedIn
-        ? "They've logged in and can see your pricing. You can still schedule the visit or ask for a deposit now."
-        : "They haven't logged into the portal yet. Email them the password setup (right side) so they can see the pricing.",
-      primary: { label: "Schedule the visit", href: "#visit" },
+        ? `${name} can see pricing in the portal. Book the install day, or ask for a deposit now.`
+        : `${name} hasn't logged in yet. You can still set the install date, or email them the portal setup.`,
+      primary: { label: "Set install date", href: "#install" },
       secondary: { label: "Request a deposit", href: "#payments" },
-    };
-  }
-
-  if (p.status === "scheduled") {
-    if (p.openInvoiceCents === 0 && p.paidInvoiceCents === 0) {
-      return {
-        title: "Visit is booked — request a deposit",
-        body: "Pick a label like “Deposit”, tap a quick amount, and send. They pay by card, Cash App, or financing in the portal.",
-        primary: { label: "Request a deposit", href: "#payments" },
-        secondary: { label: "Start the job", onClick: () => setStatus("in_progress") },
-      };
-    }
-    return {
-      title: p.openInvoiceCents > 0 ? `${money(p.openInvoiceCents)} still unpaid` : "Deposit is in — you're set",
-      body: "When you get on site, mark the job started so the customer sees progress.",
-      primary: { label: "Start the job", onClick: () => setStatus("in_progress") },
-      secondary: { label: "See payments", href: "#payments" },
     };
   }
 
   if (p.status === "in_progress") {
     return {
-      title: "Work is underway",
+      title: "Install / project is on the calendar",
       body:
         p.openInvoiceCents > 0
-          ? `${money(p.openInvoiceCents)} is still open. When you're done, mark it complete and collect the balance.`
-          : "When you're done, mark it complete and request the balance.",
+          ? `${money(p.openInvoiceCents)} is still open. When the work is finished, mark it done.`
+          : "When you're on site or the install is finished, mark it done and collect any balance.",
       primary: { label: "Mark job done", onClick: () => setStatus("completed") },
       secondary: { label: "Request balance", href: "#payments" },
     };
   }
 
-  // completed
   if (p.openInvoiceCents > 0) {
     return {
-      title: `Job done — ${money(p.openInvoiceCents)} still owed`,
+      title: `Job done - ${money(p.openInvoiceCents)} still owed`,
       body: "Resend the pay link or mark it paid if they paid cash or check.",
       primary: { label: "Go to payments", href: "#payments" },
     };
