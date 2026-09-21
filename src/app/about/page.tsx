@@ -13,7 +13,7 @@ import { team } from "@/lib/team";
 export const metadata: Metadata = {
   title: "About How Much? | Family-Owned HVAC with Integrity",
   description:
-    "How Much? Air & Home Improvements is a family-owned HVAC company serving Orange County, Los Angeles, and San Diego. Meet Andy and the team behind honest options and fair pricing.",
+    "How Much? Air & Home is a family-owned HVAC company serving Orange County, Los Angeles, and San Diego. Meet Andy and the team behind honest options and fair pricing.",
 };
 
 export default function AboutPage() {
@@ -28,7 +28,7 @@ export default function AboutPage() {
             Bringing Integrity Back Into HVAC
           </Heading>
           <p className="mt-4 max-w-3xl text-lg leading-relaxed text-white/75">
-            How Much? Air &amp; Home Improvements is a family-owned HVAC company built for
+            How Much? Air &amp; Home is a family-owned HVAC company built for
             homeowners who are done with scare tactics, mystery fees, and the runaround. We serve
             Orange County, Los Angeles, and San Diego with licensed work, clear options, and real
             accountability — because your home deserves the same care we give our own families.

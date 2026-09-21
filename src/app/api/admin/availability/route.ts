@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getSessionUser, getProfile } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { findScheduleConflict } from "@/lib/schedule-conflicts";
 
 const schema = z.object({
   startsAt: z.string(),
@@ -23,6 +24,9 @@ export async function POST(request: Request) {
   }
 
   const admin = getSupabaseAdmin();
+  const conflict = await findScheduleConflict(admin, parsed.data.startsAt, parsed.data.endsAt);
+  if (conflict) return NextResponse.json({ ok: false, error: conflict }, { status: 409 });
+
   const { data, error } = await admin
     .from("availability_windows")
     .insert({

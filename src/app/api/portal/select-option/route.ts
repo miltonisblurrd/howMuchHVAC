@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSessionUser, getProfile } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { money } from "@/lib/db-types";
+import { lockInDepositCents } from "@/lib/deposits";
 
 const schema = z.object({
   jobId: z.string().uuid(),
@@ -54,7 +55,7 @@ export async function POST(request: Request) {
     detail: `Customer chose ${option.name} at ${money(option.price_cents)}.`,
   });
 
-  // Create a 20% deposit invoice if none unpaid exists for this job
+  // Lock-in deposit: 10% of the chosen price, capped at $1,000.
   const { data: existing } = await admin
     .from("invoices")
     .select("id")
@@ -62,14 +63,14 @@ export async function POST(request: Request) {
     .in("status", ["unpaid", "overdue", "draft"])
     .limit(1);
 
-  if (!existing?.length) {
-    const deposit = Math.round(option.price_cents * 0.2);
+  const deposit = lockInDepositCents(option.price_cents);
+  if (!existing?.length && deposit > 0) {
     const number = `HM-D-${Date.now().toString().slice(-8)}`;
     await admin.from("invoices").insert({
       job_id: job.id,
       customer_id: profile.id,
       number,
-      description: `Deposit — ${option.name} (${job.title})`,
+      description: `Deposit to lock the price and install date — ${option.name} (${job.title})`,
       amount_cents: deposit,
       status: "unpaid",
       due_at: new Date(Date.now() + 7 * 86400000).toISOString(),

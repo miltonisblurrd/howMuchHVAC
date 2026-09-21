@@ -9,7 +9,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const contact = await getPublicContact();
   return {
     title: `Contact How Much? | Call ${contact.displayName} or Request a Quote`,
-    description: `Contact How Much? Air & Home Improvements. Call ${contact.displayName} direct at ${contact.directDisplay}, office ${contact.officeDisplay}, or request a quote online for HVAC service in OC, LA, and San Diego.`,
+    description: `Contact How Much? Air & Home. Call ${contact.displayName} direct at ${contact.directDisplay}, office ${contact.officeDisplay}, or request a quote online for HVAC service in OC, LA, and San Diego.`,
   };
 }
 

@@ -6,6 +6,7 @@ import { sendAppointmentEmail } from "@/lib/email";
 import { sendPortalInvite } from "@/lib/portal-provision";
 import { sendAppointmentSms } from "@/lib/sms";
 import { formatWhen } from "@/lib/db-types";
+import { findScheduleConflict } from "@/lib/schedule-conflicts";
 
 const createSchema = z.object({
   jobId: z.string().uuid(),
@@ -41,6 +42,9 @@ export async function POST(request: Request) {
   }
 
   const admin = getSupabaseAdmin();
+  const conflict = await findScheduleConflict(admin, parsed.data.startsAt, parsed.data.endsAt);
+  if (conflict) return NextResponse.json({ ok: false, error: conflict }, { status: 409 });
+
   const { data: job } = await admin
     .from("jobs")
     .select("*, profiles!customer_id(name, email, phone)")

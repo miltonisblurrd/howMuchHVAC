@@ -1,6 +1,6 @@
-/** Public marketing site stays behind the rebuild cover unless explicitly turned off. */
+/** Marketing pages are on for review. Set NEXT_PUBLIC_COMING_SOON=true to put the cover back. */
 export function comingSoonEnabled() {
-  return process.env.NEXT_PUBLIC_COMING_SOON !== "false";
+  return process.env.NEXT_PUBLIC_COMING_SOON === "true";
 }
 
 export function isComingSoonExemptPath(pathname: string) {

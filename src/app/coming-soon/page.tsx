@@ -8,7 +8,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Website update in progress",
   description:
-    "How Much? Air & Home Improvements is rebuilding trusthowmuch.com for a better customer experience. Call Andy or request a quote.",
+    "How Much? Air & Home is rebuilding trusthowmuch.com for a better customer experience. Call Andy or request a quote.",
   robots: { index: false, follow: true },
 };
 
@@ -21,7 +21,7 @@ export default async function ComingSoonPage() {
         <Logo height={168} href={null} priority />
 
         <p className="mt-6 font-display text-[11px] font-bold uppercase tracking-[0.22em] text-hm-red">
-          How Much? Air & Home Improvements
+          How Much? Air & Home
         </p>
         <h1 className="mt-3 text-center font-display text-3xl font-bold tracking-tight md:text-4xl">
           Our Website Is Being Rebuilt

@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "How Much? Air & Home Improvements",
+    name: "How Much? Air & Home",
     short_name: "How Much?",
     description:
       "Licensed, insured HVAC experts serving Orange County, Los Angeles, and San Diego.",

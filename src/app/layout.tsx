@@ -21,7 +21,7 @@ const lato = Lato({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} Air & Home Improvements | Orange County HVAC`,
+    default: `${site.name} Air & Home | Orange County HVAC`,
     template: `%s | ${site.name}`,
   },
   description: site.description,

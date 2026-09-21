@@ -6,6 +6,7 @@ import { CountUp } from "@/components/admin/CountUp";
 import { requirePortalUser } from "@/lib/auth";
 import { getCustomerInvoices } from "@/lib/portal-queries";
 import { formatWhen, money } from "@/lib/db-types";
+import { LOCK_IN_COPY } from "@/lib/deposits";
 
 export default async function PortalPayPage({
   searchParams,
@@ -21,7 +22,7 @@ export default async function PortalPayPage({
       userId={user.id}
       userName={user.name || user.email}
       title="Payments"
-      description="Pay in full with card or Cash App, or apply for Synchrony financing — same app as Andy's booth QR."
+      description={LOCK_IN_COPY}
     >
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-hm-line bg-white px-5 py-4">
         <div>

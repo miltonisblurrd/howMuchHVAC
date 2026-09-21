@@ -8,6 +8,7 @@ import { cn } from "@/lib/cn";
 import { formatWhen, money } from "@/lib/db-types";
 import type { Invoice } from "@/lib/db-types";
 import { INVOICE_LABEL_PRESETS, INVOICE_STATUS_LABELS } from "@/lib/job-stages";
+import { LOCK_IN_COPY, lockInDepositCents } from "@/lib/deposits";
 
 type Opt = { id: string; name: string; price_cents: number; recommended: boolean };
 
@@ -54,7 +55,7 @@ export function JobPaymentCard({
 
   const quick: { label: string; cents: number }[] = base
     ? [
-        { label: "10% deposit", cents: Math.round(base.price_cents * 0.1) },
+        { label: "10% up to $1,000", cents: lockInDepositCents(base.price_cents) },
         { label: "25% deposit", cents: Math.round(base.price_cents * 0.25) },
         { label: "Half", cents: Math.round(base.price_cents * 0.5) },
         { label: remaining > 0 && remaining !== base.price_cents ? "Remaining balance" : "Full amount", cents: remaining > 0 ? remaining : base.price_cents },
@@ -150,6 +151,7 @@ export function JobPaymentCard({
 
       <div className="mt-5 rounded-xl bg-hm-fog p-4">
         <p className="font-display text-sm font-bold text-hm-charcoal">Request a payment</p>
+        <p className="mt-1 text-xs leading-relaxed text-hm-muted">{LOCK_IN_COPY} You can still request progress, balance, or a custom amount.</p>
 
         <p className="mt-3 text-[11px] font-semibold uppercase tracking-wide text-hm-muted">
           1. What is it for?

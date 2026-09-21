@@ -215,7 +215,7 @@ export default async function BlogPostPage({
                   {author} · How Much?
                 </h2>
                 <p className="mt-3 text-[15px] leading-relaxed text-hm-muted">
-                  {author} leads How Much? Air &amp; Home Improvements — a family-owned HVAC
+                  {author} leads How Much? Air &amp; Home — a family-owned HVAC
                   company serving Orange County, Los Angeles, and San Diego. The goal is simple:
                   honest diagnostics, clear options, and pricing homeowners can actually
                   understand.

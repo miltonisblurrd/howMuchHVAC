@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Section";
 import { FaqJsonLd } from "@/components/seo/JsonLd";
 import { getFeaturedReviews } from "@/lib/reviews";
-import { services } from "@/lib/services";
+import { servicesInGroup } from "@/lib/services";
 import { site } from "@/lib/site";
 import { CallAndy, CallAndyPhone, AndyName, DirectPhone } from "@/components/contact/CallAndy";
 
@@ -356,17 +356,29 @@ export default function GetAQuotePage() {
           <h2 className="font-display text-3xl font-bold tracking-tight">
             HVAC Services We Handle
           </h2>
-          <ul className="mt-6 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <li
-                key={service.slug}
-                className="flex items-center gap-2 rounded-lg border border-hm-line bg-white px-4 py-3 text-sm font-semibold"
-              >
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-hm-red" />
-                {service.name}
-              </li>
-            ))}
-          </ul>
+          {(
+            [
+              ["Services", servicesInGroup("service")],
+              ["Installation", servicesInGroup("installation")],
+            ] as const
+          ).map(([label, items]) => (
+            <div key={label} className="mt-8">
+              <h3 className="font-display text-sm font-bold uppercase tracking-[0.16em] text-hm-muted">
+                {label}
+              </h3>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {items.map((service) => (
+                  <li
+                    key={service.slug}
+                    className="flex items-center gap-2 rounded-lg border border-hm-line bg-white px-4 py-3 text-sm font-semibold"
+                  >
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-hm-red" />
+                    {service.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </Container>
       </section>
 

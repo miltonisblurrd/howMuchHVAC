@@ -8,7 +8,7 @@ import { AndyName, DirectPhone } from "@/components/contact/CallAndy";
 export const metadata: Metadata = {
   title: "Book HVAC Service / Get a Quote | How Much?",
   description:
-    "Schedule HVAC service or request a personalized quote from How Much? Air & Home Improvements. Transparent options, no pressure. Call Andy direct at (714) 333-5953.",
+    "Schedule HVAC service or request a personalized quote from How Much? Air & Home. Transparent options, no pressure. Call Andy direct at (714) 333-5953.",
 };
 
 export default function BookingPage() {

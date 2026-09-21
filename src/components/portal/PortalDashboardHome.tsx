@@ -13,6 +13,7 @@ import {
 import { JOB_STATUS_LABELS, formatWhen, money, type JobStatus } from "@/lib/db-types";
 import { cn } from "@/lib/cn";
 import { site } from "@/lib/site";
+import { LOCK_IN_COPY } from "@/lib/deposits";
 
 const statusColor: Record<JobStatus, string> = {
   quote_request: "bg-sky-500/12 text-sky-800",
@@ -186,12 +187,15 @@ export async function PortalDashboardHome({ userId }: { userId: string }) {
           ) : (
             <p className="mt-3 text-base font-semibold text-emerald-700">You&apos;re all caught up</p>
           )}
+          {dueCents > 0 ? (
+            <p className="mt-2 text-xs leading-relaxed text-hm-muted">{LOCK_IN_COPY}</p>
+          ) : null}
           <div className="mt-4 flex flex-wrap gap-2">
             <Link
               href="/portal/pay"
               className="inline-flex h-10 items-center rounded-lg bg-hm-red px-4 font-display text-sm font-semibold text-white"
             >
-              {dueCents > 0 ? "Pay in full" : "View payments"}
+              {dueCents > 0 ? "Pay now" : "View payments"}
             </Link>
             <a
               href={site.synchrony.applyUrl}

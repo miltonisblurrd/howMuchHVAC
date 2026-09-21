@@ -4,7 +4,7 @@ import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { services } from "@/lib/services";
+import { ServiceOptions } from "@/components/forms/ServiceOptions";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { MIN_PASSWORD_LENGTH, validateNewPassword } from "@/lib/passwords";
@@ -187,14 +187,7 @@ export function QuoteForm({
                 Service needed
               </span>
               <select name="service" className="hm-input" defaultValue="" required>
-                <option value="" disabled>
-                  Select a service
-                </option>
-                {services.map((s) => (
-                  <option key={s.slug} value={s.slug}>
-                    {s.name}
-                  </option>
-                ))}
+                <ServiceOptions blankLabel="Select a service" blankDisabled valueKey="slug" />
                 <option value="second-opinion">Second opinion</option>
                 <option value="not-sure">Not sure yet</option>
               </select>

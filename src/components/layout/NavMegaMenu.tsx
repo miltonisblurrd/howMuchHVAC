@@ -18,7 +18,7 @@ import { cn } from "@/lib/cn";
 import { getNavFeaturedAreas } from "@/lib/areas";
 import { projects } from "@/lib/projects";
 import { serviceIcons } from "@/lib/serviceIcons";
-import { services } from "@/lib/services";
+import { servicesInGroup } from "@/lib/services";
 
 type MenuKey = "services" | "projects" | "areas" | null;
 
@@ -148,30 +148,44 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
               View All Services ?
             </Link>
           </div>
-          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => {
-              const Icon = serviceIcons[service.slug] ?? AirVent;
-              return (
-                <Link
-                  key={service.slug}
-                  href={`/services/${service.slug}`}
-                  onClick={() => setOpen(null)}
-                  className="flex gap-3 rounded-xl px-3 py-3 transition hover:bg-hm-fog"
-                >
-                  <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-hm-red/10 text-hm-red">
-                    <Icon className="h-[18px] w-[18px]" />
-                  </span>
-                  <span>
-                    <p className="font-display text-sm font-bold text-hm-charcoal">
-                      {service.name}
-                    </p>
-                    <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-hm-muted">
-                      {service.summary}
-                    </p>
-                  </span>
-                </Link>
-              );
-            })}
+          <div className="max-h-[70vh] space-y-5 overflow-y-auto pr-1">
+            {(
+              [
+                ["Services", servicesInGroup("service")],
+                ["Installation", servicesInGroup("installation")],
+              ] as const
+            ).map(([label, items]) => (
+              <div key={label}>
+                <p className="mb-2 font-display text-[11px] font-bold uppercase tracking-[0.16em] text-hm-muted">
+                  {label}
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {items.map((service) => {
+                    const Icon = serviceIcons[service.slug] ?? AirVent;
+                    return (
+                      <Link
+                        key={service.slug}
+                        href={`/services/${service.slug}`}
+                        onClick={() => setOpen(null)}
+                        className="flex gap-3 rounded-xl px-3 py-3 transition hover:bg-hm-fog"
+                      >
+                        <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-hm-red/10 text-hm-red">
+                          <Icon className="h-[18px] w-[18px]" />
+                        </span>
+                        <span>
+                          <p className="font-display text-sm font-bold text-hm-charcoal">
+                            {service.name}
+                          </p>
+                          <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-hm-muted">
+                            {service.summary}
+                          </p>
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </>
       );

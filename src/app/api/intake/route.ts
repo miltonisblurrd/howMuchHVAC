@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { processPhoneIntake } from "@/lib/phone-intake";
+import { findScheduleConflict } from "@/lib/schedule-conflicts";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 const schema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -31,6 +33,14 @@ export async function POST(request: Request) {
   }
 
   try {
+    if (parsed.data.startsAt && parsed.data.endsAt) {
+      const conflict = await findScheduleConflict(
+        getSupabaseAdmin(),
+        parsed.data.startsAt,
+        parsed.data.endsAt,
+      );
+      if (conflict) return NextResponse.json({ ok: false, error: conflict }, { status: 409 });
+    }
     const result = await processPhoneIntake(parsed.data);
     return NextResponse.json({ ok: true, ...result });
   } catch (err) {

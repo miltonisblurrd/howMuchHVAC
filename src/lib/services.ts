@@ -1,9 +1,13 @@
 export type ServiceFaq = { question: string; answer: string };
 
+export type ServiceGroup = "service" | "installation";
+
 export type Service = {
   slug: string;
   name: string;
   shortName: string;
+  /** Service visits and installation are separate jobs. */
+  group?: ServiceGroup;
   summary: string;
   description: string;
   image: string;
@@ -20,9 +24,9 @@ export type Service = {
 export const services: Service[] = [
   {
     slug: "ac-repair-installation",
-    name: "A/C Repair & Installation",
-    shortName: "A/C",
-    summary: "Cooling that works when Southern California heat hits hard.",
+    name: "AC services",
+    shortName: "AC services",
+    summary: "Cooling service when Southern California heat hits hard.",
     description:
       "When your home stops cooling, you need answers—not a hard sell. How Much? is a family-owned HVAC company serving Southern California homeowners with clear diagnostics, honest repair-vs-replace options, and pricing you can actually understand. We walk you through what's broken, what can wait, and what a quality install looks like for your home—no mystery fees and no pressure to decide on the spot. Call Direct (714) 333-5953 and we'll help you get comfortable again with options that fit your budget and your house.",
     image:
@@ -103,8 +107,8 @@ export const services: Service[] = [
   },
   {
     slug: "heating",
-    name: "Heating Systems",
-    shortName: "Heating",
+    name: "Heating services",
+    shortName: "Heating services",
     summary: "Reliable warmth for cooler nights—safely and efficiently.",
     description:
       "Southern California winters are mild until a cold snap hits and the heater won't start. How Much? is family-owned and focused on honest heating service for homeowners who want safety, even warmth, and clear options—not a pressure pitch. We diagnose ignition, airflow, and delivery issues first, then show repair, tune-up, or upgrade paths that fit your home and budget. Call Direct (714) 333-5953 when you want warmth you can trust—without mystery fees or rush tactics.",
@@ -177,8 +181,8 @@ export const services: Service[] = [
   },
   {
     slug: "gas-furnace",
-    name: "Gas Furnace",
-    shortName: "Gas Furnace",
+    name: "Gas furnace services",
+    shortName: "Gas furnace",
     summary: "Furnace service, repair, and replacement done right.",
     description:
       "Gas furnaces need careful handling—especially when ignition fails or you smell something that doesn't feel right. How Much? is a family-owned team serving Southern California homeowners with safety-first furnace inspections, honest repair guidance, and clean installs when replacement truly makes sense. We explain what's urgent versus optional so you're never pushed into a new system out of fear. Call Direct (714) 333-5953 for furnace help from neighbors who put clarity before the close.",
@@ -241,8 +245,8 @@ export const services: Service[] = [
   },
   {
     slug: "heat-pump",
-    name: "Heat Pump",
-    shortName: "Heat Pump",
+    name: "Heat pump services",
+    shortName: "Heat pump",
     summary: "Year-round comfort with efficient heating and cooling.",
     description:
       "Heat pumps are a smart fit for many Southern California homes—one system for most of the year's heating and cooling. How Much? is family-owned and helps homeowners cut through the marketing so you understand performance, operating costs, and whether a heat pump truly fits your ducts, electrical, and comfort goals. We present clear options with real-world expectations—no pressure and no mystery fees. Call Direct (714) 333-5953 when you're ready for honest guidance on an upgrade that should actually save you hassle.",
@@ -558,8 +562,8 @@ export const services: Service[] = [
   },
   {
     slug: "insulation",
-    name: "Insulation",
-    shortName: "Insulation",
+    name: "Duct insulation",
+    shortName: "Duct insulation",
     summary: "Keep conditioned air where it belongs—inside your home.",
     description:
       "Insulation upgrades pair powerfully with HVAC work—especially when the attic turns into an oven every afternoon. How Much? is family-owned and helps Southern California homeowners improve comfort and reduce load on the system with targeted insulation recommendations, not blanket upsells. We explain how the building envelope affects sizing and bills so you can decide what to do first—clearly and without pressure. Call Direct (714) 333-5953 when good equipment still can't keep up with a leaky attic.",
@@ -743,8 +747,129 @@ export const services: Service[] = [
     relatedBlogSlugs: ["heat-pumps-for-southern-california"],
     relatedFaqSlugs: ["pricing-and-quotes", "financing-basics"],
   },
+  installationService({
+    slug: "ac-installation",
+    name: "AC installation",
+    shortName: "AC installation",
+    system: "air conditioner",
+    image:
+      "https://images.unsplash.com/photo-1631545806609-35d4ae440431?auto=format&fit=crop&w=1600&q=80",
+  }),
+  installationService({
+    slug: "heating-installation",
+    name: "Heating installation",
+    shortName: "Heating installation",
+    system: "heating system",
+    image:
+      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80",
+  }),
+  installationService({
+    slug: "gas-furnace-installation",
+    name: "Gas furnace installation",
+    shortName: "Furnace installation",
+    system: "gas furnace",
+    image:
+      "https://images.unsplash.com/photo-1581094794329-adc84e1d0d52?auto=format&fit=crop&w=1600&q=80",
+  }),
+  installationService({
+    slug: "heat-pump-installation",
+    name: "Heat pump installation",
+    shortName: "Heat pump installation",
+    system: "heat pump",
+    image:
+      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1600&q=80",
+  }),
+  installationService({
+    slug: "ductless-package-installation",
+    name: "Ductless and package unit installation",
+    shortName: "Ductless install",
+    system: "ductless or package unit",
+    image:
+      "https://images.unsplash.com/photo-1631545806609-35d4ae440431?auto=format&fit=crop&w=1600&q=80",
+  }),
 ];
+
+function installationService(input: {
+  slug: string;
+  name: string;
+  shortName: string;
+  system: string;
+  image: string;
+}): Service {
+  const title = input.name;
+  return {
+    slug: input.slug,
+    name: input.name,
+    shortName: input.shortName,
+    group: "installation",
+    summary: `A straight ${input.system} install, separate from a service call.`,
+    description: `${title} is its own job at How Much? Air & Home. If you already know you want a new ${input.system}, you do not have to start under a service visit. We size the equipment for the house, walk the access and the ducts, and give you install options with the price before anyone orders equipment. Call Direct (714) 333-5953 to lock a visit. Licensed CA Lic #107-3814.`,
+    image: input.image,
+    expect: [
+      "A sizing visit before equipment is ordered",
+      "Install options with price, warranty, and what is included",
+      "A deposit that locks the price and the install date",
+      "Crews who protect the house and leave the startup paperwork",
+    ],
+    benefits: [
+      "Service and installation stay separate, so the job matches what you asked for",
+      "Equipment sized for this house, not a leftover on the truck",
+      "Clear price before the install day",
+      "Warranty and permits tracked with the job",
+    ],
+    painPoints: [
+      {
+        title: "You already know it needs replacing",
+        body: `A service call is the wrong door if the ${input.system} is done. Start here and we plan the install.`,
+      },
+      {
+        title: "The last quote jumped to a full system",
+        body: "We still look at ducts, electrical, and access so the new equipment can actually deliver.",
+      },
+    ],
+    process: [
+      {
+        title: "Confirm the install",
+        body: `We confirm the ${input.system}, the home, and the day you want it done.`,
+      },
+      {
+        title: "Size and price",
+        body: "You get options in the portal. The short description is the offer. Fine print stays behind details.",
+      },
+      {
+        title: "Lock it in",
+        body: "A deposit up to $1,000 locks the price and the install date. Without it, the date is not held.",
+      },
+      {
+        title: "Install and start up",
+        body: "We install, start the system, and leave the paperwork in your portal.",
+      },
+    ],
+    faqs: [
+      {
+        question: `Is ${title.toLowerCase()} different from a service visit?`,
+        answer:
+          "Yes. Service covers repair and maintenance. Installation is a replacement or new system. Pick the one that matches the job so scheduling and pricing stay clear.",
+      },
+      {
+        question: "How do I hold the install date?",
+        answer:
+          "The date and price lock when the deposit is paid. The deposit is 10% of the price, and never more than $1,000.",
+      },
+    ],
+    relatedBlogSlugs: ["repair-vs-replace-hvac"],
+    relatedFaqSlugs: ["pricing-and-quotes"],
+  };
+}
 
 export function getService(slug: string) {
   return services.find((s) => s.slug === slug);
+}
+
+export function serviceGroup(service: Service): ServiceGroup {
+  return service.group ?? "service";
+}
+
+export function servicesInGroup(group: ServiceGroup) {
+  return services.filter((service) => serviceGroup(service) === group);
 }

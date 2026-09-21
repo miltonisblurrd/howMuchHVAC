@@ -6,7 +6,7 @@ import { GuideDownloadBand } from "@/components/home/GuideDownloadBand";
 import { Button } from "@/components/ui/Button";
 import { CallAndy } from "@/components/contact/CallAndy";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
-import { services } from "@/lib/services";
+import { servicesInGroup } from "@/lib/services";
 
 export const metadata: Metadata = {
   title: "HVAC Services | A/C, Heating, Heat Pumps & More",
@@ -40,33 +40,44 @@ export default function ServicesPage() {
 
       <Section tone="white">
         <Container>
-          <div className="grid gap-6 md:grid-cols-2">
-            {services.map((service) => (
-              <Link
-                key={service.slug}
-                href={`/services/${service.slug}`}
-                className="group overflow-hidden rounded-2xl border border-hm-line bg-hm-fog"
-              >
-                <div className="relative h-52">
-                  <Image
-                    src={service.image}
-                    alt={service.name}
-                    fill
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-6">
-                  <h2 className="font-display text-2xl font-bold tracking-tight">
-                    {service.name}
-                  </h2>
-                  <p className="mt-2 text-hm-muted">{service.summary}</p>
-                  <span className="mt-4 inline-flex font-display text-sm font-semibold text-hm-red">
-                    Learn more →
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
+          {(
+            [
+              ["Services", "Repair, maintenance, and the work that is not a new system."],
+              ["Installation", "A straight install. Separate from a service visit."],
+            ] as const
+          ).map(([label, caption], index) => (
+            <div key={label} className={index === 0 ? "" : "mt-14"}>
+              <h2 className="font-display text-2xl font-bold tracking-tight">{label}</h2>
+              <p className="mt-2 max-w-2xl text-hm-muted">{caption}</p>
+              <div className="mt-6 grid gap-6 md:grid-cols-2">
+                {servicesInGroup(index === 0 ? "service" : "installation").map((service) => (
+                  <Link
+                    key={service.slug}
+                    href={`/services/${service.slug}`}
+                    className="group overflow-hidden rounded-2xl border border-hm-line bg-hm-fog"
+                  >
+                    <div className="relative h-52">
+                      <Image
+                        src={service.image}
+                        alt={service.name}
+                        fill
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="font-display text-2xl font-bold tracking-tight">
+                        {service.name}
+                      </h3>
+                      <p className="mt-2 text-hm-muted">{service.summary}</p>
+                      <span className="mt-4 inline-flex font-display text-sm font-semibold text-hm-red">
+                        Learn more →
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          ))}
         </Container>
       </Section>
       <GuideDownloadBand />

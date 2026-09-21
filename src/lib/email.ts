@@ -62,7 +62,7 @@ export async function sendLeadEmails(lead: LeadEmailInput) {
   const customerHtml = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
       <p>Hi ${escapeHtml(lead.name.split(" ")[0] || "there")},</p>
-      <p>Thanks for reaching out to <strong>How Much? Air &amp; Home Improvements</strong>. We got your request and ${escapeHtml(settings.displayName)}’s team will follow up soon.</p>
+      <p>Thanks for reaching out to <strong>How Much? Air &amp; Home</strong>. We got your request and ${escapeHtml(settings.displayName)}’s team will follow up soon.</p>
       <p><strong>Your client portal is ready</strong></p>
       ${inviteBlock}
       <p><strong>What happens next</strong></p>
@@ -72,7 +72,7 @@ export async function sendLeadEmails(lead: LeadEmailInput) {
         <li>Prefer the phone? Call ${escapeHtml(settings.displayName)} anytime — that route always stays open.</li>
       </ol>
       <p>Need us sooner? Call ${escapeHtml(settings.displayName)} direct at <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
-      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home Improvements<br/>${site.license}</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home<br/>${site.license}</p>
     </div>
   `;
 
@@ -132,7 +132,7 @@ export async function sendPortalInviteEmail(input: {
       <p style="margin:24px 0"><a href="${escapeHtml(input.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">${input.isPasswordSetup ? "Set your password" : "Sign in to your portal"}</a></p>
       <p style="font-size:13px;color:#555">Link: ${escapeHtml(input.inviteUrl)}</p>
       <p>Prefer to talk? Call ${escapeHtml(settings.displayName)} at <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
-      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home Improvements</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home</p>
     </div>
   `;
 
@@ -177,14 +177,14 @@ export async function sendPhoneIntakeEmail(input: {
   const html = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
       <p>Hi ${escapeHtml(first)},</p>
-      <p>Thank you for talking with <strong>How Much? Air &amp; Home Improvements</strong>. We’re glad you called.</p>
+      <p>Thank you for talking with <strong>How Much? Air &amp; Home</strong>. We’re glad you called.</p>
       ${visitBlock}
       ${serviceLine ? `<p>What we noted: <strong>${escapeHtml(serviceLine)}</strong>.</p>` : ""}
       <p>To view your appointment and access your portal — pricing, messages, documents, and pay — click the button below. You’ll set a password on the next screen, then you’re in.</p>
       <p style="margin:24px 0"><a href="${escapeHtml(input.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Open your portal</a></p>
       <p style="font-size:13px;color:#555">Or copy this link: ${escapeHtml(input.inviteUrl)}</p>
       <p>Need Andy again? Call <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
-      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home Improvements<br/>${site.license}</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home<br/>${site.license}</p>
     </div>
   `;
 

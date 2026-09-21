@@ -79,7 +79,7 @@ export default function FairHvacPricingGuidePage() {
               Ready For Straight Answers?
             </h2>
             <p className="mt-3 text-hm-muted">
-              How Much? Air &amp; Home Improvements serves Orange County, Los Angeles, and San Diego
+              How Much? Air &amp; Home serves Orange County, Los Angeles, and San Diego
               with licensed, family-owned HVAC ? options first, always.
             </p>
             <div className="mt-6 flex flex-wrap gap-3 print:hidden">

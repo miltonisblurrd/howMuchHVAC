@@ -7,6 +7,7 @@ import { sendLeadSmsAlert } from "@/lib/sms";
 import { formatWhen } from "@/lib/db-types";
 import { site } from "@/lib/site";
 import { getBusinessSettings } from "@/lib/business";
+import { findScheduleConflict } from "@/lib/schedule-conflicts";
 
 const schema = z.object({
   jobId: z.string().uuid(),
@@ -32,6 +33,9 @@ export async function POST(request: Request) {
   const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
 
   const admin = getSupabaseAdmin();
+  const conflict = await findScheduleConflict(admin, start.toISOString(), end.toISOString());
+  if (conflict) return NextResponse.json({ ok: false, error: conflict }, { status: 409 });
+
   const { data: job } = await admin
     .from("jobs")
     .select("*")

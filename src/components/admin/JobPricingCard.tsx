@@ -6,20 +6,40 @@ import { Plus, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
 import { money } from "@/lib/db-types";
+import { packOptionCopy, unpackOptionCopy } from "@/lib/option-copy";
 
 export type OptionDraft = {
   id?: string;
   name: string;
   price_cents: number;
   description: string;
+  equipment: string;
+  addons: string;
+  warranty: string;
+  details: string;
   recommended: boolean;
 };
 
+const EMPTY_COPY = { equipment: "", addons: "", warranty: "", details: "" };
+
 const STARTER: OptionDraft[] = [
-  { name: "Good", price_cents: 0, description: "Solid, reliable, gets the job done.", recommended: false },
-  { name: "Better", price_cents: 0, description: "Higher efficiency, quieter, longer warranty.", recommended: true },
-  { name: "Best", price_cents: 0, description: "Top-tier comfort, smart controls, best warranty.", recommended: false },
+  { name: "Good", price_cents: 0, description: "Solid, reliable, gets the job done.", ...EMPTY_COPY, recommended: false },
+  { name: "Better", price_cents: 0, description: "Higher efficiency, quieter, longer warranty.", ...EMPTY_COPY, recommended: true },
+  { name: "Best", price_cents: 0, description: "Top-tier comfort, smart controls, best warranty.", ...EMPTY_COPY, recommended: false },
 ];
+
+function hydrate(option: Omit<OptionDraft, "equipment" | "addons" | "warranty" | "details"> & Partial<OptionDraft>): OptionDraft {
+  const copy = unpackOptionCopy(option.description);
+  return {
+    ...EMPTY_COPY,
+    ...option,
+    description: copy.summary,
+    equipment: option.equipment || copy.equipment,
+    addons: option.addons || copy.addons,
+    warranty: option.warranty || copy.warranty,
+    details: option.details || copy.details,
+  };
+}
 
 function dollarsToCents(v: string) {
   const digits = v.replace(/[^0-9]/g, "");
@@ -36,12 +56,14 @@ export function JobPricingCard({
   selectedOptionId,
 }: {
   jobId: string;
-  existingOptions: OptionDraft[];
+  existingOptions: Array<
+    Pick<OptionDraft, "name" | "price_cents" | "description" | "recommended"> & { id?: string }
+  >;
   selectedOptionId: string | null;
 }) {
   const router = useRouter();
   const [options, setOptions] = useState<OptionDraft[]>(
-    existingOptions.length ? existingOptions : STARTER,
+    existingOptions.length ? existingOptions.map((option) => hydrate(option)) : STARTER,
   );
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -62,7 +84,7 @@ export function JobPricingCard({
   function add() {
     setOptions((prev) => [
       ...prev,
-      { name: `Option ${prev.length + 1}`, price_cents: 0, description: "", recommended: false },
+      { name: `Option ${prev.length + 1}`, price_cents: 0, description: "", ...EMPTY_COPY, recommended: false },
     ]);
   }
 
@@ -77,7 +99,22 @@ export function JobPricingCard({
     const res = await fetch("/api/admin/jobs", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jobId, options }),
+      body: JSON.stringify({
+        jobId,
+        options: options.map((option) => ({
+          id: option.id,
+          name: option.name,
+          price_cents: option.price_cents,
+          recommended: option.recommended,
+          description: packOptionCopy({
+            summary: option.description,
+            equipment: option.equipment,
+            addons: option.addons,
+            warranty: option.warranty,
+            details: option.details,
+          }),
+        })),
+      }),
     });
     setSaving(false);
     if (!res.ok) {
@@ -179,17 +216,37 @@ export function JobPricingCard({
                 </div>
               </label>
 
-              <label className="mt-3 block flex-1">
+              <label className="mt-3 block">
                 <span className="text-[11px] font-semibold uppercase tracking-wide text-hm-muted">
-                  What they get
+                  Short description
                 </span>
                 <textarea
-                  className="hm-input mt-1 min-h-[84px] resize-y py-2.5 text-sm leading-snug"
+                  className="hm-input mt-1 min-h-[72px] resize-y py-2.5 text-sm leading-snug"
                   value={opt.description}
                   onChange={(e) => update(idx, { description: e.target.value })}
-                  placeholder="Equipment, warranty, what's included…"
+                  placeholder="What they see first. Keep this short."
                 />
               </label>
+              {(
+                [
+                  ["equipment", "Equipment", "Paste the equipment from QuickBooks"],
+                  ["addons", "Miscellaneous add-ons", "Filters, lines, pads, permits"],
+                  ["warranty", "Warranty", "Labor and parts warranty"],
+                  ["details", "Fine print", "The rest of the proposal. Customers open this under Details."],
+                ] as const
+              ).map(([key, label, placeholder]) => (
+                <label key={key} className="mt-3 block">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide text-hm-muted">
+                    {label}
+                  </span>
+                  <textarea
+                    className="hm-input mt-1 min-h-[64px] resize-y py-2.5 text-sm leading-snug"
+                    value={opt[key]}
+                    onChange={(e) => update(idx, { [key]: e.target.value })}
+                    placeholder={placeholder}
+                  />
+                </label>
+              ))}
 
               <button
                 type="button"

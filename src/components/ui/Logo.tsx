@@ -28,7 +28,7 @@ export function Logo({
   const image = (
     <Image
       src={SRC}
-      alt="How Much? Air & Home Improvements"
+      alt="How Much? Air & Home"
       width={width}
       height={height}
       priority={priority}

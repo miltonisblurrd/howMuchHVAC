@@ -9,7 +9,7 @@ import { CallAndy, AndyName, DirectPhone } from "@/components/contact/CallAndy";
 export const metadata: Metadata = {
   title: "HVAC Service Areas | Orange County, Los Angeles & San Diego",
   description:
-    "How Much? Air & Home Improvements serves major cities across Orange County, Los Angeles County, and San Diego County with honest HVAC repair, install, and second opinions.",
+    "How Much? Air & Home serves major cities across Orange County, Los Angeles County, and San Diego County with honest HVAC repair, install, and second opinions.",
 };
 
 const regions = [

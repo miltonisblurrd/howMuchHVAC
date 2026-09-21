@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { PortalChrome } from "@/components/portal/PortalChrome";
 import { Button } from "@/components/ui/Button";
 import { SelectOptionButton } from "@/components/portal/SelectOptionButton";
+import { OptionCopyView } from "@/components/portal/OptionCopyView";
 import { BookSlotForm } from "@/components/portal/BookSlotForm";
 import { AdminCard, AdminCardHeader } from "@/components/admin/AdminUi";
 import { CountUp } from "@/components/admin/CountUp";
@@ -16,6 +17,7 @@ import { JOB_STATUS_LABELS, formatWhen, money } from "@/lib/db-types";
 import { APPOINTMENT_TYPE_LABELS } from "@/lib/job-stages";
 import { DirectPhone } from "@/components/contact/CallAndy";
 import { cn } from "@/lib/cn";
+import { LOCK_IN_COPY } from "@/lib/deposits";
 
 export default async function PortalProjectPage({
   params,
@@ -73,7 +75,7 @@ export default async function PortalProjectPage({
           <AdminCard>
             <AdminCardHeader
               title="Your options"
-              caption="Compare packages. Prefer to talk it through? Call Andy."
+              caption={`Compare packages. ${LOCK_IN_COPY}`}
             />
             <div className="mt-4 grid gap-3 md:grid-cols-3">
               {bundle.options.map((option) => {
@@ -104,7 +106,7 @@ export default async function PortalProjectPage({
                     <p className="mt-2 font-display text-2xl font-bold tracking-tight text-hm-charcoal">
                       <CountUp value={money(option.price_cents)} />
                     </p>
-                    <p className="mt-3 text-sm text-hm-muted">{option.description}</p>
+                    <OptionCopyView description={option.description} />
                     {option.selectable && !selected && (
                       <div className="mt-4">
                         <SelectOptionButton jobId={job.id} optionId={option.id} />

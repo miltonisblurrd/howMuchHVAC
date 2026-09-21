@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
-import { services } from "@/lib/services";
+import { ServiceOptions } from "@/components/forms/ServiceOptions";
+import { StreetAddressField } from "@/components/forms/StreetAddressField";
 import { cn } from "@/lib/cn";
 
 function pad(n: number) {
@@ -119,7 +120,7 @@ export function PhoneIntakeForm() {
             autoComplete="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="First and last"
+            placeholder="First and Last"
           />
         </label>
         <label className="block">
@@ -145,20 +146,14 @@ export function PhoneIntakeForm() {
             inputMode="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="They need this for the portal"
+            placeholder="Needed to start your account"
           />
         </label>
         <label className="block sm:col-span-2">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-hm-muted">
             Street address
           </span>
-          <input
-            className="hm-input mt-1 h-12 bg-white"
-            autoComplete="street-address"
-            value={address}
-            onChange={(e) => setAddress(e.target.value)}
-            placeholder="123 Main St"
-          />
+          <StreetAddressField address={address} onAddress={setAddress} onCity={setCity} />
         </label>
         <label className="block">
           <span className="text-[11px] font-semibold uppercase tracking-wide text-hm-muted">City</span>
@@ -177,12 +172,7 @@ export function PhoneIntakeForm() {
             value={service}
             onChange={(e) => setService(e.target.value)}
           >
-            <option value="">Not sure yet</option>
-            {services.map((s) => (
-              <option key={s.slug} value={s.name}>
-                {s.name}
-              </option>
-            ))}
+            <ServiceOptions blankLabel="Not sure yet" />
           </select>
         </label>
       </div>

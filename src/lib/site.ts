@@ -1,6 +1,6 @@
 export const site = {
   name: "How Much?",
-  legalName: "How Much? Air & Home Improvements",
+  legalName: "How Much? Air & Home",
   tagline: "Honest HVAC. Transparent pricing. Real answers.",
   description:
     "Licensed, insured HVAC experts serving Orange County, Los Angeles, and San Diego. Fair options, no pressure — just trustworthy service for your family.",

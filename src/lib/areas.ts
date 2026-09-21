@@ -74,10 +74,10 @@ function makeCity(seed: CitySeed): ServiceArea {
     isHub: hub,
     summary: hub
       ? `Family-owned HVAC across ${seed.name} — honest diagnostics, fair options, and clear pricing for homeowners who want answers, not pressure.`
-      : `Trusted HVAC in ${seed.name}: repair, install, maintenance, and second opinions from How Much? Air & Home Improvements.`,
+      : `Trusted HVAC in ${seed.name}: repair, install, maintenance, and second opinions from How Much? Air & Home.`,
     description: hub
       ? `How Much? serves ${seed.name} with licensed, insured HVAC work built around integrity. ${seed.vibe} Whether you need a same-day diagnosis, a second look at a big quote, or a full system replacement, you get options first — then a deal that makes sense for your home and budget.`
-      : `Looking for HVAC in ${seed.name}? How Much? Air & Home Improvements is the family-owned team homeowners call when they want honest answers. ${seed.vibe} We diagnose carefully, explain every option in plain English, and never push a replacement you do not need.`,
+      : `Looking for HVAC in ${seed.name}? How Much? Air & Home is the family-owned team homeowners call when they want honest answers. ${seed.vibe} We diagnose carefully, explain every option in plain English, and never push a replacement you do not need.`,
     localStory: `Homeowners in ${seed.name} deal with ${seed.climate.toLowerCase()} On top of that, ${seed.housing.toLowerCase()} Andy and the How Much? crew take the time to understand your house, your comfort goals, and your budget — then build a plan you can actually trust.`,
     climateNote: seed.climate,
     housingNote: seed.housing,
@@ -139,7 +139,7 @@ function makeCity(seed: CitySeed): ServiceArea {
       {
         question: "Are you licensed and insured?",
         answer:
-          "Yes. How Much? Air & Home Improvements is licensed and insured in California (CA Lic #107-3814), with 15+ years of experience serving Southern California families.",
+          "Yes. How Much? Air & Home is licensed and insured in California (CA Lic #107-3814), with 15+ years of experience serving Southern California families.",
       },
       {
         question: "What happens after I request a quote online?",

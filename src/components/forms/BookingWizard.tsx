@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { services } from "@/lib/services";
+import { servicesInGroup, type Service } from "@/lib/services";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { DirectPhone } from "@/components/contact/CallAndy";
@@ -27,6 +27,8 @@ export function BookingWizard() {
     confirmPassword: "",
     timing: "As soon as possible",
     notes: "",
+    date: "",
+    time: "09:00",
   });
 
   async function confirm() {
@@ -52,6 +54,8 @@ export function BookingWizard() {
           city: info.city,
           service: selected.join(", "),
           message: [`Preferred timing: ${info.timing}`, info.notes].filter(Boolean).join("\n\n"),
+          startsAt: new Date(`${info.date}T${info.time}:00`).toISOString(),
+          endsAt: new Date(new Date(`${info.date}T${info.time}:00`).getTime() + 2 * 60 * 60 * 1000).toISOString(),
           password: info.password,
           sourcePath: "/booking",
           sourceLabel: "Booking wizard",
@@ -147,37 +151,71 @@ export function BookingWizard() {
         )}
 
         {step === 1 && (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {services.map((service) => {
-              const active = selected.includes(service.slug);
-              return (
-                <button
-                  key={service.slug}
-                  type="button"
-                  onClick={() =>
-                    setSelected((prev) =>
-                      active
-                        ? prev.filter((s) => s !== service.slug)
-                        : [...prev, service.slug],
-                    )
-                  }
-                  className={cn(
-                    "rounded-xl border px-4 py-4 text-left transition",
-                    active
-                      ? "border-hm-red bg-hm-red/5"
-                      : "border-hm-line bg-hm-fog hover:border-hm-muted/30",
-                  )}
-                >
-                  <span className="font-display font-semibold">{service.shortName}</span>
-                  <span className="mt-1 block text-sm text-hm-muted">{service.summary}</span>
-                </button>
-              );
-            })}
+          <div className="space-y-6">
+            {(
+              [
+                ["Services", servicesInGroup("service")],
+                ["Installation", servicesInGroup("installation")],
+              ] as const
+            ).map(([label, items]) => (
+              <div key={label}>
+                <p className="mb-2 font-display text-xs font-bold uppercase tracking-[0.16em] text-hm-muted">
+                  {label}
+                </p>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {items.map((service: Service) => {
+                    const active = selected.includes(service.slug);
+                    return (
+                      <button
+                        key={service.slug}
+                        type="button"
+                        onClick={() =>
+                          setSelected((prev) =>
+                            active
+                              ? prev.filter((s) => s !== service.slug)
+                              : [...prev, service.slug],
+                          )
+                        }
+                        className={cn(
+                          "rounded-xl border px-4 py-4 text-left transition",
+                          active
+                            ? "border-hm-red bg-hm-red/5"
+                            : "border-hm-line bg-hm-fog hover:border-hm-muted/30",
+                        )}
+                      >
+                        <span className="font-display font-semibold">{service.shortName}</span>
+                        <span className="mt-1 block text-sm text-hm-muted">{service.summary}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
         {step === 2 && (
           <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-hm-muted">Day</span>
+              <input
+                required
+                type="date"
+                className="hm-input"
+                value={info.date}
+                onChange={(e) => setInfo((s) => ({ ...s, date: e.target.value }))}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-sm font-medium text-hm-muted">Arrive at</span>
+              <input
+                required
+                type="time"
+                className="hm-input"
+                value={info.time}
+                onChange={(e) => setInfo((s) => ({ ...s, time: e.target.value }))}
+              />
+            </label>
             <label className="block sm:col-span-2">
               <span className="mb-1.5 block text-sm font-medium text-hm-muted">
                 Preferred timing
@@ -215,7 +253,7 @@ export function BookingWizard() {
             <ul className="space-y-2 text-sm">
               <li>· {info.name || "Your name"} · {info.phone || "Phone"} · {info.email || "Email"}</li>
               <li>· Services: {selected.length ? selected.join(", ") : "None selected"}</li>
-              <li>· Timing: {info.timing}</li>
+              <li>· Visit: {info.date || "Pick a day"} at {info.time} · {info.timing}</li>
               <li>
                 · Direct line: <DirectPhone className="font-semibold text-hm-charcoal" />
               </li>
@@ -244,7 +282,8 @@ export function BookingWizard() {
                   !info.phone ||
                   info.password.length < MIN_PASSWORD_LENGTH ||
                   info.password !== info.confirmPassword)) ||
-              (step === 1 && selected.length === 0)
+              (step === 1 && selected.length === 0) ||
+              (step === 2 && !info.date)
             }
           >
             Continue

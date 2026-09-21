@@ -5,13 +5,14 @@ import { sendLeadSmsAlert } from "@/lib/sms";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { provisionPortalFromLead } from "@/lib/portal-provision";
 import { MIN_PASSWORD_LENGTH } from "@/lib/passwords";
+import { findScheduleConflict } from "@/lib/schedule-conflicts";
 
 const leadSchema = z.object({
   name: z.string().trim().min(1).max(120),
   email: z.string().trim().email().max(200),
   phone: z.string().trim().max(40).optional().nullable(),
   city: z.string().trim().max(120).optional().nullable(),
-  service: z.string().trim().max(120).optional().nullable(),
+  service: z.string().trim().max(500).optional().nullable(),
   message: z.string().trim().max(4000).optional().nullable(),
   password: z.string().min(MIN_PASSWORD_LENGTH).max(72).optional(),
   sourcePath: z.string().trim().max(300).optional().nullable(),
@@ -19,6 +20,8 @@ const leadSchema = z.object({
   utmSource: z.string().trim().max(120).optional().nullable(),
   utmMedium: z.string().trim().max(120).optional().nullable(),
   utmCampaign: z.string().trim().max(120).optional().nullable(),
+  startsAt: z.string().optional().nullable(),
+  endsAt: z.string().optional().nullable(),
 });
 
 export async function POST(request: Request) {
@@ -35,6 +38,11 @@ export async function POST(request: Request) {
 
     const lead = parsed.data;
     const supabase = getSupabaseAdmin();
+
+    if (lead.startsAt && lead.endsAt) {
+      const conflict = await findScheduleConflict(supabase, lead.startsAt, lead.endsAt);
+      if (conflict) return NextResponse.json({ ok: false, error: conflict }, { status: 409 });
+    }
 
     const { data, error } = await supabase
       .from("leads")
@@ -98,6 +106,17 @@ export async function POST(request: Request) {
           inviteSent: provisioned.inviteSent,
           jobId: provisioned.job.id,
         };
+        if (lead.startsAt && lead.endsAt) {
+          await supabase.from("appointments").insert({
+            job_id: provisioned.job.id,
+            type: "diagnostic",
+            starts_at: lead.startsAt,
+            ends_at: lead.endsAt,
+            status: "pending",
+            booked_by: "customer",
+            notes: "Requested on the website",
+          });
+        }
       } catch (provisionError) {
         console.error("[leads] portal provision failed", provisionError);
       }

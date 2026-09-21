@@ -5,6 +5,7 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { sendAppointmentEmail } from "@/lib/email";
 import { sendAppointmentSms } from "@/lib/sms";
 import { formatWhen } from "@/lib/db-types";
+import { findScheduleConflict } from "@/lib/schedule-conflicts";
 
 const schema = z.object({
   jobId: z.string().uuid(),
@@ -41,20 +42,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Slot unavailable" }, { status: 400 });
   }
 
-  // Overlap check
-  const { data: conflicts } = await admin
-    .from("appointments")
-    .select("id")
-    .neq("status", "cancelled")
-    .lt("starts_at", window.ends_at)
-    .gt("ends_at", window.starts_at)
-    .limit(1);
-
-  if (conflicts?.length) {
-    return NextResponse.json(
-      { ok: false, error: "That slot was just taken. Pick another." },
-      { status: 409 },
-    );
+  const conflict = await findScheduleConflict(admin, window.starts_at, window.ends_at);
+  if (conflict) {
+    return NextResponse.json({ ok: false, error: conflict }, { status: 409 });
   }
 
   const { data: appt, error } = await admin

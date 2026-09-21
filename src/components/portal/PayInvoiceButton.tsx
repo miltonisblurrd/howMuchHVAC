@@ -29,7 +29,7 @@ export function PayInvoiceButton({ invoiceId }: { invoiceId: string }) {
     <div className="flex flex-col items-end gap-2">
       <div className="flex flex-wrap items-center justify-end gap-2">
         <Button type="button" size="sm" onClick={pay} disabled={loading} arrow={false}>
-          {loading ? "Opening…" : "Pay in full"}
+          {loading ? "Opening…" : "Pay now"}
         </Button>
         <SynchronyFinanceButton />
       </div>

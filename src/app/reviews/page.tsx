@@ -10,7 +10,7 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Reviews | How Much? Google Reviews",
   description:
-    "Read real Google reviews for How Much? Air & Home Improvements — honest HVAC, fair options, and family-owned service across Orange County, Los Angeles, and San Diego.",
+    "Read real Google reviews for How Much? Air & Home — honest HVAC, fair options, and family-owned service across Orange County, Los Angeles, and San Diego.",
 };
 
 export default function ReviewsPage() {

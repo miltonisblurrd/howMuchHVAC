@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { services } from "@/lib/services";
+import { ServiceOptions } from "@/components/forms/ServiceOptions";
 import { AndyName, DirectPhone } from "@/components/contact/CallAndy";
 
 export function RequestForm() {
@@ -40,11 +41,7 @@ export function RequestForm() {
           Service
         </span>
         <select className="hm-input" value={service} onChange={(e) => setService(e.target.value)}>
-          {services.map((s) => (
-            <option key={s.slug} value={s.name}>
-              {s.name}
-            </option>
-          ))}
+          <ServiceOptions />
         </select>
       </label>
       <label className="block">
