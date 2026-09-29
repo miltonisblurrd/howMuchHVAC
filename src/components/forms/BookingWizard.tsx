@@ -9,6 +9,7 @@ import { cn } from "@/lib/cn";
 import { DirectPhone } from "@/components/contact/CallAndy";
 import { MIN_PASSWORD_LENGTH, validateNewPassword } from "@/lib/passwords";
 import { markSkipPortalSkeleton } from "@/lib/admin-dashboard-skel";
+import { HoneypotField, TurnstileField, useFormGuard } from "@/components/forms/FormGuard";
 
 const steps = ["Your info", "Services", "Schedule", "Confirm"];
 
@@ -18,6 +19,7 @@ export function BookingWizard() {
   const [selected, setSelected] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const guard = useFormGuard();
   const [info, setInfo] = useState({
     name: "",
     phone: "",
@@ -43,6 +45,13 @@ export function BookingWizard() {
       return;
     }
 
+    const notReady = guard.notReadyMessage();
+    if (notReady) {
+      setError(notReady);
+      setLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/leads", {
         method: "POST",
@@ -59,13 +68,20 @@ export function BookingWizard() {
           password: info.password,
           sourcePath: "/booking",
           sourceLabel: "Booking wizard",
+          ...guard.payload(),
         }),
       });
 
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      const data = (await res.json()) as { ok?: boolean; error?: string; id?: string };
       if (!res.ok || !data.ok) {
         setError(data.error || "Something went wrong. Please call us or try again.");
         setLoading(false);
+        return;
+      }
+
+      if (!data.id) {
+        const first = info.name.trim().split(/\s+/)[0] || "";
+        router.push(`/thank-you?name=${encodeURIComponent(first)}`);
         return;
       }
 
@@ -89,7 +105,8 @@ export function BookingWizard() {
   }
 
   return (
-    <div className="rounded-2xl border border-hm-line bg-white p-6 md:p-10">
+    <div className="relative rounded-2xl border border-hm-line bg-white p-6 md:p-10">
+      <HoneypotField inputRef={guard.honeypotRef} />
       <div className="flex flex-wrap gap-2">
         {steps.map((label, i) => (
           <div
@@ -262,6 +279,8 @@ export function BookingWizard() {
           </div>
         )}
       </div>
+
+      <TurnstileField onToken={guard.setTurnstileToken} />
 
       {error && <p className="mt-4 text-sm text-hm-red">{error}</p>}
 

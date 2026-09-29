@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { ServiceOptions } from "@/components/forms/ServiceOptions";
 import { StreetAddressField } from "@/components/forms/StreetAddressField";
 import { cn } from "@/lib/cn";
+import { HoneypotField, TurnstileField, useFormGuard } from "@/components/forms/FormGuard";
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -36,8 +37,8 @@ export function PhoneIntakeForm() {
   const [city, setCity] = useState("");
   const [service, setService] = useState("");
   const [notes, setNotes] = useState("");
-  const [website, setWebsite] = useState("");
   const [date, setDate] = useState(toDateInput(tomorrow()));
+  const guard = useFormGuard();
   const [time, setTime] = useState("09:00");
   const [tech, setTech] = useState("");
   const [saving, setSaving] = useState(false);
@@ -56,6 +57,13 @@ export function PhoneIntakeForm() {
     }
     const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
 
+    const notReady = guard.notReadyMessage();
+    if (notReady) {
+      setSaving(false);
+      setMsg({ ok: false, text: notReady });
+      return;
+    }
+
     const res = await fetch("/api/intake", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -67,8 +75,8 @@ export function PhoneIntakeForm() {
         city: city || null,
         service: service || null,
         notes: notes || null,
-        website,
         startsAt: start.toISOString(),
+        ...guard.payload(),
         endsAt: end.toISOString(),
         visitType: "diagnostic",
         techName: tech.trim() || null,
@@ -76,7 +84,7 @@ export function PhoneIntakeForm() {
     });
     const data = await res.json().catch(() => ({}));
     setSaving(false);
-    if (!res.ok) {
+    if (!res.ok || !data.jobId) {
       setMsg({ ok: false, text: data.error || "Couldn't save. Check the email and try again." });
       return;
     }
@@ -102,13 +110,8 @@ export function PhoneIntakeForm() {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5">
-      <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden>
-        <label>
-          Website
-          <input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
-        </label>
-      </div>
+    <form onSubmit={submit} className="relative space-y-5">
+      <HoneypotField inputRef={guard.honeypotRef} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block sm:col-span-2">
@@ -237,6 +240,8 @@ export function PhoneIntakeForm() {
           </label>
         </div>
       </div>
+
+      <TurnstileField onToken={guard.setTurnstileToken} />
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <Button type="submit" disabled={saving} arrow={false} className="w-full sm:w-auto">

@@ -9,6 +9,7 @@ import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { MIN_PASSWORD_LENGTH, validateNewPassword } from "@/lib/passwords";
 import { markSkipPortalSkeleton } from "@/lib/admin-dashboard-skel";
+import { HoneypotField, TurnstileField, useFormGuard } from "@/components/forms/FormGuard";
 
 export function QuoteForm({
   compact = false,
@@ -32,6 +33,7 @@ export function QuoteForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const guard = useFormGuard();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -54,6 +56,13 @@ export function QuoteForm({
       }
     }
 
+    const notReady = guard.notReadyMessage();
+    if (notReady) {
+      setError(notReady);
+      setLoading(false);
+      return;
+    }
+
     const params =
       typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
 
@@ -74,17 +83,18 @@ export function QuoteForm({
           utmSource: params?.get("utm_source"),
           utmMedium: params?.get("utm_medium"),
           utmCampaign: params?.get("utm_campaign"),
+          ...guard.payload(),
         }),
       });
 
-      const data = (await res.json()) as { ok?: boolean; error?: string };
+      const data = (await res.json()) as { ok?: boolean; error?: string; id?: string };
       if (!res.ok || !data.ok) {
         setError(data.error || "Something went wrong. Please call us or try again.");
         setLoading(false);
         return;
       }
 
-      if (portalSignup) {
+      if (portalSignup && data.id) {
         const login = await fetch("/api/auth/password-login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -132,7 +142,7 @@ export function QuoteForm({
   return (
     <form
       className={cn(
-        "rounded-2xl bg-white p-6 text-hm-charcoal md:p-8",
+        "relative rounded-2xl bg-white p-6 text-hm-charcoal md:p-8",
         elevated
           ? "shadow-[0_32px_80px_-24px_rgba(0,0,0,0.55)] ring-1 ring-black/5"
           : "shadow-xl ring-1 ring-black/5",
@@ -140,6 +150,7 @@ export function QuoteForm({
       )}
       onSubmit={onSubmit}
     >
+      <HoneypotField inputRef={guard.honeypotRef} />
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="font-display text-[11px] font-bold uppercase tracking-[0.22em] text-hm-red">
@@ -213,6 +224,8 @@ export function QuoteForm({
           remember — you&apos;ll use it to sign in next time, no email link.
         </p>
       )}
+
+      <TurnstileField onToken={guard.setTurnstileToken} />
 
       {error && <p className="mt-3 text-sm text-hm-red">{error}</p>}
 

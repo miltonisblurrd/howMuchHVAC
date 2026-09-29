@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { HoneypotField, TurnstileField, useFormGuard } from "@/components/forms/FormGuard";
 
 const GUIDE_HREF = "/guides/fair-hvac-pricing";
 const ARROW = "\u2192";
@@ -13,19 +14,28 @@ export function GuideDownloadForm({ className }: { className?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const guard = useFormGuard();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setError("");
 
+    const notReady = guard.notReadyMessage();
+    if (notReady) {
+      setError(notReady);
+      setLoading(false);
+      return;
+    }
+
     const form = e.currentTarget;
     const email = String(new FormData(form).get("email") || "").trim();
     const local = email.split("@")[0] || "Homeowner";
-    const name = local
+    const derived = local
       .replace(/[._-]+/g, " ")
       .replace(/\b\w/g, (c) => c.toUpperCase())
       .slice(0, 80);
+    const name = (derived.match(/[A-Za-z\u00C0-\u024F]/g)?.length ?? 0) >= 2 ? derived : "Homeowner";
 
     const params =
       typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
@@ -46,6 +56,7 @@ export function GuideDownloadForm({ className }: { className?: string }) {
           utmSource: params?.get("utm_source"),
           utmMedium: params?.get("utm_medium"),
           utmCampaign: params?.get("utm_campaign"),
+          ...guard.payload(),
         }),
       });
 
@@ -67,7 +78,8 @@ export function GuideDownloadForm({ className }: { className?: string }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className={cn("w-full max-w-lg", className)}>
+    <form onSubmit={onSubmit} className={cn("relative w-full max-w-lg", className)}>
+      <HoneypotField inputRef={guard.honeypotRef} />
       <label htmlFor="guide-email" className="sr-only">
         Email address
       </label>
@@ -93,6 +105,7 @@ export function GuideDownloadForm({ className }: { className?: string }) {
       <p className="mt-3 text-xs text-white/70">
         Instant access. No spam {EM_DASH} just the guide and an optional follow-up if you want help.
       </p>
+      <TurnstileField onToken={guard.setTurnstileToken} />
       {error ? <p className="mt-2 text-sm text-white">{error}</p> : null}
       {done ? (
         <p className="mt-2 text-sm font-medium text-white">

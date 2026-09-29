@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 import { processPhoneIntake } from "@/lib/phone-intake";
 import { findScheduleConflict } from "@/lib/schedule-conflicts";
+import { readGuard, screenPublicForm, toScreenHttp } from "@/lib/form-guard";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 
 const schema = z.object({
@@ -16,11 +17,17 @@ const schema = z.object({
   endsAt: z.string().optional().nullable(),
   visitType: z.enum(["diagnostic", "install", "maintenance", "follow_up"]).optional(),
   techName: z.string().trim().max(80).optional().nullable(),
-  website: z.string().optional().nullable(),
 });
 
 export async function POST(request: Request) {
-  const parsed = schema.safeParse(await request.json());
+  let json: unknown;
+  try {
+    json = await request.json();
+  } catch {
+    return NextResponse.json({ ok: false, error: "Name, a real email, and a phone number are required." }, { status: 400 });
+  }
+
+  const parsed = schema.safeParse(json);
   if (!parsed.success) {
     return NextResponse.json(
       { ok: false, error: "Name, a real email, and a phone number are required." },
@@ -28,9 +35,21 @@ export async function POST(request: Request) {
     );
   }
 
-  if (parsed.data.website?.trim()) {
-    return NextResponse.json({ ok: true });
-  }
+  const guard = readGuard(json);
+  const screened = toScreenHttp(
+    await screenPublicForm(request, {
+      name: parsed.data.name,
+      email: parsed.data.email,
+      phone: parsed.data.phone,
+      city: parsed.data.city,
+      service: parsed.data.service,
+      message: parsed.data.notes,
+      honeypot: guard.honeypot,
+      formToken: guard.formToken,
+      turnstileToken: guard.turnstileToken,
+    }),
+  );
+  if (screened) return NextResponse.json(screened.body, { status: screened.status });
 
   try {
     if (parsed.data.startsAt && parsed.data.endsAt) {

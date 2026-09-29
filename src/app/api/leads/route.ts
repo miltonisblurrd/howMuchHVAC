@@ -6,6 +6,7 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { provisionPortalFromLead } from "@/lib/portal-provision";
 import { MIN_PASSWORD_LENGTH } from "@/lib/passwords";
 import { findScheduleConflict } from "@/lib/schedule-conflicts";
+import { readGuard, screenPublicForm, toScreenHttp } from "@/lib/form-guard";
 
 const leadSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -30,11 +31,24 @@ export async function POST(request: Request) {
     const parsed = leadSchema.safeParse(json);
 
     if (!parsed.success) {
-      return NextResponse.json(
-        { ok: false, error: "Invalid lead payload", details: parsed.error.flatten() },
-        { status: 400 },
-      );
+      return NextResponse.json({ ok: false, error: "Check the form and try again." }, { status: 400 });
     }
+
+    const guard = readGuard(json);
+    const screened = toScreenHttp(
+      await screenPublicForm(request, {
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone,
+        city: parsed.data.city,
+        service: parsed.data.service,
+        message: parsed.data.message,
+        honeypot: guard.honeypot,
+        formToken: guard.formToken,
+        turnstileToken: guard.turnstileToken,
+      }),
+    );
+    if (screened) return NextResponse.json(screened.body, { status: screened.status });
 
     const lead = parsed.data;
     const supabase = getSupabaseAdmin();
