@@ -48,8 +48,12 @@ export async function uploadJobFile(input: {
   file: File;
   kind: "photo" | "document";
 }) {
-  if (input.file.size > 8 * 1024 * 1024) {
-    return { ok: false as const, error: "File must be under 8MB" };
+  const maxBytes = input.kind === "photo" ? 15 * 1024 * 1024 : 8 * 1024 * 1024;
+  if (input.file.size > maxBytes) {
+    return {
+      ok: false as const,
+      error: input.kind === "photo" ? "Photo must be under 15MB" : "File must be under 8MB",
+    };
   }
   const allowed = input.kind === "photo" ? PHOTO_TYPES : DOC_TYPES;
   if (input.file.type && !allowed.has(input.file.type)) {

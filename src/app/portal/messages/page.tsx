@@ -29,7 +29,7 @@ export default async function PortalMessagesPage() {
       userId={user.id}
       userName={user.name || user.email}
       unreadCount={0}
-      title="Messages"
+      title="Message Andy"
       description="Chat with Andy's team about your job. Prefer voice? Call anytime."
     >
       <MessagesClient

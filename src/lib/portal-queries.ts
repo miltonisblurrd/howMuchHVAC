@@ -124,9 +124,18 @@ export async function getActiveAvailability() {
   return (data || []) as AvailabilityWindow[];
 }
 
-export async function getSignedUrl(bucket: string, path: string, expiresIn = 3600) {
+export async function getSignedUrl(
+  bucket: string,
+  path: string,
+  expiresIn = 3600,
+  download?: string,
+) {
   const admin = getSupabaseAdmin();
-  const { data, error } = await admin.storage.from(bucket).createSignedUrl(path, expiresIn);
+  const { data, error } = await admin.storage.from(bucket).createSignedUrl(
+    path,
+    expiresIn,
+    download ? { download } : undefined,
+  );
   if (error) return null;
   return data.signedUrl;
 }
@@ -146,6 +155,28 @@ export async function decorateMessagePhotos<T extends Message>(messages: T[]) {
 export async function countUnreadForCustomer(customerId: string) {
   const messages = await getCustomerMessages(customerId);
   return messages.filter((m) => m.from_role === "admin" && !m.read_at).length;
+}
+
+export async function getOptionsForJobs(jobIds: string[]) {
+  if (!jobIds.length) return [] as JobOption[];
+  const admin = getSupabaseAdmin();
+  const { data } = await admin
+    .from("job_options")
+    .select("*")
+    .in("job_id", jobIds)
+    .order("sort_order", { ascending: true });
+  return (data || []) as JobOption[];
+}
+
+export async function getAppointmentsForJobs(jobIds: string[]) {
+  if (!jobIds.length) return [] as Appointment[];
+  const admin = getSupabaseAdmin();
+  const { data } = await admin
+    .from("appointments")
+    .select("*")
+    .in("job_id", jobIds)
+    .order("starts_at", { ascending: true });
+  return (data || []) as Appointment[];
 }
 
 export async function getNextAppointmentForCustomer(customerId: string) {

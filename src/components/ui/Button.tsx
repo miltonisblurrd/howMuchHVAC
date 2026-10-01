@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { titleCaseWords } from "@/lib/titleCase";
 
@@ -72,12 +73,7 @@ function withArrow(children: React.ReactNode, show: boolean) {
   return (
     <span className="inline-flex items-center gap-2">
       <span className="leading-none">{label}</span>
-      <span
-        aria-hidden
-        className="inline-flex h-[1em] w-[1em] shrink-0 items-center justify-center text-[1.1em] leading-none"
-      >
-        {"\u2192"}
-      </span>
+      <ArrowRight aria-hidden className="h-[1em] w-[1em] shrink-0" />
     </span>
   );
 }

@@ -11,6 +11,7 @@ import { JobPricingCard } from "@/components/admin/JobPricingCard";
 import { JobPaymentCard } from "@/components/admin/JobPaymentCard";
 import { JobVisitCard } from "@/components/admin/JobVisitCard";
 import { JobNotesCard } from "@/components/admin/JobNotesCard";
+import { JobPhotosCard } from "@/components/admin/JobPhotosCard";
 import { requireAdmin } from "@/lib/auth";
 import { getAdminJob } from "@/lib/admin-queries";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
@@ -28,7 +29,7 @@ export default async function AdminJobDetailPage({
   const bundle = await getAdminJob(id);
   if (!bundle) notFound();
 
-  const { job, options, events, documents, appointments, invoices, messages } = bundle;
+  const { job, options, events, documents, appointments, invoices, messages, photos } = bundle;
   const customer = job.profiles;
   const firstName = (customer?.name || "the customer").split(" ")[0];
 
@@ -48,6 +49,13 @@ export default async function AdminJobDetailPage({
   }
 
   const messagesWithPhotos = await decorateMessagePhotos(messages);
+  const photosWithUrls = await Promise.all(
+    photos.map(async (photo) => ({
+      id: photo.id,
+      label: photo.label,
+      url: await getSignedUrl(photo.bucket, photo.storage_path),
+    })),
+  );
   const docsWithUrls = await Promise.all(
     documents.map(async (d) => ({
       ...d,
@@ -99,6 +107,8 @@ export default async function AdminJobDetailPage({
           />
 
           <JobVisitCard jobId={job.id} customerFirstName={firstName} appointments={appointments} />
+
+          <JobPhotosCard jobId={job.id} photos={photosWithUrls} />
 
           <JobPricingCard
             jobId={job.id}

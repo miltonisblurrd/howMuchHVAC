@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/Button";
 export function SelectOptionButton({
   jobId,
   optionId,
+  label = "Select this option",
 }: {
   jobId: string;
   optionId: string;
+  label?: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ export function SelectOptionButton({
   return (
     <div>
       <Button type="button" size="sm" onClick={select} disabled={loading} className="w-full">
-        {loading ? "Saving?" : "Select this option"}
+        {loading ? "Saving…" : label}
       </Button>
       {error && <p className="mt-2 text-xs text-hm-red">{error}</p>}
     </div>

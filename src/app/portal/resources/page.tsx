@@ -9,7 +9,7 @@ export default async function PortalResourcesPage() {
     <PortalChrome
       userId={user.id}
       userName={user.name || user.email}
-      title="Resources & tips"
+      title="Home Tips and Resources"
       description="How-tos from Andy's crew — filters, heat, ducts, indoor air, and the rest of what we actually service. Start with Home basics. Call if anything feels off."
     >
       <ResourcesGuide />

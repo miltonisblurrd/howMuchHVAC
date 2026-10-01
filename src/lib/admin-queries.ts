@@ -7,6 +7,7 @@ import type {
   Job,
   JobEvent,
   JobOption,
+  JobPhoto,
   Message,
   Profile,
 } from "@/lib/db-types";
@@ -101,13 +102,14 @@ export async function getAdminJob(jobId: string) {
     .maybeSingle();
   if (!job) return null;
 
-  const [options, events, docs, appts, invoices, messages] = await Promise.all([
+  const [options, events, docs, appts, invoices, messages, photos] = await Promise.all([
     admin.from("job_options").select("*").eq("job_id", jobId).order("sort_order"),
     admin.from("job_events").select("*").eq("job_id", jobId).order("event_at"),
     admin.from("documents").select("*").eq("job_id", jobId).order("created_at", { ascending: false }),
     admin.from("appointments").select("*").eq("job_id", jobId).order("starts_at"),
     admin.from("invoices").select("*").eq("job_id", jobId).order("created_at", { ascending: false }),
     admin.from("messages").select("*").eq("job_id", jobId).order("created_at"),
+    admin.from("job_photos").select("*").eq("job_id", jobId).order("created_at", { ascending: false }),
   ]);
 
   return {
@@ -118,6 +120,7 @@ export async function getAdminJob(jobId: string) {
     appointments: (appts.data || []) as Appointment[],
     invoices: (invoices.data || []) as Invoice[],
     messages: (messages.data || []) as Message[],
+    photos: (photos.data || []) as JobPhoto[],
   };
 }
 

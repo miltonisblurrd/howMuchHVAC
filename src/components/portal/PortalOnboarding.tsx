@@ -107,9 +107,9 @@ export function PortalOnboarding({
 
   const navGuide = [
     { label: "Dashboard", detail: "Your next step, jobs, and upcoming visit." },
-    { label: "Messages", detail: `Ask ${contact.displayName} a question or send photos of the unit.` },
-    { label: "Documents", detail: "Quotes, scopes, and warranties." },
-    { label: "Resources", detail: "Filter changes, how-tos, and when to call." },
+    { label: "Message Andy", detail: `Ask ${contact.displayName} a question or send photos of the unit.` },
+    { label: "Your Past Services", detail: "Finished jobs. Open the project or download receipts." },
+    { label: "Home Tips and Resources", detail: "Filter changes, how-tos, and when to call." },
     { label: "Pay", detail: "Invoices when they are ready. Pay online." },
     { label: "Request service", detail: "The red button starts a new job." },
   ];

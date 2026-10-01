@@ -1,23 +1,32 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PortalChrome } from "@/components/portal/PortalChrome";
 import { Button } from "@/components/ui/Button";
-import { SelectOptionButton } from "@/components/portal/SelectOptionButton";
-import { OptionCopyView } from "@/components/portal/OptionCopyView";
-import { BookSlotForm } from "@/components/portal/BookSlotForm";
+import { ClientJobStepper } from "@/components/portal/ClientJobStepper";
+import { ClientNextStep } from "@/components/portal/ClientNextStep";
+import { VisitCard } from "@/components/portal/VisitCard";
+import { OptionsCard } from "@/components/portal/OptionsCard";
+import { InstallCard } from "@/components/portal/InstallCard";
+import { JobPhotoGallery } from "@/components/portal/JobPhotoGallery";
 import { AdminCard, AdminCardHeader } from "@/components/admin/AdminUi";
-import { CountUp } from "@/components/admin/CountUp";
 import { requirePortalUser } from "@/lib/auth";
+import { getClientStage } from "@/lib/client-stages";
 import {
-  getActiveAvailability,
+  decorateMessagePhotos,
+  getCustomerInvoices,
+  getCustomerMessages,
   getJobBundle,
   getJobForCustomer,
   getSignedUrl,
+  countUnreadForCustomer,
 } from "@/lib/portal-queries";
-import { JOB_STATUS_LABELS, formatWhen, money } from "@/lib/db-types";
-import { APPOINTMENT_TYPE_LABELS } from "@/lib/job-stages";
-import { DirectPhone } from "@/components/contact/CallAndy";
-import { cn } from "@/lib/cn";
-import { LOCK_IN_COPY } from "@/lib/deposits";
+import { formatWhen, type Invoice } from "@/lib/db-types";
+
+function openCents(invoices: Invoice[]) {
+  return invoices
+    .filter((i) => i.status === "unpaid" || i.status === "overdue")
+    .reduce((sum, i) => sum + i.amount_cents, 0);
+}
 
 export default async function PortalProjectPage({
   params,
@@ -29,8 +38,25 @@ export default async function PortalProjectPage({
   const job = await getJobForCustomer(id, user.id);
   if (!job) notFound();
 
-  const bundle = await getJobBundle(id);
-  const slots = await getActiveAvailability();
+  const [bundle, invoices, messages, unread] = await Promise.all([
+    getJobBundle(id),
+    getCustomerInvoices(user.id),
+    getCustomerMessages(user.id),
+    countUnreadForCustomer(user.id),
+  ]);
+
+  const stage = getClientStage({
+    job,
+    options: bundle.options,
+    invoices,
+    appointments: bundle.appointments,
+    unreadCount: unread,
+    otherOpenCents: openCents(invoices.filter((i) => i.job_id !== job.id)),
+  });
+
+  const choosing = stage.phase === "pick" || stage.phase === "deposit";
+
+  const thread = (await decorateMessagePhotos(messages.filter((m) => m.job_id === job.id))).slice(-3);
 
   const photoUrls = await Promise.all(
     bundle.photos.map(async (p) => ({
@@ -38,7 +64,6 @@ export default async function PortalProjectPage({
       url: await getSignedUrl(p.bucket, p.storage_path),
     })),
   );
-
   const docUrls = await Promise.all(
     bundle.documents.map(async (d) => ({
       ...d,
@@ -51,195 +76,154 @@ export default async function PortalProjectPage({
       userId={user.id}
       userName={user.name || user.email}
       title={job.title}
-      description={[job.service, JOB_STATUS_LABELS[job.status]].filter(Boolean).join(" · ")}
+      description={[job.service, stage.label].filter(Boolean).join(" · ")}
       actions={
         <Button href="/portal/messages" variant="secondary" size="sm">
-          Message us
+          Message Andy
         </Button>
       }
     >
       <p className="mb-6 text-sm text-hm-muted">
-        <a href="/portal" className="font-semibold text-hm-red hover:text-hm-red-deep">
-          ← Dashboard
-        </a>
+        <Link href="/portal" className="font-semibold text-hm-red hover:text-hm-red-deep">
+          Back to dashboard
+        </Link>
       </p>
 
-      {job.summary && (
-        <p className="mb-6 max-w-3xl text-sm leading-relaxed text-hm-muted whitespace-pre-wrap">
-          {job.summary}
-        </p>
-      )}
+      <div className="space-y-6">
+        <ClientJobStepper stage={stage} />
+        <ClientNextStep stage={stage} />
 
-      {bundle.options.length > 0 && (
-        <section className="mb-6">
-          <AdminCard>
-            <AdminCardHeader
-              title="Your options"
-              caption={`Compare packages. ${LOCK_IN_COPY}`}
-            />
-            <div className="mt-4 grid gap-3 md:grid-cols-3">
-              {bundle.options.map((option) => {
-                const selected = job.selected_option_id === option.id;
-                return (
-                  <div
-                    key={option.id}
-                    className={cn(
-                      "rounded-xl border bg-white p-4",
-                      selected || option.recommended
-                        ? "border-hm-red/50"
-                        : "border-hm-line",
-                    )}
-                  >
-                    {option.recommended && (
-                      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-hm-red">
-                        Recommended
-                      </p>
-                    )}
-                    {selected && (
-                      <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-700">
-                        Selected
-                      </p>
-                    )}
-                    <h3 className="mt-1 font-display text-[15px] font-bold text-hm-charcoal">
-                      {option.name}
-                    </h3>
-                    <p className="mt-2 font-display text-2xl font-bold tracking-tight text-hm-charcoal">
-                      <CountUp value={money(option.price_cents)} />
-                    </p>
-                    <OptionCopyView description={option.description} />
-                    {option.selectable && !selected && (
-                      <div className="mt-4">
-                        <SelectOptionButton jobId={job.id} optionId={option.id} />
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="flex flex-col gap-6">
+            <div className={choosing ? "order-2" : "order-1"}>
+              <VisitCard appointment={stage.lookVisit} />
             </div>
-          </AdminCard>
-        </section>
-      )}
-
-      <section className="grid gap-5 lg:grid-cols-2">
-        <AdminCard>
-          <AdminCardHeader title="Timeline" caption="Updates as your job moves." />
-          {bundle.events.length === 0 ? (
-            <p className="mt-4 text-sm text-hm-muted">Updates will show up here as your job moves.</p>
-          ) : (
-            <ol className="mt-4 space-y-2">
-              {bundle.events.map((item) => (
-                <li key={item.id} className="rounded-xl bg-hm-fog/80 px-3.5 py-3">
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-hm-red">
-                    {formatWhen(item.event_at)}
-                  </p>
-                  <p className="mt-1 font-semibold text-hm-charcoal">{item.title}</p>
-                  <p className="mt-0.5 text-sm text-hm-muted">{item.detail}</p>
-                </li>
-              ))}
-            </ol>
-          )}
-        </AdminCard>
-
-        <AdminCard>
-          <AdminCardHeader
-            title={
-              job.status === "in_progress" || job.status === "estimate_ready"
-                ? "Install / project date"
-                : "First visit"
-            }
-            caption={
-              job.status === "in_progress" || job.status === "estimate_ready"
-                ? "This is the day Andy comes back to do the work."
-                : "Andy looks at the job first. Pricing comes after that visit."
-            }
-          />
-          {bundle.appointments.length > 0 && (
-            <div className="mt-4 space-y-2">
-              {bundle.appointments.map((a) => (
-                <div
-                  key={a.id}
-                  className={
-                    a.status === "pending"
-                      ? "rounded-xl border border-amber-200/80 bg-amber-50/80 px-3 py-2.5 text-sm"
-                      : "rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-3 py-2.5 text-sm"
-                  }
-                >
-                  <p className="font-semibold text-hm-charcoal">{formatWhen(a.starts_at)}</p>
-                  <p className="text-hm-muted">
-                    {APPOINTMENT_TYPE_LABELS[a.type] ?? a.type} · {a.status}
-                    {a.tech_name ? ` · ${a.tech_name}` : ""}
-                  </p>
-                  {a.status === "pending" && (
-                    <p className="mt-1 text-xs text-amber-900">Waiting on Andy to confirm.</p>
-                  )}
-                </div>
-              ))}
+            <div className={choosing ? "order-1" : "order-2"}>
+              <OptionsCard stage={stage} options={bundle.options} />
             </div>
-          )}
-          <div className="mt-4">
-            <BookSlotForm jobId={job.id} slots={slots} />
+            <div className="order-3">
+              <InstallCard
+                appointment={stage.installVisit}
+                hasSelection={Boolean(stage.selected)}
+                depositPaid={stage.depositPaid}
+                depositCents={stage.depositCents}
+                phase={stage.phase}
+              />
+            </div>
+            <div className="order-4">
+              <AdminCard>
+                <AdminCardHeader
+                  title="Photos"
+                  caption="Shots Andy took on this job, including before and after."
+                />
+                <JobPhotoGallery
+                  photos={photoUrls.map((photo) => ({
+                    id: photo.id,
+                    label: photo.label,
+                    url: photo.url,
+                  }))}
+                />
+              </AdminCard>
+            </div>
           </div>
-          <p className="mt-4 text-sm text-hm-muted">
-            Or call <DirectPhone className="font-semibold text-hm-red" />
-          </p>
-        </AdminCard>
-      </section>
 
-      {(docUrls.length > 0 || photoUrls.length > 0) && (
-        <section className="mt-5 grid gap-5 lg:grid-cols-2">
-          {docUrls.length > 0 && (
+          <aside className="space-y-6">
             <AdminCard>
-              <AdminCardHeader title="Documents" />
-              <ul className="mt-4 space-y-2">
-                {docUrls.map((d) => (
-                  <li key={d.id}>
-                    {d.url ? (
-                      <a
-                        href={d.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="hm-admin-click block rounded-xl border border-hm-line px-4 py-3 text-sm font-semibold"
-                      >
-                        {d.name}{" "}
-                        <span className="font-normal text-hm-muted">· {d.doc_type}</span>
-                      </a>
-                    ) : (
-                      <span className="block rounded-xl border border-hm-line px-4 py-3 text-sm">
-                        {d.name}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <AdminCardHeader title="Job notes" caption="What Andy has written for you." />
+              <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-hm-muted">
+                {job.summary || "No notes yet."}
+              </p>
+              {job.warranty && (
+                <p className="mt-4 text-sm text-hm-muted">
+                  <span className="font-semibold text-hm-charcoal">Warranty. </span>
+                  {job.warranty}
+                </p>
+              )}
             </AdminCard>
-          )}
-          {photoUrls.length > 0 && (
+
             <AdminCard>
-              <AdminCardHeader title="Job photos" />
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                {photoUrls.map((p) =>
-                  p.url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      key={p.id}
-                      src={p.url}
-                      alt={p.label || "Job photo"}
-                      className="h-36 w-full rounded-xl object-cover"
-                    />
-                  ) : null,
+              <AdminCardHeader
+                title="Messages"
+                action={
+                  <Link href="/portal/messages" className="text-sm font-semibold text-hm-red">
+                    Open
+                  </Link>
+                }
+              />
+              {thread.length === 0 ? (
+                <p className="mt-4 text-sm text-hm-muted">No messages yet.</p>
+              ) : (
+                <ul className="mt-4 space-y-2">
+                  {thread.map((m) => (
+                    <li
+                      key={m.id}
+                      className={
+                        m.from_role === "admin"
+                          ? "rounded-xl bg-hm-fog px-3 py-2 text-sm"
+                          : "rounded-xl bg-white px-3 py-2 text-sm ring-1 ring-hm-line"
+                      }
+                    >
+                      <p className="text-xs text-hm-muted">
+                        {m.from_role === "admin" ? "Andy" : "You"} · {formatWhen(m.created_at)}
+                      </p>
+                      {m.displayBody && <p className="mt-1 whitespace-pre-wrap">{m.displayBody}</p>}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </AdminCard>
+
+            <section id="documents">
+              <AdminCard>
+                <AdminCardHeader title="Documents" caption="Quotes, scope, and warranty files." />
+                {docUrls.length === 0 ? (
+                  <p className="mt-4 text-sm text-hm-muted">None yet.</p>
+                ) : (
+                  <ul className="mt-4 space-y-2">
+                    {docUrls.map((d) => (
+                      <li key={d.id}>
+                        {d.url ? (
+                          <a
+                            href={d.url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="block rounded-xl border border-hm-line px-4 py-3 text-sm font-semibold"
+                          >
+                            {d.name} <span className="font-normal text-hm-muted">· {d.doc_type}</span>
+                          </a>
+                        ) : (
+                          <span className="block rounded-xl border border-hm-line px-4 py-3 text-sm">
+                            {d.name}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 )}
-              </div>
-            </AdminCard>
-          )}
-        </section>
-      )}
+              </AdminCard>
+            </section>
 
-      {job.warranty && (
-        <p className="hm-admin-card mt-5 px-5 py-4 text-sm text-hm-muted">
-          <span className="font-semibold text-hm-charcoal">Warranty: </span>
-          {job.warranty}
-        </p>
-      )}
+            <AdminCard>
+              <AdminCardHeader title="History" caption="What has happened on this job." />
+              {bundle.events.length === 0 ? (
+                <p className="mt-4 text-sm text-hm-muted">Updates will show up here as the job moves.</p>
+              ) : (
+                <ol className="mt-4 space-y-3 border-l border-hm-line pl-4">
+                  {[...bundle.events].reverse().map((item) => (
+                    <li key={item.id} className="relative text-sm">
+                      <span className="absolute top-1.5 -left-[1.3rem] h-2 w-2 rounded-full bg-hm-red" />
+                      <p className="text-xs text-hm-muted">{formatWhen(item.event_at)}</p>
+                      <p className="font-semibold text-hm-charcoal">{item.title}</p>
+                      {item.detail && <p className="text-hm-muted">{item.detail}</p>}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </AdminCard>
+          </aside>
+        </div>
+      </div>
+
     </PortalChrome>
   );
 }
