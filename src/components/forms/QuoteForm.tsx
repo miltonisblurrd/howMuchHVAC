@@ -16,7 +16,7 @@ export function QuoteForm({
   className,
   elevated = false,
   sourceLabel = "Quote form",
-  portalSignup = true,
+  portalSignup = false,
   stayOnSuccess = false,
 }: {
   compact?: boolean;

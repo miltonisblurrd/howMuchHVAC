@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmAppointmentActions } from "@/components/admin/ConfirmAppointmentActions";
 import { cn } from "@/lib/cn";
 import type { Appointment, AppointmentType } from "@/lib/db-types";
-import { formatWhen } from "@/lib/db-types";
+import { formatWhen, type SchedulePace } from "@/lib/db-types";
 import { APPOINTMENT_STATUS_LABELS, APPOINTMENT_TYPE_LABELS } from "@/lib/job-stages";
+import { pacificVisit } from "@/lib/pacific";
+import { SCHEDULE_PACE_LABELS } from "@/lib/schedule-pace";
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -104,21 +106,21 @@ function ScheduleFields({
   const [tech, setTech] = useState("");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
-  const start = new Date(`${date}T${time}:00`);
+  const start = pacificVisit(date, time, hours).start;
   const validStart = !Number.isNaN(start.getTime());
 
   async function schedule() {
     if (!validStart) return;
     setSaving(true);
     setMsg(null);
-    const end = new Date(start.getTime() + hours * 3600 * 1000);
+    const visit = pacificVisit(date, time, hours);
     const res = await fetch("/api/admin/appointments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jobId,
-        startsAt: start.toISOString(),
-        endsAt: end.toISOString(),
+        startsAt: visit.startsAt,
+        endsAt: visit.endsAt,
         type,
         techName: tech.trim() || undefined,
       }),
@@ -230,17 +232,21 @@ export function JobVisitCard({
   jobId,
   customerFirstName,
   appointments,
+  section,
+  schedulePace,
 }: {
   jobId: string;
   customerFirstName: string;
   appointments: Appointment[];
+  section: "look" | "install";
+  schedulePace?: SchedulePace | null;
 }) {
   const look = appointments.filter((a) => a.status !== "cancelled" && a.type !== "install");
   const install = appointments.filter((a) => a.status !== "cancelled" && a.type === "install");
 
-  return (
-    <section className="hm-admin-card scroll-mt-24 space-y-8 p-5">
-      <div id="visit" className="scroll-mt-24">
+  if (section === "look") {
+    return (
+      <section id="visit" className="hm-admin-card scroll-mt-24 p-5">
         <h2 className="font-display text-lg font-bold">1. First visit</h2>
         <p className="mt-1 text-sm text-hm-muted">
           Go look before you price. Website leads: Andy calls, then sets the day here. Phone
@@ -254,22 +260,29 @@ export function JobVisitCard({
           jobId={jobId}
           customerFirstName={customerFirstName}
         />
-      </div>
+      </section>
+    );
+  }
 
-      <div id="install" className="scroll-mt-24 border-t border-hm-line pt-6">
-        <h2 className="font-display text-lg font-bold">2. Install / project date</h2>
-        <p className="mt-1 text-sm text-hm-muted">
-          After pricing is ready. This is the day you come back to do the work.
+  return (
+    <section id="install" className="hm-admin-card scroll-mt-24 p-5">
+      <h2 className="font-display text-lg font-bold">3. Install / project date</h2>
+      <p className="mt-1 text-sm text-hm-muted">
+        After pricing. The customer picks a pace. You set the actual day.
+      </p>
+      {schedulePace && (
+        <p className="mt-3 rounded-xl border border-hm-line bg-hm-fog px-4 py-3 text-sm text-hm-charcoal">
+          They asked for <span className="font-bold">{SCHEDULE_PACE_LABELS[schedulePace]}</span>. Put the day on the calendar below.
         </p>
-        <VisitList items={install} customerFirstName={customerFirstName} />
-        <ScheduleFields
-          type="install"
-          buttonLabel="Set install date"
-          doneLabel="Job moved to Install / Project Date."
-          jobId={jobId}
-          customerFirstName={customerFirstName}
-        />
-      </div>
+      )}
+      <VisitList items={install} customerFirstName={customerFirstName} />
+      <ScheduleFields
+        type="install"
+        buttonLabel="Set install date"
+        doneLabel="Job moved to Install / Project Date."
+        jobId={jobId}
+        customerFirstName={customerFirstName}
+      />
     </section>
   );
 }

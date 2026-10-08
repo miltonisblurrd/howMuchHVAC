@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/Button";
 import { AdminEmpty } from "@/components/admin/AdminUi";
 import { requirePortalUser } from "@/lib/auth";
 import { getCustomerDocuments, getCustomerInvoices, getCustomerJobs, getSignedUrl } from "@/lib/portal-queries";
+import { customerPaymentLabel } from "@/lib/payment-label";
 
 export default async function PastServicesPage() {
   const user = await requirePortalUser();
@@ -41,7 +42,11 @@ export default async function PastServicesPage() {
                 .filter((invoice) => invoice.job_id === job.id && invoice.status === "paid")
                 .map((invoice) => ({
                   id: invoice.id,
-                  label: invoice.number,
+                  label: customerPaymentLabel({
+                    description: invoice.description,
+                    amountCents: invoice.amount_cents,
+                    priceCents: undefined,
+                  }),
                   href: `/api/portal/receipts/${invoice.id}`,
                 })),
               ...invoiceFiles

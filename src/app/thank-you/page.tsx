@@ -70,8 +70,8 @@ export default async function ThankYouPage({
             <div>
               <p className="font-semibold text-white">Your portal is ready</p>
               <p className="mt-1 text-sm text-white/70">
-                Sign in with the email and password you just created. You&apos;re already signed in
-                on this device if the quote went through.
+                Check your email for a link to create your portal password. That link is the only
+                step. You don&apos;t pick a password on the form.
               </p>
             </div>
           </div>

@@ -9,13 +9,13 @@ import { Button } from "@/components/ui/Button";
 import { NavMegaMenu } from "@/components/layout/NavMegaMenu";
 import { getNavFeaturedAreas } from "@/lib/areas";
 import { projects } from "@/lib/projects";
+import { categoryPath, productCategories, productPath, productsInCategory } from "@/lib/products";
 import { services } from "@/lib/services";
 import { useContact } from "@/components/contact/ContactProvider";
 import { cn } from "@/lib/cn";
 
 const simpleNav = [
   { href: "/about", label: "About" },
-  { href: "/reviews", label: "Reviews" },
   { href: "/blog", label: "Blog" },
 ] as const;
 
@@ -26,6 +26,7 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileSection, setMobileSection] = useState<string | null>(null);
+  const [mobileCategory, setMobileCategory] = useState<string | null>(null);
   const featuredAreas = getNavFeaturedAreas();
 
   useEffect(() => {
@@ -39,6 +40,7 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
   useEffect(() => {
     setOpen(false);
     setMobileSection(null);
+    setMobileCategory(null);
   }, [pathname]);
 
   const dark =
@@ -207,6 +209,82 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
                 </div>
               );
             })}
+
+            <div className="border-b border-hm-line/70 py-1">
+              <button
+                type="button"
+                className="flex w-full items-center justify-between rounded-lg px-3 py-3 font-display text-base font-semibold"
+                onClick={() =>
+                  setMobileSection((current) => (current === "products" ? null : "products"))
+                }
+                aria-expanded={mobileSection === "products"}
+              >
+                Products
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 text-hm-muted transition",
+                    mobileSection === "products" && "rotate-180",
+                  )}
+                />
+              </button>
+              {mobileSection === "products" && (
+                <div className="space-y-1 pb-3 pl-2">
+                  <Link
+                    href="/products"
+                    onClick={() => setOpen(false)}
+                    className="block rounded-lg px-3 py-2 text-sm font-semibold text-hm-red"
+                  >
+                    View All Products
+                  </Link>
+                  {productCategories.map((category) => {
+                    const categoryOpen = mobileCategory === category.slug;
+                    return (
+                      <div key={category.slug}>
+                        <button
+                          type="button"
+                          className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-semibold text-hm-charcoal"
+                          onClick={() =>
+                            setMobileCategory((current) =>
+                              current === category.slug ? null : category.slug,
+                            )
+                          }
+                          aria-expanded={categoryOpen}
+                        >
+                          {category.name}
+                          <ChevronDown
+                            className={cn(
+                              "h-3.5 w-3.5 text-hm-muted transition",
+                              categoryOpen && "rotate-180",
+                            )}
+                          />
+                        </button>
+                        {categoryOpen && (
+                          <div className="grid grid-cols-2 gap-2 pb-2 pl-3">
+                            {productsInCategory(category.slug).map((product) => (
+                              <Link
+                                key={product.slug}
+                                href={productPath(product)}
+                                onClick={() => setOpen(false)}
+                                className="flex flex-col items-center rounded-2xl bg-hm-fog px-2 py-3 text-center"
+                              >
+                                <img
+                                  src={product.image}
+                                  alt=""
+                                  className="h-24 w-full object-contain"
+                                />
+                                <span className="mt-2 text-xs font-semibold leading-snug text-hm-charcoal">
+                                  {product.name}
+                                </span>
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
 
             {simpleNav.map((item) => (
               <Link

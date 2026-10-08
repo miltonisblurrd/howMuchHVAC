@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSessionUser, getProfile } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { JOB_STATUS_LABELS, type JobStatus } from "@/lib/db-types";
+import { sendJobDoneEmail } from "@/lib/email";
 
 const STATUS_EVENT_TITLES: Record<JobStatus, string> = {
   quote_request: "Back to new request",
@@ -19,6 +20,7 @@ const optionSchema = z.object({
   price_cents: z.number().int().min(0),
   description: z.string(),
   recommended: z.boolean().optional(),
+  image_path: z.string().trim().max(500).nullable().optional(),
 });
 
 const schema = z.object({
@@ -71,6 +73,22 @@ export async function PATCH(request: Request) {
       title: STATUS_EVENT_TITLES[parsed.data.status],
       detail: `Updated by Andy · ${JOB_STATUS_LABELS[parsed.data.status]}`,
     });
+    if (parsed.data.status === "completed") {
+      const { data: finished } = await admin
+        .from("jobs")
+        .select("title, profiles!customer_id(name, email)")
+        .eq("id", parsed.data.jobId)
+        .maybeSingle();
+      const customer = finished?.profiles as { name?: string; email?: string } | { name?: string; email?: string }[] | null;
+      const person = Array.isArray(customer) ? customer[0] : customer;
+      if (person?.email) {
+        await sendJobDoneEmail({
+          name: person.name || "there",
+          email: person.email,
+          jobTitle: finished?.title || "Your job",
+        });
+      }
+    }
   }
 
   if (parsed.data.options) {

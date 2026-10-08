@@ -11,6 +11,7 @@ const companyLinks = [
   { href: "/team", label: "Our Team" },
   { href: "/partners", label: "Partners" },
   { href: "/projects", label: "Projects" },
+  { href: "/products", label: "Products" },
   { href: "/brand", label: "Brand Assets" },
   { href: "/contact", label: "Contact" },
 ];
@@ -18,7 +19,6 @@ const companyLinks = [
 const resourceLinks = [
   { href: "/faqs", label: "FAQs" },
   { href: "/blog", label: "Blog" },
-  { href: "/reviews", label: "Reviews" },
   { href: "/warranty", label: "Warranty" },
   { href: "/financing", label: "Financing" },
   { href: "/maintenance", label: "Maintenance Plans" },

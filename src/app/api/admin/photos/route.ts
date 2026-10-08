@@ -25,6 +25,17 @@ export async function POST(request: Request) {
   const { data: job } = await admin.from("jobs").select("id").eq("id", jobId).maybeSingle();
   if (!job) return NextResponse.json({ ok: false, error: "Job not found" }, { status: 404 });
 
+  if (String(form.get("purpose") || "") === "option") {
+    const uploaded = await uploadJobFile({
+      bucket: "job-photos",
+      jobId,
+      file: files[0],
+      kind: "photo",
+    });
+    if (!uploaded.ok) return NextResponse.json({ ok: false, error: uploaded.error }, { status: 400 });
+    return NextResponse.json({ ok: true, path: uploaded.path, bucket: "job-photos" });
+  }
+
   const saved: string[] = [];
   for (let i = 0; i < files.length; i++) {
     const file = files[i];

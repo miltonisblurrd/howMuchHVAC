@@ -41,7 +41,7 @@ export function ResetPasswordForm() {
     <form className="mt-6 space-y-4" onSubmit={onSubmit}>
       <label className="block">
         <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hm-muted">
-          New password
+          Password
         </span>
         <input
           type="password"

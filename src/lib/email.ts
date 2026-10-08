@@ -56,8 +56,8 @@ export async function sendLeadEmails(lead: LeadEmailInput) {
   const inviteBlock = lead.inviteUrl
     ? `<p style="margin:20px 0"><a href="${escapeHtml(lead.inviteUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Set your portal password</a></p>
        <p style="font-size:13px;color:#555">Or copy this link: ${escapeHtml(lead.inviteUrl)}</p>`
-    : `<p style="margin:20px 0"><a href="${escapeHtml(portalUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Sign in to your portal</a></p>
-       <p>Use the email and password you created on the quote form. Forgot it? Use “Forgot password” on the sign-in page.</p>`;
+    : `<p style="margin:20px 0"><a href="${escapeHtml(portalUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Open your portal</a></p>
+       <p>If you have not set a password yet, use the setup link in this email, or the one Andy sends you. You do not pick a password on the quote form.</p>`;
 
   const customerHtml = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
@@ -253,8 +253,7 @@ export async function sendInvoiceEmail(input: {
   const html = `
     <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
       <p>Hi ${escapeHtml(input.name.split(" ")[0] || "there")},</p>
-      <p>Invoice <strong>${escapeHtml(input.invoiceNumber)}</strong> is ready.</p>
-      <p>${escapeHtml(input.description)}</p>
+      <p><strong>${escapeHtml(input.description || "Payment")}</strong> is ready.</p>
       <p style="font-size:22px;font-weight:700">${escapeHtml(input.amountLabel)}</p>
       <p style="margin:24px 0"><a href="${escapeHtml(input.payUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Pay securely</a></p>
       <p>Or open your <a href="${site.url}/portal/pay">portal payments</a> page.</p>
@@ -267,7 +266,7 @@ export async function sendInvoiceEmail(input: {
     from,
     to: input.email,
     replyTo: settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email,
-    subject: `Invoice ${input.invoiceNumber} — ${input.amountLabel}`,
+    subject: `Payment request — ${input.amountLabel}`,
     html,
   });
   return { sent: !result.error, id: result.data?.id ?? null };
@@ -297,6 +296,41 @@ export async function sendNewMessageEmail(input: {
     from,
     to: input.toEmail,
     subject: `New message from ${input.fromLabel}`,
+    html,
+  });
+  return { sent: !result.error, id: result.data?.id ?? null };
+}
+
+export async function sendJobDoneEmail(input: { name: string; email: string; jobTitle: string }) {
+  const resend = getResend();
+  const from = process.env.RESEND_FROM_EMAIL;
+  if (!resend || !from) return { sent: false as const, reason: "not_configured" as const };
+  const settings = await getBusinessSettings();
+  const first = input.name.split(" ")[0] || "there";
+  const maintenanceUrl = `${site.url}/maintenance`;
+  const reviewUrl = site.google.reviewUrl;
+  const html = `
+    <div style="font-family:Helvetica,Arial,sans-serif;line-height:1.6;color:#111">
+      <p>Hi ${escapeHtml(first)},</p>
+      <p><strong>${escapeHtml(input.jobTitle)}</strong> is finished. Thank you for having How Much? out.</p>
+      <p>Two things from here:</p>
+      <ul>
+        <li>Book the next maintenance and get <strong>$25 off</strong>.</li>
+        <li>If the visit was fair, a short review helps the next homeowner.</li>
+      </ul>
+      <p style="margin:24px 0">
+        <a href="${escapeHtml(maintenanceUrl)}" style="display:inline-block;background:#FF1D25;color:#fff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:700">Book maintenance · $25 off</a>
+      </p>
+      <p><a href="${escapeHtml(reviewUrl)}">Leave a Google review</a></p>
+      <p>Questions? Call ${escapeHtml(settings.displayName)} at <a href="${settings.directHref}">${escapeHtml(settings.directDisplay)}</a>.</p>
+      <p style="margin-top:24px">— ${escapeHtml(settings.displayName)}<br/>How Much? Air &amp; Home</p>
+    </div>
+  `;
+  const result = await resend.emails.send({
+    from,
+    to: input.email,
+    replyTo: settings.notifyEmail || process.env.LEAD_NOTIFY_EMAIL || site.email,
+    subject: `${input.jobTitle} is done — $25 off your next maintenance`,
     html,
   });
   return { sent: !result.error, id: result.data?.id ?? null };

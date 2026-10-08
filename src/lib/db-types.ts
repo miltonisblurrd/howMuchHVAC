@@ -39,9 +39,12 @@ export type Job = {
   summary: string;
   selected_option_id: string | null;
   warranty: string | null;
+  schedule_pace?: SchedulePace | null;
   created_at: string;
   updated_at: string;
 };
+
+export type SchedulePace = "asap" | "this_week" | "this_weekend" | "no_rush";
 
 export type JobOption = {
   id: string;
@@ -52,6 +55,7 @@ export type JobOption = {
   recommended: boolean;
   selectable: boolean;
   sort_order: number;
+  image_path?: string | null;
   created_at: string;
 };
 
@@ -157,5 +161,6 @@ export function formatWhen(iso: string) {
     day: "numeric",
     hour: "numeric",
     minute: "2-digit",
+    timeZone: "America/Los_Angeles",
   });
 }

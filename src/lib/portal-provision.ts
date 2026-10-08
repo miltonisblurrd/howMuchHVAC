@@ -131,13 +131,19 @@ export async function provisionPortalFromLead(input: ProvisionLeadInput) {
     inviteSent = true;
   }
 
+  let setupLink: string | null = null;
+  if (!input.password) {
+    setupLink = await createPortalSetupLink(email);
+  }
+
   return {
     profile,
     job,
     createdUser,
     inviteSent,
     loginUrl,
-    inviteLink: loginUrl,
+    setupLink,
+    inviteLink: setupLink || loginUrl,
   };
 }
 

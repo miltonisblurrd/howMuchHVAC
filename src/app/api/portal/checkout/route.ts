@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getSessionUser, getProfile } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { getStripe, siteBaseUrl } from "@/lib/stripe";
+import { customerPaymentLabel } from "@/lib/payment-label";
 
 const schema = z.object({
   invoiceId: z.string().uuid(),
@@ -50,8 +51,11 @@ export async function POST(request: Request) {
           currency: "usd",
           unit_amount: invoice.amount_cents,
           product_data: {
-            name: invoice.number,
-            description: invoice.description || "How Much? invoice",
+            name: customerPaymentLabel({
+              description: invoice.description,
+              amountCents: invoice.amount_cents,
+            }),
+            description: invoice.description || "How Much? payment",
           },
         },
       },

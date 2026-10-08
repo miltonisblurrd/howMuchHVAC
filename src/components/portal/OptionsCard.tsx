@@ -8,12 +8,14 @@ import type { JobOption } from "@/lib/db-types";
 import { money } from "@/lib/db-types";
 import { cn } from "@/lib/cn";
 
+export type PortalOption = JobOption & { imageUrl?: string | null };
+
 export function OptionsCard({
   stage,
   options,
 }: {
   stage: ClientStage;
-  options: JobOption[];
+  options: PortalOption[];
 }) {
   const selected = stage.selected;
   const chosen = options.find((o) => o.id === selected?.id) ?? null;
@@ -52,7 +54,12 @@ export function OptionsCard({
         )}
 
         {stage.showOptions && !stage.depositPaid && !chosen && (
-          <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <div
+            className={cn(
+              "mt-4 grid gap-3",
+              options.length === 1 ? "grid-cols-1" : options.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3",
+            )}
+          >
             {options.map((option) => (
               <OptionTile
                 key={option.id}
@@ -100,7 +107,7 @@ function OptionTile({
   canSelect,
   selectLabel,
 }: {
-  option: JobOption;
+  option: PortalOption;
   selected?: boolean;
   locked?: boolean;
   jobId?: string;
@@ -123,10 +130,13 @@ function OptionTile({
         </p>
       )}
       <h3 className="mt-1 font-display text-[15px] font-bold text-hm-charcoal">{option.name}</h3>
-      <p className="mt-2 font-display text-2xl font-bold tracking-tight text-hm-charcoal">
+      {option.imageUrl ? (
+        <img src={option.imageUrl} alt="" className="mt-3 h-40 w-full rounded-lg object-cover" />
+      ) : null}
+      <OptionCopyView description={option.description} />
+      <p className="mt-4 font-display text-2xl font-bold tracking-tight text-hm-charcoal">
         <CountUp value={money(option.price_cents)} />
       </p>
-      <OptionCopyView description={option.description} />
       {canSelect && jobId && (
         <div className="mt-4">
           <SelectOptionButton jobId={jobId} optionId={option.id} label={selectLabel} />

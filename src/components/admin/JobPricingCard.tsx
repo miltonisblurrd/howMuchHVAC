@@ -18,6 +18,7 @@ export type OptionDraft = {
   warranty: string;
   details: string;
   recommended: boolean;
+  image_path?: string | null;
 };
 
 const EMPTY_COPY = { equipment: "", addons: "", warranty: "", details: "" };
@@ -38,6 +39,7 @@ function hydrate(option: Omit<OptionDraft, "equipment" | "addons" | "warranty" |
     addons: option.addons || copy.addons,
     warranty: option.warranty || copy.warranty,
     details: option.details || copy.details,
+    image_path: option.image_path || copy.photo || null,
   };
 }
 
@@ -57,7 +59,10 @@ export function JobPricingCard({
 }: {
   jobId: string;
   existingOptions: Array<
-    Pick<OptionDraft, "name" | "price_cents" | "description" | "recommended"> & { id?: string }
+    Pick<OptionDraft, "name" | "price_cents" | "description" | "recommended"> & {
+      id?: string;
+      image_path?: string | null;
+    }
   >;
   selectedOptionId: string | null;
 }) {
@@ -106,12 +111,14 @@ export function JobPricingCard({
           name: option.name,
           price_cents: option.price_cents,
           recommended: option.recommended,
+          image_path: option.image_path || null,
           description: packOptionCopy({
             summary: option.description,
             equipment: option.equipment,
             addons: option.addons,
             warranty: option.warranty,
             details: option.details,
+            photo: option.image_path || "",
           }),
         })),
       }),
@@ -135,9 +142,9 @@ export function JobPricingCard({
     <section id="pricing" className="hm-admin-card scroll-mt-24 p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="font-display text-lg font-bold">Pricing options</h2>
+          <h2 className="font-display text-lg font-bold">2. Pricing</h2>
           <p className="mt-1 text-sm text-hm-muted">
-            After the first visit. Star the one you recommend. The customer picks one in their portal.
+            After the first visit, before the install date. Star the one you recommend. A photo is optional.
           </p>
         </div>
         {options.length < 4 && (
@@ -151,7 +158,12 @@ export function JobPricingCard({
         )}
       </div>
 
-      <div className={cn("mt-4 grid gap-3", options.length >= 3 ? "lg:grid-cols-3" : "sm:grid-cols-2")}>
+      <div
+        className={cn(
+          "mt-4 grid gap-3",
+          options.length === 1 ? "grid-cols-1" : options.length === 2 ? "sm:grid-cols-2" : "lg:grid-cols-3",
+        )}
+      >
         {options.map((opt, idx) => {
           const picked = Boolean(opt.id && opt.id === selectedOptionId);
           return (
@@ -247,6 +259,37 @@ export function JobPricingCard({
                   />
                 </label>
               ))}
+
+              <label className="mt-3 block">
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-hm-muted">
+                  Photo, optional
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="mt-1 block w-full text-sm"
+                  onChange={async (event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (!file) return;
+                    const body = new FormData();
+                    body.append("jobId", jobId);
+                    body.append("purpose", "option");
+                    body.append("files", file);
+                    const res = await fetch("/api/admin/photos", { method: "POST", body });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok || !data.path) {
+                      setMsg({ ok: false, text: data.error || "Could not upload that photo." });
+                      return;
+                    }
+                    update(idx, { image_path: data.path });
+                    setMsg({ ok: true, text: "Photo attached. Save pricing to show it to the customer." });
+                  }}
+                />
+                {opt.image_path ? (
+                  <span className="mt-1 block text-xs text-hm-muted">Photo attached.</span>
+                ) : null}
+              </label>
 
               <button
                 type="button"

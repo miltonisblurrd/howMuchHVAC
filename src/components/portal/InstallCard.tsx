@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { AdminCard, AdminCardHeader } from "@/components/admin/AdminUi";
 import { RescheduleNote } from "@/components/portal/VisitCard";
-import type { Appointment } from "@/lib/db-types";
+import type { Appointment, SchedulePace } from "@/lib/db-types";
 import { formatWhen, money } from "@/lib/db-types";
 import { LOCK_IN_COPY } from "@/lib/deposits";
+import { SchedulePacePicker } from "@/components/portal/SchedulePacePicker";
 
 export function InstallCard({
   appointment,
@@ -11,12 +12,16 @@ export function InstallCard({
   depositPaid,
   depositCents,
   phase,
+  jobId,
+  schedulePace,
 }: {
   appointment: Appointment | null;
   hasSelection: boolean;
   depositPaid: boolean;
   depositCents: number;
   phase: string;
+  jobId: string;
+  schedulePace?: SchedulePace | null;
 }) {
   const upcoming =
     appointment &&
@@ -44,11 +49,13 @@ export function InstallCard({
         )}
 
         {!appointment && !choosing && (
-          <p className="mt-4 rounded-xl border border-hm-line bg-hm-fog px-4 py-3 text-sm text-hm-muted">
-            {depositPaid
-              ? "No install day yet. Andy will put it on the calendar."
-              : "No install day yet. Andy will set it, and it stays held until you pay the deposit."}
-          </p>
+          <div className="mt-4 rounded-xl border border-hm-line bg-hm-fog px-4 py-3 text-sm text-hm-muted">
+            {depositPaid ? (
+              <SchedulePacePicker jobId={jobId} pace={schedulePace ?? null} />
+            ) : (
+              <p>No install day yet. Andy will set it, and it stays held until you pay the deposit.</p>
+            )}
+          </div>
         )}
 
         {appointment && !depositPaid && (

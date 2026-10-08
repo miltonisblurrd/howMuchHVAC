@@ -115,7 +115,7 @@ export async function POST(request: Request) {
           password: lead.password,
           leadId: data.id,
         });
-        inviteUrl = provisioned.loginUrl;
+        inviteUrl = provisioned.setupLink || provisioned.loginUrl;
         portal = {
           inviteSent: provisioned.inviteSent,
           jobId: provisioned.job.id,

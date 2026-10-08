@@ -19,8 +19,14 @@ import { getNavFeaturedAreas } from "@/lib/areas";
 import { projects } from "@/lib/projects";
 import { serviceIcons } from "@/lib/serviceIcons";
 import { servicesInGroup } from "@/lib/services";
+import {
+  categoryPath,
+  productCategories,
+  productPath,
+  productsInCategory,
+} from "@/lib/products";
 
-type MenuKey = "services" | "projects" | "areas" | null;
+type MenuKey = "services" | "projects" | "areas" | "products" | null;
 
 type NavMegaMenuProps = {
   dark: boolean;
@@ -31,6 +37,7 @@ type NavMegaMenuProps = {
 export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps) {
   const pathname = usePathname();
   const [open, setOpen] = useState<MenuKey>(null);
+  const [activeCategory, setActiveCategory] = useState(productCategories[0].slug);
   const [mounted, setMounted] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -60,6 +67,10 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
   useEffect(() => {
     setOpen(null);
   }, [pathname]);
+
+  useEffect(() => {
+    if (open === "products") setActiveCategory(productCategories[0].slug);
+  }, [open]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -289,8 +300,79 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
       );
     }
 
+    if (open === "products") {
+      const selected =
+        productCategories.find((category) => category.slug === activeCategory) ??
+        productCategories[0];
+      const items = productsInCategory(selected.slug);
+      return (
+        <>
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-hm-red">
+                Products
+              </p>
+              <p className="mt-1 font-display text-lg font-bold text-hm-charcoal">
+                Mr. Cool equipment, sold and installed by How Much?
+              </p>
+            </div>
+            <Link
+              href="/products"
+              className="shrink-0 font-display text-sm font-semibold text-hm-red hover:underline"
+              onClick={() => setOpen(null)}
+            >
+              View All Products
+            </Link>
+          </div>
+          <div className="grid items-start gap-4 lg:grid-cols-[220px_1fr]">
+            <div className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
+              {productCategories.map((category) => {
+                const selectedCategory = category.slug === selected.slug;
+                return (
+                  <button
+                    key={category.slug}
+                    type="button"
+                    onMouseEnter={() => setActiveCategory(category.slug)}
+                    onFocus={() => setActiveCategory(category.slug)}
+                    onClick={() => setActiveCategory(category.slug)}
+                    className={cn(
+                      "shrink-0 rounded-lg px-3 py-2 text-left font-display text-sm font-semibold transition",
+                      selectedCategory
+                        ? "bg-hm-ink text-white"
+                        : "text-hm-charcoal hover:bg-hm-fog",
+                    )}
+                  >
+                    {category.name}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="grid content-start grid-cols-2 gap-3 self-start xl:grid-cols-4">
+              {items.map((product) => (
+                <Link
+                  key={product.slug}
+                  href={productPath(product)}
+                  onClick={() => setOpen(null)}
+                  className="flex h-full flex-col items-center rounded-2xl bg-hm-fog px-3 py-3 text-center transition hover:bg-hm-line/60"
+                >
+                  <img
+                    src={product.image}
+                    alt=""
+                    className="h-28 w-full object-contain"
+                  />
+                  <span className="mt-2 font-display text-sm font-semibold leading-snug text-hm-charcoal">
+                    {product.name}
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </>
+      );
+    }
+
     return null;
-  }, [areas, open]);
+  }, [activeCategory, areas, open]);
 
   const triggers: {
     key: Exclude<MenuKey, null>;
@@ -300,6 +382,7 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
     { key: "services", label: "Services", href: "/services" },
     { key: "projects", label: "Projects", href: "/projects" },
     { key: "areas", label: "Service Areas", href: "/service-areas" },
+    { key: "products", label: "Products", href: "/products" },
   ];
 
   const panel =

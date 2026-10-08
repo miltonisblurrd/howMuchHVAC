@@ -10,9 +10,25 @@ import { onboardingStorageKey } from "@/lib/profile-display";
 function IntroVideo() {
   const contact = useContact();
   const [failed, setFailed] = useState(false);
+  const [available, setAvailable] = useState<boolean | null>(null);
   const src = site.portalIntroVideo;
   const youtube = /youtube\.com|youtu\.be/.test(src);
   const vimeo = /vimeo\.com/.test(src);
+
+  useEffect(() => {
+    if (!src || youtube || vimeo) return;
+    let cancelled = false;
+    fetch(src, { method: "HEAD" })
+      .then((res) => {
+        if (!cancelled) setAvailable(res.ok);
+      })
+      .catch(() => {
+        if (!cancelled) setAvailable(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [src, youtube, vimeo]);
 
   const header = (
     <div className="mb-3 flex items-center gap-3">
@@ -24,23 +40,8 @@ function IntroVideo() {
     </div>
   );
 
-  if (failed || !src) {
-    return (
-      <div className="rounded-xl bg-hm-ink p-5 text-white">
-        {header}
-        <p className="text-sm text-white/70">
-          Drop a short welcome video at <code className="text-white">public/videos/andy-welcome.mp4</code>{" "}
-          and it plays here.
-        </p>
-        <a
-          href={contact.directHref}
-          className="mt-4 inline-block font-display text-sm font-semibold text-white underline decoration-hm-red underline-offset-4"
-        >
-          Or call {contact.displayName} at {contact.directDisplay}
-        </a>
-      </div>
-    );
-  }
+  if (failed || !src || available === false) return null;
+  if (!youtube && !vimeo && available !== true) return null;
 
   if (youtube || vimeo) {
     const embed = youtube

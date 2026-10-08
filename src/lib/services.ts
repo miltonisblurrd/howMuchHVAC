@@ -28,7 +28,7 @@ export const services: Service[] = [
     shortName: "AC services",
     summary: "Cooling service when Southern California heat hits hard.",
     description:
-      "When your home stops cooling, you need answers—not a hard sell. How Much? is a family-owned HVAC company serving Southern California homeowners with clear diagnostics, honest repair-vs-replace options, and pricing you can actually understand. We walk you through what's broken, what can wait, and what a quality install looks like for your home—no mystery fees and no pressure to decide on the spot. Call Direct (714) 333-5953 and we'll help you get comfortable again with options that fit your budget and your house.",
+      "When your home stops cooling, you need answers—not a hard sell. How Much? is a family-owned HVAC company serving Southern California homeowners with clear diagnostics, honest repair-vs-replace options, and pricing you can actually understand. We walk you through what's broken, what can wait, and what a quality install looks like for your home—no mystery fees and no pressure to decide on the spot. Call Direct (562) 612-8961 and we'll help you get comfortable again with options that fit your budget and your house.",
     image:
       "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1600&q=80",
     featured: true,
@@ -85,7 +85,7 @@ export const services: Service[] = [
       {
         question: "How much does AC replacement cost in Orange County?",
         answer:
-          "It depends on tonnage, efficiency, duct condition, and access. We provide personalized options after a diagnostic—not a Facebook-ad number. Call Direct (714) 333-5953 for a home visit and real ranges for your house.",
+          "It depends on tonnage, efficiency, duct condition, and access. We provide personalized options after a diagnostic—not a Facebook-ad number. Call Direct (562) 612-8961 for a home visit and real ranges for your house.",
       },
       {
         question: "Can you repair instead of replace?",
@@ -95,7 +95,7 @@ export const services: Service[] = [
       {
         question: "How fast can you come out?",
         answer:
-          "In peak heat we prioritize diagnostics and same-week installs when equipment is available. Call Direct (714) 333-5953 for the soonest slot that fits your home.",
+          "In peak heat we prioritize diagnostics and same-week installs when equipment is available. Call Direct (562) 612-8961 for the soonest slot that fits your home.",
       },
     ],
     relatedBlogSlugs: [
@@ -111,7 +111,7 @@ export const services: Service[] = [
     shortName: "Heating services",
     summary: "Reliable warmth for cooler nights—safely and efficiently.",
     description:
-      "Southern California winters are mild until a cold snap hits and the heater won't start. How Much? is family-owned and focused on honest heating service for homeowners who want safety, even warmth, and clear options—not a pressure pitch. We diagnose ignition, airflow, and delivery issues first, then show repair, tune-up, or upgrade paths that fit your home and budget. Call Direct (714) 333-5953 when you want warmth you can trust—without mystery fees or rush tactics.",
+      "Southern California winters are mild until a cold snap hits and the heater won't start. How Much? is family-owned and focused on honest heating service for homeowners who want safety, even warmth, and clear options—not a pressure pitch. We diagnose ignition, airflow, and delivery issues first, then show repair, tune-up, or upgrade paths that fit your home and budget. Call Direct (562) 612-8961 when you want warmth you can trust—without mystery fees or rush tactics.",
     image:
       "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80",
     featured: true,
@@ -173,7 +173,7 @@ export const services: Service[] = [
       {
         question: "Is a heat pump better than a furnace?",
         answer:
-          "Sometimes. Climate, ductwork, and existing equipment decide. We'll show both paths when relevant and help you compare operating cost—not hype. Call Direct (714) 333-5953 to talk through your home.",
+          "Sometimes. Climate, ductwork, and existing equipment decide. We'll show both paths when relevant and help you compare operating cost—not hype. Call Direct (562) 612-8961 to talk through your home.",
       },
     ],
     relatedBlogSlugs: ["repair-vs-replace-hvac", "seasonal-hvac-maintenance-checklist"],
@@ -185,7 +185,7 @@ export const services: Service[] = [
     shortName: "Gas furnace",
     summary: "Furnace service, repair, and replacement done right.",
     description:
-      "Gas furnaces need careful handling—especially when ignition fails or you smell something that doesn't feel right. How Much? is a family-owned team serving Southern California homeowners with safety-first furnace inspections, honest repair guidance, and clean installs when replacement truly makes sense. We explain what's urgent versus optional so you're never pushed into a new system out of fear. Call Direct (714) 333-5953 for furnace help from neighbors who put clarity before the close.",
+      "Gas furnaces need careful handling—especially when ignition fails or you smell something that doesn't feel right. How Much? is a family-owned team serving Southern California homeowners with safety-first furnace inspections, honest repair guidance, and clean installs when replacement truly makes sense. We explain what's urgent versus optional so you're never pushed into a new system out of fear. Call Direct (562) 612-8961 for furnace help from neighbors who put clarity before the close.",
     image:
       "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1600&q=80",
     expect: [
@@ -237,7 +237,7 @@ export const services: Service[] = [
       {
         question: "How long do gas furnaces last?",
         answer:
-          "Often 15–20 years with maintenance—but condition matters more than birthday. We judge performance and safety, not just age. Call Direct (714) 333-5953 for an honest assessment.",
+          "Often 15–20 years with maintenance—but condition matters more than birthday. We judge performance and safety, not just age. Call Direct (562) 612-8961 for an honest assessment.",
       },
     ],
     relatedBlogSlugs: ["repair-vs-replace-hvac", "seasonal-hvac-maintenance-checklist"],
@@ -249,7 +249,7 @@ export const services: Service[] = [
     shortName: "Heat pump",
     summary: "Year-round comfort with efficient heating and cooling.",
     description:
-      "Heat pumps are a smart fit for many Southern California homes—one system for most of the year's heating and cooling. How Much? is family-owned and helps homeowners cut through the marketing so you understand performance, operating costs, and whether a heat pump truly fits your ducts, electrical, and comfort goals. We present clear options with real-world expectations—no pressure and no mystery fees. Call Direct (714) 333-5953 when you're ready for honest guidance on an upgrade that should actually save you hassle.",
+      "Heat pumps are a smart fit for many Southern California homes—one system for most of the year's heating and cooling. How Much? is family-owned and helps homeowners cut through the marketing so you understand performance, operating costs, and whether a heat pump truly fits your ducts, electrical, and comfort goals. We present clear options with real-world expectations—no pressure and no mystery fees. Call Direct (562) 612-8961 when you're ready for honest guidance on an upgrade that should actually save you hassle.",
     image:
       "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1600&q=80",
     featured: true,
@@ -302,7 +302,7 @@ export const services: Service[] = [
       {
         question: "Do heat pumps work near the coast?",
         answer:
-          "Yes—Southern California's mild climate is often ideal. Salt air and placement still matter for longevity, and we'll talk through those details on site. Call Direct (714) 333-5953 to schedule an assessment.",
+          "Yes—Southern California's mild climate is often ideal. Salt air and placement still matter for longevity, and we'll talk through those details on site. Call Direct (562) 612-8961 to schedule an assessment.",
       },
     ],
     relatedBlogSlugs: [
@@ -317,7 +317,7 @@ export const services: Service[] = [
     shortName: "Mini-Split",
     summary: "Zoned comfort without ripping out your walls.",
     description:
-      "Additions, garages, ADUs, and problem rooms often never stay comfortable with the main system alone. How Much? is a family-owned HVAC company that designs and installs ductless mini-splits for Southern California homeowners who want quiet, efficient, room-by-room comfort—without major duct demolition. We plan placement for looks and performance, then walk you through clear options and pricing with no pressure. Call Direct (714) 333-5953 when one space in your home deserves its own climate.",
+      "Additions, garages, ADUs, and problem rooms often never stay comfortable with the main system alone. How Much? is a family-owned HVAC company that designs and installs ductless mini-splits for Southern California homeowners who want quiet, efficient, room-by-room comfort—without major duct demolition. We plan placement for looks and performance, then walk you through clear options and pricing with no pressure. Call Direct (562) 612-8961 when one space in your home deserves its own climate.",
     image:
       "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=80",
     expect: [
@@ -369,7 +369,7 @@ export const services: Service[] = [
       {
         question: "Can one outdoor unit serve multiple rooms?",
         answer:
-          "Yes—multi-zone systems are common. We'll match capacity so rooms don't starve each other. Call Direct (714) 333-5953 to plan zones for your home.",
+          "Yes—multi-zone systems are common. We'll match capacity so rooms don't starve each other. Call Direct (562) 612-8961 to plan zones for your home.",
       },
     ],
     relatedBlogSlugs: ["ductless-mini-splits-explained", "heat-pumps-for-southern-california"],
@@ -381,7 +381,7 @@ export const services: Service[] = [
     shortName: "Package Unit",
     summary: "Rooftop and outdoor package systems for homes and light commercial.",
     description:
-      "When a package unit starts failing in the heat, access is harder and waiting often turns into an emergency. How Much? is family-owned and helps Southern California homeowners understand capacity, efficiency, and replacement options so you know exactly how much—and why. We assess curb, electrical, and whether a like-for-like swap beats converting system types, then present clear options without pressure. Call Direct (714) 333-5953 to plan a package unit repair or replacement on your timeline.",
+      "When a package unit starts failing in the heat, access is harder and waiting often turns into an emergency. How Much? is family-owned and helps Southern California homeowners understand capacity, efficiency, and replacement options so you know exactly how much—and why. We assess curb, electrical, and whether a like-for-like swap beats converting system types, then present clear options without pressure. Call Direct (562) 612-8961 to plan a package unit repair or replacement on your timeline.",
     image:
       "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=1600&q=80",
     expect: [
@@ -429,7 +429,7 @@ export const services: Service[] = [
       {
         question: "How long does a package unit replacement take?",
         answer:
-          "Many residential swaps are same-day once equipment is on site—access and electrical can extend that. Call Direct (714) 333-5953 and we'll give you a realistic window for your roof or pad.",
+          "Many residential swaps are same-day once equipment is on site—access and electrical can extend that. Call Direct (562) 612-8961 and we'll give you a realistic window for your roof or pad.",
       },
     ],
     relatedBlogSlugs: ["repair-vs-replace-hvac", "how-much-does-ac-replacement-cost-orange-county"],
@@ -441,7 +441,7 @@ export const services: Service[] = [
     shortName: "Ventilation",
     summary: "Fresh air flow that supports comfort and air quality.",
     description:
-      "Proper ventilation matters as much as temperature—especially in tighter homes where stale air, odors, and moisture linger. How Much? is family-owned and helps Southern California homeowners evaluate airflow issues with practical fixes, not gadget stacks. We diagnose how air moves through your house, then recommend only what solves the real problem—clearly, honestly, and without pressure. Call Direct (714) 333-5953 when your home feels stuffy and you want fresher air that still supports comfort.",
+      "Proper ventilation matters as much as temperature—especially in tighter homes where stale air, odors, and moisture linger. How Much? is family-owned and helps Southern California homeowners evaluate airflow issues with practical fixes, not gadget stacks. We diagnose how air moves through your house, then recommend only what solves the real problem—clearly, honestly, and without pressure. Call Direct (562) 612-8961 when your home feels stuffy and you want fresher air that still supports comfort.",
     image:
       "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1600&q=80",
     expect: [
@@ -489,7 +489,7 @@ export const services: Service[] = [
       {
         question: "Is ventilation the same as air purification?",
         answer:
-          "No. Ventilation moves air; purification treats it. Many homes need a mix—we won't stack gadgets without a reason. Call Direct (714) 333-5953 if you're unsure which problem you're actually solving.",
+          "No. Ventilation moves air; purification treats it. Many homes need a mix—we won't stack gadgets without a reason. Call Direct (562) 612-8961 if you're unsure which problem you're actually solving.",
       },
     ],
     relatedBlogSlugs: ["indoor-air-quality-basics", "ductwork-problems-hot-cold-rooms"],
@@ -501,7 +501,7 @@ export const services: Service[] = [
     shortName: "Ductwork",
     summary: "Sealed, balanced ducts that make your system actually perform.",
     description:
-      "Leaky or poorly designed ducts waste money and comfort—even with a brand-new outdoor unit. How Much? is a family-owned HVAC company that inspects, seals, repairs, and redesigns duct systems for Southern California homeowners who want even temperatures and lower waste. We measure before we recommend, then show clear options without pressure to tear everything out. Call Direct (714) 333-5953 when your system runs hard but some rooms still never feel right.",
+      "Leaky or poorly designed ducts waste money and comfort—even with a brand-new outdoor unit. How Much? is a family-owned HVAC company that inspects, seals, repairs, and redesigns duct systems for Southern California homeowners who want even temperatures and lower waste. We measure before we recommend, then show clear options without pressure to tear everything out. Call Direct (562) 612-8961 when your system runs hard but some rooms still never feel right.",
     image:
       "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1600&q=80",
     featured: true,
@@ -554,7 +554,7 @@ export const services: Service[] = [
       {
         question: "Should I replace ducts or just seal them?",
         answer:
-          "Depends on material, layout, and damage. Many homes improve dramatically with sealing and balancing alone. Call Direct (714) 333-5953 for an inspection that separates must-fix from nice-to-have.",
+          "Depends on material, layout, and damage. Many homes improve dramatically with sealing and balancing alone. Call Direct (562) 612-8961 for an inspection that separates must-fix from nice-to-have.",
       },
     ],
     relatedBlogSlugs: ["ductwork-problems-hot-cold-rooms", "indoor-air-quality-basics"],
@@ -566,7 +566,7 @@ export const services: Service[] = [
     shortName: "Duct insulation",
     summary: "Keep conditioned air where it belongs—inside your home.",
     description:
-      "Insulation upgrades pair powerfully with HVAC work—especially when the attic turns into an oven every afternoon. How Much? is family-owned and helps Southern California homeowners improve comfort and reduce load on the system with targeted insulation recommendations, not blanket upsells. We explain how the building envelope affects sizing and bills so you can decide what to do first—clearly and without pressure. Call Direct (714) 333-5953 when good equipment still can't keep up with a leaky attic.",
+      "Insulation upgrades pair powerfully with HVAC work—especially when the attic turns into an oven every afternoon. How Much? is family-owned and helps Southern California homeowners improve comfort and reduce load on the system with targeted insulation recommendations, not blanket upsells. We explain how the building envelope affects sizing and bills so you can decide what to do first—clearly and without pressure. Call Direct (562) 612-8961 when good equipment still can't keep up with a leaky attic.",
     image:
       "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=80",
     expect: [
@@ -614,7 +614,7 @@ export const services: Service[] = [
       {
         question: "Should insulation come before a new AC?",
         answer:
-          "Sometimes yes—reducing load can change the right system size. We'll advise based on your home, not a default sales order. Call Direct (714) 333-5953 to talk through sequencing.",
+          "Sometimes yes—reducing load can change the right system size. We'll advise based on your home, not a default sales order. Call Direct (562) 612-8961 to talk through sequencing.",
       },
     ],
     relatedBlogSlugs: [
@@ -629,7 +629,7 @@ export const services: Service[] = [
     shortName: "Air Quality",
     summary: "Cleaner air for your family—filtration, purification, and more.",
     description:
-      "Dust, allergies, and wildfire smoke weeks make indoor air feel personal—not theoretical. How Much? is a family-owned HVAC company that recommends IAQ improvements for Southern California homeowners based on your home and your goals, not a one-size upsell. We match filtration and purification to what your system can handle, explain trade-offs clearly, and skip anything that doesn't solve your problem. Call Direct (714) 333-5953 when you want cleaner air with honest options and no pressure.",
+      "Dust, allergies, and wildfire smoke weeks make indoor air feel personal—not theoretical. How Much? is a family-owned HVAC company that recommends IAQ improvements for Southern California homeowners based on your home and your goals, not a one-size upsell. We match filtration and purification to what your system can handle, explain trade-offs clearly, and skip anything that doesn't solve your problem. Call Direct (562) 612-8961 when you want cleaner air with honest options and no pressure.",
     image:
       "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1600&q=80",
     expect: [
@@ -681,7 +681,7 @@ export const services: Service[] = [
       {
         question: "Is a higher MERV filter always better?",
         answer:
-          "Not if it chokes airflow. We match filtration to what your system can handle so comfort and air quality both improve. Call Direct (714) 333-5953 with your equipment details if you want a quick check.",
+          "Not if it chokes airflow. We match filtration to what your system can handle so comfort and air quality both improve. Call Direct (562) 612-8961 with your equipment details if you want a quick check.",
       },
     ],
     relatedBlogSlugs: ["indoor-air-quality-basics", "seasonal-hvac-maintenance-checklist"],
@@ -693,7 +693,7 @@ export const services: Service[] = [
     shortName: "Pool Heat Pump",
     summary: "Extend your swim season with efficient pool heating.",
     description:
-      "A correctly sized pool heat pump can keep evenings swimmable without shocking the utility bill. How Much? is family-owned and helps Southern California homeowners evaluate sizing, install quality, and operating expectations before they buy. We compare heat pump paths against aging gas heaters with real numbers—honest options, no pressure, and clear next steps. Call Direct (714) 333-5953 when you want a longer swim season and pricing that makes sense for how you actually use the pool.",
+      "A correctly sized pool heat pump can keep evenings swimmable without shocking the utility bill. How Much? is family-owned and helps Southern California homeowners evaluate sizing, install quality, and operating expectations before they buy. We compare heat pump paths against aging gas heaters with real numbers—honest options, no pressure, and clear next steps. Call Direct (562) 612-8961 when you want a longer swim season and pricing that makes sense for how you actually use the pool.",
     image:
       "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=1600&q=80",
     expect: [
@@ -741,7 +741,7 @@ export const services: Service[] = [
       {
         question: "Are pool heat pumps worth it in OC?",
         answer:
-          "For many households yes—especially with frequent evening use. We'll compare against your current heater honestly. Call Direct (714) 333-5953 to talk through sizing for your pool.",
+          "For many households yes—especially with frequent evening use. We'll compare against your current heater honestly. Call Direct (562) 612-8961 to talk through sizing for your pool.",
       },
     ],
     relatedBlogSlugs: ["heat-pumps-for-southern-california"],
@@ -803,7 +803,7 @@ function installationService(input: {
     shortName: input.shortName,
     group: "installation",
     summary: `A straight ${input.system} install, separate from a service call.`,
-    description: `${title} is its own job at How Much? Air & Home. If you already know you want a new ${input.system}, you do not have to start under a service visit. We size the equipment for the house, walk the access and the ducts, and give you install options with the price before anyone orders equipment. Call Direct (714) 333-5953 to lock a visit. Licensed CA Lic #107-3814.`,
+    description: `${title} is its own job at How Much? Air & Home. If you already know you want a new ${input.system}, you do not have to start under a service visit. We size the equipment for the house, walk the access and the ducts, and give you install options with the price before anyone orders equipment. Call Direct (562) 612-8961 to lock a visit. Licensed CA Lic #107-3814.`,
     image: input.image,
     expect: [
       "A sizing visit before equipment is ordered",

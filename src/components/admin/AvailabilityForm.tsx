@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
+import { pacificVisit } from "@/lib/pacific";
 
 export function AvailabilityForm() {
   const router = useRouter();
@@ -16,14 +17,14 @@ export function AvailabilityForm() {
     if (!startsAt) return;
     setLoading(true);
     setError("");
-    const start = new Date(startsAt);
-    const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
+    const [date, time] = startsAt.split("T");
+    const visit = pacificVisit(date, (time || "09:00").slice(0, 5), 2);
     const res = await fetch("/api/admin/availability", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        startsAt: start.toISOString(),
-        endsAt: end.toISOString(),
+        startsAt: visit.startsAt,
+        endsAt: visit.endsAt,
         label: label || null,
       }),
     });

@@ -7,9 +7,8 @@ import { servicesInGroup, type Service } from "@/lib/services";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
 import { DirectPhone } from "@/components/contact/CallAndy";
-import { MIN_PASSWORD_LENGTH, validateNewPassword } from "@/lib/passwords";
-import { markSkipPortalSkeleton } from "@/lib/admin-dashboard-skel";
 import { HoneypotField, TurnstileField, useFormGuard } from "@/components/forms/FormGuard";
+import { pacificVisit } from "@/lib/pacific";
 
 const steps = ["Your info", "Services", "Schedule", "Confirm"];
 
@@ -25,8 +24,6 @@ export function BookingWizard() {
     phone: "",
     email: "",
     city: "",
-    password: "",
-    confirmPassword: "",
     timing: "As soon as possible",
     notes: "",
     date: "",
@@ -36,14 +33,6 @@ export function BookingWizard() {
   async function confirm() {
     setLoading(true);
     setError("");
-
-    const passwordError = validateNewPassword(info.password, info.confirmPassword);
-    if (passwordError) {
-      setError(passwordError);
-      setLoading(false);
-      setStep(0);
-      return;
-    }
 
     const notReady = guard.notReadyMessage();
     if (notReady) {
@@ -63,9 +52,8 @@ export function BookingWizard() {
           city: info.city,
           service: selected.join(", "),
           message: [`Preferred timing: ${info.timing}`, info.notes].filter(Boolean).join("\n\n"),
-          startsAt: new Date(`${info.date}T${info.time}:00`).toISOString(),
-          endsAt: new Date(new Date(`${info.date}T${info.time}:00`).getTime() + 2 * 60 * 60 * 1000).toISOString(),
-          password: info.password,
+          startsAt: pacificVisit(info.date, info.time, 2).startsAt,
+          endsAt: pacificVisit(info.date, info.time, 2).endsAt,
           sourcePath: "/booking",
           sourceLabel: "Booking wizard",
           ...guard.payload(),
@@ -78,23 +66,6 @@ export function BookingWizard() {
         setLoading(false);
         return;
       }
-
-      if (!data.id) {
-        const first = info.name.trim().split(/\s+/)[0] || "";
-        router.push(`/thank-you?name=${encodeURIComponent(first)}`);
-        return;
-      }
-
-      const login = await fetch("/api/auth/password-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: info.email.trim().toLowerCase(),
-          password: info.password,
-          next: "/portal",
-        }),
-      });
-      if (login.ok) markSkipPortalSkeleton();
 
       const first = info.name.trim().split(/\s+/)[0] || "";
       router.push(`/thank-you?name=${encodeURIComponent(first)}`);
@@ -149,20 +120,6 @@ export function BookingWizard() {
               label="City / ZIP"
               value={info.city}
               onChange={(v) => setInfo((s) => ({ ...s, city: v }))}
-            />
-            <Field
-              label="Portal password"
-              type="password"
-              value={info.password}
-              onChange={(v) => setInfo((s) => ({ ...s, password: v }))}
-              minLength={MIN_PASSWORD_LENGTH}
-            />
-            <Field
-              label="Confirm password"
-              type="password"
-              value={info.confirmPassword}
-              onChange={(v) => setInfo((s) => ({ ...s, confirmPassword: v }))}
-              minLength={MIN_PASSWORD_LENGTH}
             />
           </div>
         )}
@@ -298,9 +255,7 @@ export function BookingWizard() {
               (step === 0 &&
                 (!info.name ||
                   !info.email ||
-                  !info.phone ||
-                  info.password.length < MIN_PASSWORD_LENGTH ||
-                  info.password !== info.confirmPassword)) ||
+                  !info.phone)) ||
               (step === 1 && selected.length === 0) ||
               (step === 2 && !info.date)
             }

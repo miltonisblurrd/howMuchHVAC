@@ -21,13 +21,13 @@ export function InviteButton({ customerId }: { customerId: string }) {
       setMsg(data.error || "Failed");
       return;
     }
-    setMsg(data.sent ? "Email sent" : "Could not send email");
+    setMsg(data.sent ? "Setup link sent. They set the password from that email." : "Could not send email");
   }
 
   return (
     <div>
       <Button type="button" size="sm" variant="outline" onClick={send} disabled={loading} arrow={false}>
-        {loading ? "Sending…" : "Email password setup"}
+        {loading ? "Sending…" : "Send password link"}
       </Button>
       {msg && <p className="mt-1 text-xs text-hm-muted">{msg}</p>}
     </div>

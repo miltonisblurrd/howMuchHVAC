@@ -6,6 +6,7 @@ import { ServiceOptions } from "@/components/forms/ServiceOptions";
 import { StreetAddressField } from "@/components/forms/StreetAddressField";
 import { cn } from "@/lib/cn";
 import { HoneypotField, TurnstileField, useFormGuard } from "@/components/forms/FormGuard";
+import { pacificVisit } from "@/lib/pacific";
 
 function pad(n: number) {
   return String(n).padStart(2, "0");
@@ -49,13 +50,12 @@ export function PhoneIntakeForm() {
     setSaving(true);
     setMsg(null);
 
-    const start = new Date(`${date}T${time}:00`);
-    if (Number.isNaN(start.getTime())) {
+    const visit = pacificVisit(date, time, 2);
+    if (Number.isNaN(visit.start.getTime())) {
       setSaving(false);
       setMsg({ ok: false, text: "Pick a real day and time for the first visit." });
       return;
     }
-    const end = new Date(start.getTime() + 2 * 60 * 60 * 1000);
 
     const notReady = guard.notReadyMessage();
     if (notReady) {
@@ -75,9 +75,9 @@ export function PhoneIntakeForm() {
         city: city || null,
         service: service || null,
         notes: notes || null,
-        startsAt: start.toISOString(),
+        startsAt: visit.startsAt,
         ...guard.payload(),
-        endsAt: end.toISOString(),
+        endsAt: visit.endsAt,
         visitType: "diagnostic",
         techName: tech.trim() || null,
       }),

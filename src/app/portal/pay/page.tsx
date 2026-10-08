@@ -4,9 +4,10 @@ import { SynchronyFinanceButton } from "@/components/portal/SynchronyFinanceButt
 import { AdminEmpty } from "@/components/admin/AdminUi";
 import { CountUp } from "@/components/admin/CountUp";
 import { requirePortalUser } from "@/lib/auth";
-import { getCustomerInvoices } from "@/lib/portal-queries";
+import { getCustomerInvoices, getCustomerJobs, getOptionsForJobs } from "@/lib/portal-queries";
 import { formatWhen, money } from "@/lib/db-types";
 import { LOCK_IN_COPY } from "@/lib/deposits";
+import { customerPaymentLabel } from "@/lib/payment-label";
 
 export default async function PortalPayPage({
   searchParams,
@@ -14,7 +15,11 @@ export default async function PortalPayPage({
   searchParams: Promise<{ success?: string; canceled?: string }>;
 }) {
   const user = await requirePortalUser();
-  const invoices = await getCustomerInvoices(user.id);
+  const [invoices, jobs] = await Promise.all([
+    getCustomerInvoices(user.id),
+    getCustomerJobs(user.id),
+  ]);
+  const options = await getOptionsForJobs(invoices.map((invoice) => invoice.job_id));
   const { success, canceled } = await searchParams;
 
   return (
@@ -51,6 +56,15 @@ export default async function PortalPayPage({
         <ul className="space-y-2.5">
           {invoices.map((inv) => {
             const open = inv.status === "unpaid" || inv.status === "overdue";
+            const selectedId = jobs.find((job) => job.id === inv.job_id)?.selected_option_id;
+            const price =
+              options.find((option) => option.id === selectedId) ||
+              options.find((option) => option.job_id === inv.job_id && option.price_cents > 0);
+            const label = customerPaymentLabel({
+              description: inv.description,
+              amountCents: inv.amount_cents,
+              priceCents: price?.price_cents,
+            });
             return (
               <li
                 key={inv.id}
@@ -58,9 +72,8 @@ export default async function PortalPayPage({
               >
                 <div>
                   <p className="font-display text-[17px] font-bold tracking-tight text-hm-charcoal">
-                    {inv.number}
+                    {label}
                   </p>
-                  <p className="text-sm text-hm-muted">{inv.description || "Invoice"}</p>
                   <p className="mt-1 text-xs text-hm-muted">
                     {inv.due_at ? `Due ${formatWhen(inv.due_at)}` : `Created ${formatWhen(inv.created_at)}`}
                     {" · "}

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import type { AvailabilityWindow } from "@/lib/db-types";
 import { formatWhen } from "@/lib/db-types";
+import { pacificVisit } from "@/lib/pacific";
 
 export function BookSlotForm({
   jobId,
@@ -44,13 +45,14 @@ export function BookSlotForm({
     if (!startsAt) return;
     setLoading(true);
     setError("");
-    const start = new Date(startsAt);
+    const [date, time] = startsAt.split("T");
+    const visit = pacificVisit(date, (time || "09:00").slice(0, 5), 2);
     const res = await fetch("/api/portal/request-time", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         jobId,
-        startsAt: start.toISOString(),
+        startsAt: visit.startsAt,
         note,
       }),
     });

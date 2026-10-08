@@ -18,6 +18,7 @@ import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { decorateMessagePhotos, getSignedUrl } from "@/lib/portal-queries";
 import { formatWhen } from "@/lib/db-types";
 import { JOB_STAGES } from "@/lib/job-stages";
+import { paceFromEvents } from "@/lib/schedule-pace";
 
 export default async function AdminJobDetailPage({
   params,
@@ -106,7 +107,12 @@ export default async function AdminJobDetailPage({
             customerSignedIn={hasSignedIn}
           />
 
-          <JobVisitCard jobId={job.id} customerFirstName={firstName} appointments={appointments} />
+          <JobVisitCard
+            section="look"
+            jobId={job.id}
+            customerFirstName={firstName}
+            appointments={appointments}
+          />
 
           <JobPhotosCard jobId={job.id} photos={photosWithUrls} />
 
@@ -119,7 +125,16 @@ export default async function AdminJobDetailPage({
               price_cents: o.price_cents,
               description: o.description,
               recommended: o.recommended,
+              image_path: o.image_path,
             }))}
+          />
+
+          <JobVisitCard
+            section="install"
+            jobId={job.id}
+            customerFirstName={firstName}
+            appointments={appointments}
+            schedulePace={paceFromEvents(events, job.schedule_pace)}
           />
 
           <JobPaymentCard

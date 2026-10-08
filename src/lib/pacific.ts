@@ -27,6 +27,13 @@ export function pacificToUtc(date: string, time: string) {
   return new Date(asUtc.getTime() - (asZone - asUtc.getTime()));
 }
 
+/** A visit length that starts at a Pacific wall-clock time. */
+export function pacificVisit(date: string, time: string, hours: number) {
+  const start = pacificToUtc(date, time);
+  const end = new Date(start.getTime() + hours * 60 * 60 * 1000);
+  return { startsAt: start.toISOString(), endsAt: end.toISOString(), start };
+}
+
 /** Inclusive Pacific dates, stored as [start midnight, end next midnight). */
 export function pacificDateSpan(startDate: string, endDate: string) {
   const end = endDate < startDate ? startDate : endDate;

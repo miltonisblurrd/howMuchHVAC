@@ -4,6 +4,7 @@ export type OptionCopy = {
   addons: string;
   warranty: string;
   details: string;
+  photo: string;
 };
 
 const PREFIX = "[[hm-price]]";
@@ -15,15 +16,16 @@ export function packOptionCopy(input: OptionCopy) {
     addons: input.addons.trim(),
     warranty: input.warranty.trim(),
     details: input.details.trim(),
+    photo: (input.photo || "").trim(),
   };
-  if (!extra.equipment && !extra.addons && !extra.warranty && !extra.details) return summary;
+  if (!extra.equipment && !extra.addons && !extra.warranty && !extra.details && !extra.photo) return summary;
   return `${PREFIX}${JSON.stringify({ summary, ...extra })}`;
 }
 
 export function unpackOptionCopy(raw: string | null | undefined): OptionCopy {
   const text = raw || "";
   if (!text.startsWith(PREFIX)) {
-    return { summary: text, equipment: "", addons: "", warranty: "", details: "" };
+    return { summary: text, equipment: "", addons: "", warranty: "", details: "", photo: "" };
   }
   try {
     const parsed = JSON.parse(text.slice(PREFIX.length)) as Partial<OptionCopy>;
@@ -33,8 +35,9 @@ export function unpackOptionCopy(raw: string | null | undefined): OptionCopy {
       addons: String(parsed.addons || ""),
       warranty: String(parsed.warranty || ""),
       details: String(parsed.details || ""),
+      photo: String((parsed as { photo?: string }).photo || ""),
     };
   } catch {
-    return { summary: text, equipment: "", addons: "", warranty: "", details: "" };
+    return { summary: text, equipment: "", addons: "", warranty: "", details: "", photo: "" };
   }
 }

@@ -21,6 +21,9 @@ import {
   countUnreadForCustomer,
 } from "@/lib/portal-queries";
 import { formatWhen, type Invoice } from "@/lib/db-types";
+import { JobDoneBanner } from "@/components/portal/JobDoneBanner";
+import { unpackOptionCopy } from "@/lib/option-copy";
+import { paceFromEvents } from "@/lib/schedule-pace";
 
 function openCents(invoices: Invoice[]) {
   return invoices
@@ -90,6 +93,7 @@ export default async function PortalProjectPage({
       </p>
 
       <div className="space-y-6">
+        {stage.phase === "done" ? <JobDoneBanner jobTitle={job.title} /> : null}
         <ClientJobStepper stage={stage} />
         <ClientNextStep stage={stage} />
 
@@ -99,10 +103,23 @@ export default async function PortalProjectPage({
               <VisitCard appointment={stage.lookVisit} />
             </div>
             <div className={choosing ? "order-1" : "order-2"}>
-              <OptionsCard stage={stage} options={bundle.options} />
+              <OptionsCard
+                stage={stage}
+                options={await Promise.all(
+                  bundle.options.map(async (option) => ({
+                    ...option,
+                    imageUrl: await (async () => {
+                      const photo = option.image_path || unpackOptionCopy(option.description).photo;
+                      return photo ? getSignedUrl("job-photos", photo) : null;
+                    })(),
+                  })),
+                )}
+              />
             </div>
             <div className="order-3">
               <InstallCard
+                jobId={job.id}
+                schedulePace={paceFromEvents(bundle.events, job.schedule_pace)}
                 appointment={stage.installVisit}
                 hasSelection={Boolean(stage.selected)}
                 depositPaid={stage.depositPaid}

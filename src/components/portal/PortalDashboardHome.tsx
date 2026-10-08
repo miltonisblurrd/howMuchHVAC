@@ -12,6 +12,7 @@ import {
   getOptionsForJobs,
 } from "@/lib/portal-queries";
 import { money, type Invoice, type Job } from "@/lib/db-types";
+import { JobDoneBanner } from "@/components/portal/JobDoneBanner";
 
 function openCents(invoices: Invoice[]) {
   return invoices
@@ -77,8 +78,11 @@ export async function PortalDashboardHome({ userId }: { userId: string }) {
     );
   }
 
+  const finished = past.find((stage) => stage.phase === "done");
+
   return (
     <div className="space-y-6">
+      {finished ? <JobDoneBanner jobTitle={finished.title} /> : null}
       {featured && (
         <section className="space-y-4">
           <div className="flex flex-wrap items-end justify-between gap-3">
