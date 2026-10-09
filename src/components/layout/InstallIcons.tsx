@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { ComponentType, SVGProps } from "react";
 
 function InstallIcon(props: SVGProps<SVGSVGElement>) {
   return (
@@ -66,10 +66,10 @@ function DuctlessInstallIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-export const installationIcons = {
+export const installationIcons: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
   "ac-installation": AcInstallIcon,
   "heating-installation": HeatingInstallIcon,
   "gas-furnace-installation": FurnaceInstallIcon,
   "heat-pump-installation": HeatPumpInstallIcon,
   "ductless-package-installation": DuctlessInstallIcon,
-} as const;
+};
