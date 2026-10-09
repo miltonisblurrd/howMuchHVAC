@@ -241,7 +241,8 @@ body {
   transition: transform 0.2s ease;
 }
 
-.hm-press:hover .hm-arrow {
+.hm-press:hover .hm-arrow,
+.hm-arrow-link:hover .hm-arrow {
   transform: translateX(4px);
 }
 
@@ -371,6 +372,7 @@ body {
 
   .hm-press:active,
   .hm-press:hover .hm-arrow,
+  .hm-arrow-link:hover .hm-arrow,
   .hm-logo-hover,
   .hm-logo-hover:hover {
     transform: none;

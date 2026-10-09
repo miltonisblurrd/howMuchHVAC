@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Link from "next/link";
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
@@ -8,7 +7,6 @@ import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { getFeaturedReviews } from "@/lib/reviews";
 import { ReviewCard } from "@/components/content/ReviewCard";
 import { site } from "@/lib/site";
-import { team } from "@/lib/team";
 
 export const metadata: Metadata = {
   title: "About How Much? | Family-Owned HVAC with Integrity",
@@ -157,43 +155,6 @@ export default function AboutPage() {
           <div className="mt-8 grid gap-4 md:grid-cols-3">
             {featured.map((review) => (
               <ReviewCard key={review.id} review={review} clamp />
-            ))}
-          </div>
-        </Container>
-      </Section>
-
-      <Section tone="white">
-        <Container>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <Eyebrow>Team</Eyebrow>
-              <Heading as="h2" className="mt-3 text-hm-charcoal">
-                The People Behind The Work
-              </Heading>
-            </div>
-            <Button href="/team" variant="outline">
-              Meet the full team
-            </Button>
-          </div>
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {team.slice(0, 4).map((member) => (
-              <Link
-                key={member.slug}
-                href={`/team/${member.slug}`}
-                className="rounded-2xl border border-hm-line bg-hm-fog p-4 transition hover:border-hm-red/40"
-              >
-                <div className="relative mb-4 aspect-[4/5] overflow-hidden rounded-xl">
-                  <Image
-                    src={member.image}
-                    alt={member.name}
-                    fill
-                    sizes="240px"
-                    className="object-cover"
-                  />
-                </div>
-                <p className="font-display font-bold text-hm-charcoal">{member.name}</p>
-                <p className="text-sm text-hm-muted">{member.role}</p>
-              </Link>
             ))}
           </div>
         </Container>

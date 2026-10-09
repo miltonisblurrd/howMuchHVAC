@@ -199,8 +199,8 @@ export default function HomePage() {
               <div className="absolute -inset-8 rounded-full bg-hm-red/15 blur-3xl" />
               <div className="relative overflow-hidden rounded-[2rem] border border-white/10">
                 <Image
-                  src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=80"
-                  alt="Southern California home exterior"
+                  src="/images/technician-lifestyle.jpg"
+                  alt="HVAC technician checking an air conditioner at a Southern California home"
                   width={900}
                   height={720}
                   sizes="(max-width:1024px) 100vw, 50vw"

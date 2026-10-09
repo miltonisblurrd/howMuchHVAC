@@ -13,10 +13,11 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
-import { AirVent, ChevronDown, MapPin } from "lucide-react";
+import { AirVent, ArrowRight, ChevronDown, MapPin } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getNavFeaturedAreas } from "@/lib/areas";
 import { serviceIcons } from "@/lib/serviceIcons";
+import { installationIcons } from "@/components/layout/InstallIcons";
 import { servicesInGroup } from "@/lib/services";
 import {
   categoryPath,
@@ -141,21 +142,17 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
     if (open === "services") {
       return (
         <>
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-hm-red">
-                Services
-              </p>
-              <p className="mt-1 font-display text-lg font-bold text-hm-charcoal">
-                Comfort Systems Done Right
-              </p>
-            </div>
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-hm-red">
+              Services
+            </p>
             <Link
               href="/services"
-              className="shrink-0 font-display text-sm font-semibold text-hm-red hover:underline"
+              className="hm-arrow-link inline-flex shrink-0 items-center gap-1.5 font-display text-sm font-semibold text-hm-red"
               onClick={() => setOpen(null)}
             >
-              View All Services ?
+              View All Services
+              <ArrowRight aria-hidden className="hm-arrow h-4 w-4" />
             </Link>
           </div>
           <div className="max-h-[70vh] space-y-5 overflow-y-auto pr-1">
@@ -166,12 +163,20 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
               ] as const
             ).map(([label, items]) => (
               <div key={label}>
-                <p className="mb-2 font-display text-[11px] font-bold uppercase tracking-[0.16em] text-hm-muted">
-                  {label}
-                </p>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                {label === "Installation" ? (
+                  <p className="mb-2 font-display text-[11px] font-bold uppercase tracking-[0.16em] text-hm-muted">
+                    {label}
+                  </p>
+                ) : null}
+                <div
+                  className={cn(
+                    "grid gap-2 sm:grid-cols-2",
+                    label === "Installation" ? "lg:grid-cols-3" : "lg:grid-cols-4",
+                  )}
+                >
                   {items.map((service) => {
-                    const Icon = serviceIcons[service.slug] ?? AirVent;
+                    const Icon =
+                      installationIcons[service.slug] ?? serviceIcons[service.slug] ?? AirVent;
                     return (
                       <Link
                         key={service.slug}
@@ -204,21 +209,17 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
     if (open === "areas") {
       return (
         <>
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-hm-red">
-                Service Areas
-              </p>
-              <p className="mt-1 font-display text-lg font-bold text-hm-charcoal">
-                Top Cities We Serve
-              </p>
-            </div>
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <p className="font-display text-lg font-bold text-hm-charcoal">
+              Top Cities We Serve
+            </p>
             <Link
               href="/service-areas"
-              className="shrink-0 font-display text-sm font-semibold text-hm-red hover:underline"
+              className="hm-arrow-link inline-flex shrink-0 items-center gap-1.5 font-display text-sm font-semibold text-hm-red"
               onClick={() => setOpen(null)}
             >
-              See All Service Areas ?
+              See All Service Areas
+              <ArrowRight aria-hidden className="hm-arrow h-4 w-4" />
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4 lg:grid-cols-5">
@@ -233,18 +234,6 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
                 <span className="truncate">{area.name}</span>
               </Link>
             ))}
-          </div>
-          <div className="mt-5 border-t border-hm-line pt-4">
-            <Link
-              href="/service-areas"
-              onClick={() => setOpen(null)}
-              className="inline-flex items-center rounded-xl bg-hm-ink px-4 py-2.5 font-display text-sm font-bold text-white transition hover:bg-hm-charcoal"
-            >
-              See All Service Areas
-            </Link>
-            <p className="mt-2 text-xs text-hm-muted">
-              Full OC, LA, and San Diego county directory.
-            </p>
           </div>
         </>
       );
