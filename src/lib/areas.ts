@@ -37,12 +37,6 @@ const regionLabel = {
   sd: "San Diego County, CA",
 } as const;
 
-const regionImages = {
-  oc: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=80",
-  la: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=80",
-  sd: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1600&q=80",
-} as const;
-
 const defaultProcess = [
   {
     title: "Local Intake",
@@ -160,7 +154,7 @@ function makeCity(seed: CitySeed): ServiceArea {
       "seasonal-hvac-maintenance-checklist",
       "signs-your-ac-is-failing",
     ],
-    image: seed.image || regionImages[seed.regionKey],
+    image: seed.image || `/images/cities/${seed.slug}.jpg`,
   };
 }
 

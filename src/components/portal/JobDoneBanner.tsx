@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { PortalBurst } from "@/components/portal/PortalBurst";
 
-export function JobDoneBanner({ jobTitle }: { jobTitle?: string }) {
+export function JobDoneBanner({ jobTitle, jobId }: { jobTitle?: string; jobId?: string }) {
   return (
     <section className="rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-5">
       <p className="font-display text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-800">
@@ -29,6 +30,7 @@ export function JobDoneBanner({ jobTitle }: { jobTitle?: string }) {
           Leave a review
         </a>
       </div>
+      {jobId ? <PortalBurst storageKey={`hm-burst-done-${jobId}`} /> : null}
     </section>
   );
 }

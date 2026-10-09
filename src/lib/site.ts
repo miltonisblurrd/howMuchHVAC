@@ -44,7 +44,6 @@ export const site = {
 
 export const navPrimary = [
   { href: "/services", label: "Services" },
-  { href: "/projects", label: "Projects" },
   { href: "/service-areas", label: "Service Areas" },
   { href: "/about", label: "About" },
   { href: "/reviews", label: "Reviews" },
@@ -58,7 +57,6 @@ export const navFooter = [
       { href: "/about", label: "About" },
       { href: "/team", label: "Our Team" },
       { href: "/partners", label: "Partners" },
-      { href: "/projects", label: "Projects" },
       { href: "/brand", label: "Brand Assets" },
       { href: "/contact", label: "Contact" },
     ],

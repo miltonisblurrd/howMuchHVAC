@@ -8,16 +8,12 @@ import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/Button";
 import { NavMegaMenu } from "@/components/layout/NavMegaMenu";
 import { getNavFeaturedAreas } from "@/lib/areas";
-import { projects } from "@/lib/projects";
 import { categoryPath, productCategories, productPath, productsInCategory } from "@/lib/products";
 import { services } from "@/lib/services";
 import { useContact } from "@/components/contact/ContactProvider";
 import { cn } from "@/lib/cn";
 
-const simpleNav = [
-  { href: "/about", label: "About" },
-  { href: "/blog", label: "Blog" },
-] as const;
+const simpleNav = [{ href: "/about", label: "About" }] as const;
 
 export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transparent" }) {
   const contact = useContact();
@@ -30,8 +26,8 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
   const featuredAreas = getNavFeaturedAreas();
 
   useEffect(() => {
-    if (tone !== "transparent") return;
-    const onScroll = () => setScrolled(window.scrollY > 24);
+    if (tone === "dark") return;
+    const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -46,6 +42,7 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
   const dark =
     tone === "dark" || (tone === "transparent" && !scrolled && !open);
   const solidLight = tone === "light" || (tone === "transparent" && (scrolled || open));
+  const tighten = scrolled && tone !== "dark";
 
   const linkClass = (active: boolean) =>
     cn(
@@ -57,9 +54,10 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
   return (
     <header
       className={cn(
-        "z-50 w-full transition-colors duration-300",
-        tone === "transparent" ? "fixed inset-x-0 top-0" : "relative",
+        "z-50 w-full transition-[background-color,box-shadow,color] duration-300",
+        tone === "transparent" ? "fixed inset-x-0 top-0" : "sticky top-0",
         solidLight && "border-b border-hm-line bg-white/95 text-hm-charcoal backdrop-blur-md",
+        tighten && "shadow-[0_12px_30px_-18px_rgba(18,21,26,0.45)]",
         tone === "dark" && "bg-hm-ink text-white",
         tone === "transparent" && !scrolled && !open && "bg-transparent text-white",
       )}
@@ -69,11 +67,16 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
         data-header-shell
         className="relative mx-auto max-w-6xl px-5 md:px-8"
       >
-        <div className="flex h-[4.25rem] items-center justify-between gap-4 md:h-20">
+        <div
+          className={cn(
+            "flex items-center justify-between gap-4 transition-[height] duration-300",
+            tighten ? "h-16" : "h-[4.25rem] md:h-20",
+          )}
+        >
           <Logo
             variant={dark ? "white" : "regular"}
             priority
-            height={dark ? 52 : 56}
+            height={tighten ? 42 : dark ? 52 : 56}
           />
 
           <div className="hidden lg:block lg:translate-x-6 xl:translate-x-8">
@@ -134,15 +137,6 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
                   links: services.map((s) => ({
                     href: `/services/${s.slug}`,
                     label: s.name,
-                  })),
-                },
-                {
-                  key: "projects",
-                  label: "Projects",
-                  href: "/projects",
-                  links: projects.map((p) => ({
-                    href: `/projects/${p.slug}`,
-                    label: p.title,
                   })),
                 },
                 {
@@ -219,7 +213,7 @@ export function Header({ tone = "light" }: { tone?: "light" | "dark" | "transpar
                 }
                 aria-expanded={mobileSection === "products"}
               >
-                Products
+                Shop Equipment
                 <ChevronDown
                   className={cn(
                     "h-4 w-4 text-hm-muted transition",

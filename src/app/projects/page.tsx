@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Projects",
   description:
     "Recent How Much? HVAC projects across Orange County, Los Angeles, and San Diego — before/after, scope, and outcomes.",
+  robots: { index: false, follow: false },
 };
 
 export default function ProjectsPage() {

@@ -1,5 +1,6 @@
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
+import { PageFade } from "@/components/layout/PageFade";
 import { StickyMobileCTA } from "@/components/layout/StickyMobileCTA";
 
 export function SiteShell({
@@ -14,7 +15,9 @@ export function SiteShell({
   return (
     <>
       <Header tone={headerTone} />
-      <main className={`flex-1 ${stickyCta ? "pb-20 md:pb-0" : ""}`}>{children}</main>
+      <main className={`flex-1 ${stickyCta ? "pb-20 md:pb-0" : ""}`}>
+        <PageFade>{children}</PageFade>
+      </main>
       <Footer />
       {stickyCta && <StickyMobileCTA />}
     </>

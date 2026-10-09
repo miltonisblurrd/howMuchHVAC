@@ -22,6 +22,7 @@ import {
 } from "@/lib/portal-queries";
 import { formatWhen, type Invoice } from "@/lib/db-types";
 import { JobDoneBanner } from "@/components/portal/JobDoneBanner";
+import { PortalBurst } from "@/components/portal/PortalBurst";
 import { unpackOptionCopy } from "@/lib/option-copy";
 import { paceFromEvents } from "@/lib/schedule-pace";
 
@@ -93,7 +94,10 @@ export default async function PortalProjectPage({
       </p>
 
       <div className="space-y-6">
-        {stage.phase === "done" ? <JobDoneBanner jobTitle={job.title} /> : null}
+        {stage.phase === "done" ? <JobDoneBanner jobTitle={job.title} jobId={job.id} /> : null}
+        {stage.depositPaid && stage.phase !== "done" ? (
+          <PortalBurst storageKey={`hm-burst-deposit-${job.id}`} />
+        ) : null}
         <ClientJobStepper stage={stage} />
         <ClientNextStep stage={stage} />
 

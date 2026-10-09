@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { ProductQuoteForm } from "@/components/products/ProductQuoteForm";
+import { ProductJumpBar } from "@/components/products/ProductJumpBar";
 import { Container, Eyebrow, Section } from "@/components/ui/Section";
 import { getProductDetail, getProductStory } from "@/lib/product-details";
 import { getProductShowcase } from "@/lib/product-showcase";
@@ -73,7 +74,7 @@ export default async function ProductPage({
               Get a quote
             </a>
             <a
-              href="#buy"
+              href="#quote"
               className="inline-flex h-12 items-center rounded-full bg-white px-6 font-display text-sm font-bold text-hm-charcoal"
             >
               Buy now
@@ -82,30 +83,9 @@ export default async function ProductPage({
         </Container>
       </section>
 
-      <div className="sticky top-16 z-40 border-b border-hm-line bg-white/95 backdrop-blur md:top-20">
-        <Container className="flex gap-6 overflow-x-auto py-3 text-sm font-semibold">
-          <a href="#overview" className="text-hm-charcoal">
-            Overview
-          </a>
-          <a href="#install" className="text-hm-muted hover:text-hm-charcoal">
-            How it goes in
-          </a>
-          <a href="#facts" className="text-hm-muted hover:text-hm-charcoal">
-            Facts
-          </a>
-          <a href="#why" className="text-hm-muted hover:text-hm-charcoal">
-            Why this one
-          </a>
-          <a href="#questions" className="text-hm-muted hover:text-hm-charcoal">
-            Questions
-          </a>
-          <a href="#quote" className="text-hm-red">
-            Get a quote
-          </a>
-        </Container>
-      </div>
+      <ProductJumpBar />
 
-      <Section id="overview" tone="white">
+      <Section id="overview" tone="white" className="scroll-mt-28">
         <Container>
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div className="rounded-3xl bg-hm-fog px-8 py-10">
@@ -143,7 +123,7 @@ export default async function ProductPage({
         </Container>
       </Section>
 
-      <Section id="install" tone="fog">
+      <Section id="install" tone="fog" className="scroll-mt-28">
         <Container>
           <div className="grid items-center gap-10 lg:grid-cols-2">
             <div>
@@ -169,7 +149,7 @@ export default async function ProductPage({
         </Container>
       </Section>
 
-      <Section id="facts" tone="white">
+      <Section id="facts" tone="white" className="scroll-mt-28">
         <Container>
           <h2 className="font-display text-3xl font-bold tracking-tight">The facts that matter</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -183,7 +163,7 @@ export default async function ProductPage({
         </Container>
       </Section>
 
-      <Section id="why" tone="white" className="!pt-4">
+      <Section id="why" tone="white" className="scroll-mt-28 !pt-4">
         <Container>
           <Eyebrow>Why this one</Eyebrow>
           <h2 className="mt-3 max-w-3xl font-display text-4xl font-bold tracking-tight">{showcase.title}</h2>
@@ -193,15 +173,15 @@ export default async function ProductPage({
               index === 1 ? (
                 <article
                   key={card.title}
-                  className="flex min-h-[34rem] flex-col rounded-[1.75rem] bg-[#f3efe6] p-6 md:p-8"
+                  className="hm-why-card flex min-h-[34rem] flex-col rounded-[1.75rem] bg-[#f3efe6] p-6 transition duration-300 hover:-translate-y-1 md:p-8"
                 >
                   <h3 className="font-display text-2xl font-bold tracking-tight">{card.title}</h3>
                   <p className="mt-3 text-base leading-relaxed text-hm-charcoal/80">{card.body}</p>
                   <img src={card.image} alt="" className="mt-6 h-56 w-full object-contain object-bottom" />
                 </article>
               ) : (
-                <article key={card.title} className="relative min-h-[34rem] overflow-hidden rounded-[1.75rem]">
-                  <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover" />
+                <article key={card.title} className="hm-why-card group relative min-h-[34rem] overflow-hidden rounded-[1.75rem] transition duration-300 hover:-translate-y-1">
+                  <img src={card.image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/15" />
                   <div className="relative flex h-full min-h-[34rem] flex-col justify-end p-6 text-white md:p-8">
                     <h3 className="font-display text-2xl font-bold tracking-tight">{card.title}</h3>
@@ -228,7 +208,7 @@ export default async function ProductPage({
         </Container>
       </Section>
 
-      <Section id="questions" tone="white" className="!pt-0">
+      <Section id="questions" tone="white" className="scroll-mt-28 !pt-0">
         <Container>
           <h2 className="font-display text-3xl font-bold tracking-tight">Questions</h2>
           <div className="mt-6 divide-y divide-hm-line border-y border-hm-line">

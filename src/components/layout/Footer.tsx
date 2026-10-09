@@ -10,7 +10,6 @@ const companyLinks = [
   { href: "/about", label: "About" },
   { href: "/team", label: "Our Team" },
   { href: "/partners", label: "Partners" },
-  { href: "/projects", label: "Projects" },
   { href: "/products", label: "Products" },
   { href: "/brand", label: "Brand Assets" },
   { href: "/contact", label: "Contact" },
@@ -89,7 +88,7 @@ export async function Footer() {
             </div>
           </div>
 
-          <div className="grid gap-10 sm:grid-cols-3">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-white/35">
                 Company
@@ -108,30 +107,48 @@ export async function Footer() {
               </ul>
             </div>
 
-            <div>
+            <div className="sm:col-span-2">
               <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-white/35">
                 Services
               </p>
-              <ul className="mt-4 space-y-3">
-                <li>
-                  <Link
-                    href="/services"
-                    className="text-sm font-semibold text-white transition hover:text-hm-red"
-                  >
-                    All Services
-                  </Link>
-                </li>
-                {services.map((service) => (
-                  <li key={service.slug}>
+              <div className="mt-4 grid grid-cols-2 gap-x-4">
+                <ul className="space-y-3">
+                  <li>
                     <Link
-                      href={`/services/${service.slug}`}
-                      className="text-sm text-white/70 transition hover:text-white"
+                      href="/services"
+                      className="text-sm font-semibold text-white transition hover:text-hm-red"
                     >
-                      {service.name}
+                      All Services
                     </Link>
                   </li>
-                ))}
-              </ul>
+                  {services
+                    .filter((_, index) => index % 2 === 0)
+                    .map((service) => (
+                      <li key={service.slug}>
+                        <Link
+                          href={`/services/${service.slug}`}
+                          className="text-sm leading-snug text-white/70 transition hover:text-white"
+                        >
+                          {service.name}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
+                <ul className="space-y-3">
+                  {services
+                    .filter((_, index) => index % 2 === 1)
+                    .map((service) => (
+                      <li key={service.slug}>
+                        <Link
+                          href={`/services/${service.slug}`}
+                          className="text-sm leading-snug text-white/70 transition hover:text-white"
+                        >
+                          {service.name}
+                        </Link>
+                      </li>
+                    ))}
+                </ul>
+              </div>
             </div>
 
             <div>

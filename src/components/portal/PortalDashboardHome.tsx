@@ -82,7 +82,7 @@ export async function PortalDashboardHome({ userId }: { userId: string }) {
 
   return (
     <div className="space-y-6">
-      {finished ? <JobDoneBanner jobTitle={finished.title} /> : null}
+      {finished ? <JobDoneBanner jobTitle={finished.title} jobId={finished.jobId} /> : null}
       {featured && (
         <section className="space-y-4">
           <div className="flex flex-wrap items-end justify-between gap-3">

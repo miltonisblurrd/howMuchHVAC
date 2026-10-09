@@ -43,7 +43,7 @@ export function Logo({
     <Link
       href={href}
       aria-label="How Much? home"
-      className="inline-flex shrink-0 items-center"
+      className="hm-logo-hover inline-flex shrink-0 origin-center items-center"
       style={{ height }}
     >
       {image}

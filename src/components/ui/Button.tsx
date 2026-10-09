@@ -73,7 +73,7 @@ function withArrow(children: React.ReactNode, show: boolean) {
   return (
     <span className="inline-flex items-center gap-2">
       <span className="leading-none">{label}</span>
-      <ArrowRight aria-hidden className="h-[1em] w-[1em] shrink-0" />
+      <ArrowRight aria-hidden className="hm-arrow h-[1em] w-[1em] shrink-0" />
     </span>
   );
 }
@@ -92,7 +92,7 @@ export function Button({
   const content = withArrow(children, showArrow);
 
   const classes = cn(
-    "inline-flex items-center justify-center gap-2 rounded-lg font-display font-semibold tracking-tight transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hm-red/45 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+    "hm-press inline-flex items-center justify-center gap-2 rounded-lg font-display font-semibold tracking-tight transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-hm-red/45 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
     variantClasses(variant, tone),
     sizes[size],
     className,

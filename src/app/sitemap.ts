@@ -2,7 +2,6 @@ import type { MetadataRoute } from "next";
 import { serviceAreas } from "@/lib/areas";
 import { getBlogPosts, getFaqs } from "@/lib/mdx";
 import { catalogProducts, productCategories, productPath } from "@/lib/products";
-import { projects } from "@/lib/projects";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
 import { team } from "@/lib/team";
@@ -13,7 +12,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "",
     "/services",
     "/service-areas",
-    "/projects",
     "/products",
     "/partners",
     "/about",
@@ -43,7 +41,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${base}/service-areas/${a.slug}`,
       lastModified: new Date(),
     })),
-    ...projects.map((p) => ({ url: `${base}/projects/${p.slug}`, lastModified: new Date() })),
     ...productCategories.map((category) => ({
       url: `${base}/products/${category.slug}`,
       lastModified: new Date(),

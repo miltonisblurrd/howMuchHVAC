@@ -27,10 +27,9 @@ export const services: Service[] = [
     name: "AC services",
     shortName: "AC services",
     summary: "Cooling service when Southern California heat hits hard.",
+    image: "/images/services/ac-services.jpg",
     description:
       "When your home stops cooling, you need answers—not a hard sell. How Much? is a family-owned HVAC company serving Southern California homeowners with clear diagnostics, honest repair-vs-replace options, and pricing you can actually understand. We walk you through what's broken, what can wait, and what a quality install looks like for your home—no mystery fees and no pressure to decide on the spot. Call Direct (562) 612-8961 and we'll help you get comfortable again with options that fit your budget and your house.",
-    image:
-      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1600&q=80",
     featured: true,
     expect: [
       "Plain-English diagnostic before any repair recommendation",
@@ -112,8 +111,7 @@ export const services: Service[] = [
     summary: "Reliable warmth for cooler nights—safely and efficiently.",
     description:
       "Southern California winters are mild until a cold snap hits and the heater won't start. How Much? is family-owned and focused on honest heating service for homeowners who want safety, even warmth, and clear options—not a pressure pitch. We diagnose ignition, airflow, and delivery issues first, then show repair, tune-up, or upgrade paths that fit your home and budget. Call Direct (562) 612-8961 when you want warmth you can trust—without mystery fees or rush tactics.",
-    image:
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/services/heating-services.jpg",
     featured: true,
     expect: [
       "Safety-first inspections before any comfort tweaks",
@@ -187,7 +185,7 @@ export const services: Service[] = [
     description:
       "Gas furnaces need careful handling—especially when ignition fails or you smell something that doesn't feel right. How Much? is a family-owned team serving Southern California homeowners with safety-first furnace inspections, honest repair guidance, and clean installs when replacement truly makes sense. We explain what's urgent versus optional so you're never pushed into a new system out of fear. Call Direct (562) 612-8961 for furnace help from neighbors who put clarity before the close.",
     image:
-      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1600&q=80",
+      "/images/services/gas-furnace.jpg",
     expect: [
       "Combustion, venting, and safety checks before any repair pitch",
       "Honest repair vs replace guidance based on condition—not fear",
@@ -250,8 +248,7 @@ export const services: Service[] = [
     summary: "Year-round comfort with efficient heating and cooling.",
     description:
       "Heat pumps are a smart fit for many Southern California homes—one system for most of the year's heating and cooling. How Much? is family-owned and helps homeowners cut through the marketing so you understand performance, operating costs, and whether a heat pump truly fits your ducts, electrical, and comfort goals. We present clear options with real-world expectations—no pressure and no mystery fees. Call Direct (562) 612-8961 when you're ready for honest guidance on an upgrade that should actually save you hassle.",
-    image:
-      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/services/heat-pump.jpg",
     featured: true,
     expect: [
       "All-in-one heating and cooling guidance tailored to your home",
@@ -319,7 +316,7 @@ export const services: Service[] = [
     description:
       "Additions, garages, ADUs, and problem rooms often never stay comfortable with the main system alone. How Much? is a family-owned HVAC company that designs and installs ductless mini-splits for Southern California homeowners who want quiet, efficient, room-by-room comfort—without major duct demolition. We plan placement for looks and performance, then walk you through clear options and pricing with no pressure. Call Direct (562) 612-8961 when one space in your home deserves its own climate.",
     image:
-      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=80",
+      "/images/services/ductless-mini-split.jpg",
     expect: [
       "Room-by-room temperature control designed for how you use the space",
       "Minimal-disruption installs with a clear placement plan upfront",
@@ -383,7 +380,7 @@ export const services: Service[] = [
     description:
       "When a package unit starts failing in the heat, access is harder and waiting often turns into an emergency. How Much? is family-owned and helps Southern California homeowners understand capacity, efficiency, and replacement options so you know exactly how much—and why. We assess curb, electrical, and whether a like-for-like swap beats converting system types, then present clear options without pressure. Call Direct (562) 612-8961 to plan a package unit repair or replacement on your timeline.",
     image:
-      "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=1600&q=80",
+      "/images/services/package-unit.jpg",
     expect: [
       "Accurate load and condition assessment before you buy equipment",
       "Trusted equipment options with clear efficiency tiers",
@@ -443,7 +440,7 @@ export const services: Service[] = [
     description:
       "Proper ventilation matters as much as temperature—especially in tighter homes where stale air, odors, and moisture linger. How Much? is family-owned and helps Southern California homeowners evaluate airflow issues with practical fixes, not gadget stacks. We diagnose how air moves through your house, then recommend only what solves the real problem—clearly, honestly, and without pressure. Call Direct (562) 612-8961 when your home feels stuffy and you want fresher air that still supports comfort.",
     image:
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1600&q=80",
+      "/images/services/ventilation.jpg",
     expect: [
       "Airflow diagnostics that explain why rooms feel stale or uneven",
       "Practical upgrade recommendations—not a pile of unnecessary gadgets",
@@ -503,7 +500,7 @@ export const services: Service[] = [
     description:
       "Leaky or poorly designed ducts waste money and comfort—even with a brand-new outdoor unit. How Much? is a family-owned HVAC company that inspects, seals, repairs, and redesigns duct systems for Southern California homeowners who want even temperatures and lower waste. We measure before we recommend, then show clear options without pressure to tear everything out. Call Direct (562) 612-8961 when your system runs hard but some rooms still never feel right.",
     image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1600&q=80",
+      "/images/services/ductwork.jpg",
     featured: true,
     expect: [
       "Leak detection and sealing prioritized by impact—not busywork",
@@ -568,7 +565,7 @@ export const services: Service[] = [
     description:
       "Insulation upgrades pair powerfully with HVAC work—especially when the attic turns into an oven every afternoon. How Much? is family-owned and helps Southern California homeowners improve comfort and reduce load on the system with targeted insulation recommendations, not blanket upsells. We explain how the building envelope affects sizing and bills so you can decide what to do first—clearly and without pressure. Call Direct (562) 612-8961 when good equipment still can't keep up with a leaky attic.",
     image:
-      "https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1600&q=80",
+      "/images/services/duct-insulation.jpg",
     expect: [
       "Attic and relevant area assessments tied to real comfort complaints",
       "Comfort and efficiency gains explained before any install",
@@ -631,7 +628,7 @@ export const services: Service[] = [
     description:
       "Dust, allergies, and wildfire smoke weeks make indoor air feel personal—not theoretical. How Much? is a family-owned HVAC company that recommends IAQ improvements for Southern California homeowners based on your home and your goals, not a one-size upsell. We match filtration and purification to what your system can handle, explain trade-offs clearly, and skip anything that doesn't solve your problem. Call Direct (562) 612-8961 when you want cleaner air with honest options and no pressure.",
     image:
-      "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1600&q=80",
+      "/images/services/indoor-air-quality.jpg",
     expect: [
       "Right-sized filtration options matched to your system's airflow",
       "Allergy- and comfort-focused solutions aimed at a clear goal",
@@ -695,7 +692,7 @@ export const services: Service[] = [
     description:
       "A correctly sized pool heat pump can keep evenings swimmable without shocking the utility bill. How Much? is family-owned and helps Southern California homeowners evaluate sizing, install quality, and operating expectations before they buy. We compare heat pump paths against aging gas heaters with real numbers—honest options, no pressure, and clear next steps. Call Direct (562) 612-8961 when you want a longer swim season and pricing that makes sense for how you actually use the pool.",
     image:
-      "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=1600&q=80",
+      "/images/services/pool-heat-pump.jpg",
     expect: [
       "Proper sizing guidance based on pool size, exposure, and usage",
       "Efficient heating options with operating expectations upfront",
@@ -752,40 +749,35 @@ export const services: Service[] = [
     name: "AC installation",
     shortName: "AC installation",
     system: "air conditioner",
-    image:
-      "https://images.unsplash.com/photo-1631545806609-35d4ae440431?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/services/ac-installation.jpg",
   }),
   installationService({
     slug: "heating-installation",
     name: "Heating installation",
     shortName: "Heating installation",
     system: "heating system",
-    image:
-      "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/services/heating-installation.jpg",
   }),
   installationService({
     slug: "gas-furnace-installation",
     name: "Gas furnace installation",
     shortName: "Furnace installation",
     system: "gas furnace",
-    image:
-      "https://images.unsplash.com/photo-1581094794329-adc84e1d0d52?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/services/gas-furnace-installation.jpg",
   }),
   installationService({
     slug: "heat-pump-installation",
     name: "Heat pump installation",
     shortName: "Heat pump installation",
     system: "heat pump",
-    image:
-      "https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/services/heat-pump-installation.jpg",
   }),
   installationService({
     slug: "ductless-package-installation",
     name: "Ductless and package unit installation",
     shortName: "Ductless install",
     system: "ductless or package unit",
-    image:
-      "https://images.unsplash.com/photo-1631545806609-35d4ae440431?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/services/ductless-package-installation.jpg",
   }),
 ];
 

@@ -13,10 +13,9 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import gsap from "gsap";
-import { AirVent, ChevronDown, FolderKanban, MapPin } from "lucide-react";
+import { AirVent, ChevronDown, MapPin } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { getNavFeaturedAreas } from "@/lib/areas";
-import { projects } from "@/lib/projects";
 import { serviceIcons } from "@/lib/serviceIcons";
 import { servicesInGroup } from "@/lib/services";
 import {
@@ -26,7 +25,7 @@ import {
   productsInCategory,
 } from "@/lib/products";
 
-type MenuKey = "services" | "projects" | "areas" | "products" | null;
+type MenuKey = "services" | "areas" | "products" | null;
 
 type NavMegaMenuProps = {
   dark: boolean;
@@ -202,55 +201,6 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
       );
     }
 
-    if (open === "projects") {
-      return (
-        <>
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-hm-red">
-                Projects
-              </p>
-              <p className="mt-1 font-display text-lg font-bold text-hm-charcoal">
-                Proof In The Work
-              </p>
-            </div>
-            <Link
-              href="/projects"
-              className="shrink-0 font-display text-sm font-semibold text-hm-red hover:underline"
-              onClick={() => setOpen(null)}
-            >
-              View All Projects ?
-            </Link>
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            {projects.map((project) => (
-              <Link
-                key={project.slug}
-                href={`/projects/${project.slug}`}
-                onClick={() => setOpen(null)}
-                className="flex gap-3 rounded-xl px-3 py-3 transition hover:bg-hm-fog"
-              >
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-hm-red/10 text-hm-red">
-                  <FolderKanban className="h-[18px] w-[18px]" />
-                </span>
-                <span>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-hm-red">
-                    {project.city}
-                  </p>
-                  <p className="mt-1 font-display text-sm font-bold text-hm-charcoal">
-                    {project.title}
-                  </p>
-                  <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-hm-muted">
-                    {project.summary}
-                  </p>
-                </span>
-              </Link>
-            ))}
-          </div>
-        </>
-      );
-    }
-
     if (open === "areas") {
       return (
         <>
@@ -310,10 +260,10 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
           <div className="mb-4 flex items-end justify-between gap-4">
             <div>
               <p className="font-display text-[11px] font-bold uppercase tracking-[0.2em] text-hm-red">
-                Products
+                Shop Equipment
               </p>
               <p className="mt-1 font-display text-lg font-bold text-hm-charcoal">
-                Mr. Cool equipment, sold and installed by How Much?
+                How Much? is an official Mr. Cool vendor.
               </p>
             </div>
             <Link
@@ -380,9 +330,8 @@ export function NavMegaMenu({ dark, shellRef, trailingLinks }: NavMegaMenuProps)
     href: string;
   }[] = [
     { key: "services", label: "Services", href: "/services" },
-    { key: "projects", label: "Projects", href: "/projects" },
     { key: "areas", label: "Service Areas", href: "/service-areas" },
-    { key: "products", label: "Products", href: "/products" },
+    { key: "products", label: "Shop Equipment", href: "/products" },
   ];
 
   const panel =

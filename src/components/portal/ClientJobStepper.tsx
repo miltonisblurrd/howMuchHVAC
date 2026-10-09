@@ -1,9 +1,22 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { CLIENT_STEPS, type ClientStage } from "@/lib/client-stages";
 import { cn } from "@/lib/cn";
 
 export function ClientJobStepper({ stage }: { stage: ClientStage }) {
   const cancelled = stage.phase === "cancelled";
+  const [drawn, setDrawn] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setDrawn(true);
+      return;
+    }
+    const frame = requestAnimationFrame(() => setDrawn(true));
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   return (
     <section className="hm-admin-card p-5">
@@ -29,11 +42,16 @@ export function ClientJobStepper({ stage }: { stage: ClientStage }) {
                   {idx < CLIENT_STEPS.length - 1 && (
                     <span
                       aria-hidden
-                      className={cn(
-                        "absolute top-[1.35rem] left-[calc(50%+1.25rem)] hidden h-[2px] w-[calc(100%-2.5rem)] sm:block",
-                        done ? "bg-hm-red" : "bg-hm-line",
-                      )}
-                    />
+                      className="absolute top-[1.35rem] left-[calc(50%+1.25rem)] hidden h-[2px] w-[calc(100%-2.5rem)] overflow-hidden bg-hm-line sm:block"
+                    >
+                      <span
+                        className={cn(
+                          "hm-step-fill block h-full w-full bg-hm-red",
+                          drawn && idx < stage.stepIndex && "is-on",
+                        )}
+                        style={{ transitionDelay: `${idx * 140}ms` }}
+                      />
+                    </span>
                   )}
                   <div
                     aria-current={active ? "step" : undefined}
@@ -46,7 +64,7 @@ export function ClientJobStepper({ stage }: { stage: ClientStage }) {
                       className={cn(
                         "relative z-10 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 font-display text-sm font-bold",
                         done && "border-hm-red bg-hm-red text-white",
-                        active && "border-hm-red bg-white text-hm-red shadow-[0_0_0_4px_rgba(255,29,37,0.15)]",
+                        active && "hm-pulse-once border-hm-red bg-white text-hm-red shadow-[0_0_0_4px_rgba(255,29,37,0.15)]",
                         !done && !active && "border-hm-line bg-white text-hm-muted",
                       )}
                     >

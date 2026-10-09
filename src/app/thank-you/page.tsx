@@ -1,14 +1,9 @@
 import type { Metadata } from "next";
-import {
-  CheckCircle2,
-  FileText,
-  MessageSquare,
-  CalendarDays,
-  CreditCard,
-  Mail,
-} from "lucide-react";
+import { FileText, MessageSquare, CalendarDays, CreditCard, Mail } from "lucide-react";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { Button } from "@/components/ui/Button";
+import { DrawnCheck } from "@/components/forms/FormMotion";
+import { quoteNextSteps } from "@/lib/quote-next";
 import { Container, Eyebrow, Heading, Section } from "@/components/ui/Section";
 import { getFeaturedReviews } from "@/lib/reviews";
 import { CallAndy, AndyName, DirectPhone } from "@/components/contact/CallAndy";
@@ -54,9 +49,7 @@ export default async function ThankYouPage({
     <SiteShell>
       <Section tone="dark" className="!pt-16 md:!pt-24">
         <Container className="max-w-3xl">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/15 text-emerald-400">
-            <CheckCircle2 className="h-7 w-7" />
-          </div>
+          <DrawnCheck className="text-emerald-400" />
           <Eyebrow className="mt-6 text-hm-red">Request received</Eyebrow>
           <Heading as="h1" className="mt-3 text-white">
             Thanks, {first} — We&apos;ve Got You
@@ -65,6 +58,15 @@ export default async function ThankYouPage({
             Your request is in Andy&apos;s queue. A real person from How Much? will follow up with
             clear next steps — options first, no pressure.
           </p>
+          <ol className="mt-8 grid gap-3 sm:grid-cols-3">
+            {quoteNextSteps.map((step, index) => (
+              <li key={step.title} className="rounded-2xl border border-white/10 bg-white/5 p-4 text-left">
+                <span className="font-display text-sm font-extrabold text-hm-red">{index + 1}</span>
+                <p className="mt-2 font-display text-base font-bold text-white">{step.title}</p>
+                <p className="mt-1 text-sm text-white/65">{step.body}</p>
+              </li>
+            ))}
+          </ol>
           <div className="mt-6 flex items-start gap-3 rounded-2xl border border-white/15 bg-white/5 p-4 text-white/85">
             <Mail className="mt-0.5 h-5 w-5 shrink-0 text-hm-red" />
             <div>

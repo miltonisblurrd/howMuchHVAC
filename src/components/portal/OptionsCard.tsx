@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { AdminCard, AdminCardHeader } from "@/components/admin/AdminUi";
 import { CountUp } from "@/components/admin/CountUp";
 import { OptionCopyView } from "@/components/portal/OptionCopyView";
@@ -43,7 +44,7 @@ export function OptionsCard({
 
         {stage.showOptions && stage.depositPaid && chosen && (
           <div className="mt-4">
-            <OptionTile option={chosen} selected locked />
+            <OptionTile option={chosen} selected locked depositCents={stage.depositCents} />
             <p className="mt-3 text-sm text-hm-muted">
               <Link href="/portal/messages" className="font-semibold text-hm-red">
                 Message Andy
@@ -73,7 +74,7 @@ export function OptionsCard({
 
         {stage.showOptions && !stage.depositPaid && chosen && (
           <div className="mt-4 space-y-3">
-            <OptionTile option={chosen} selected jobId={stage.jobId} />
+            <OptionTile option={chosen} selected jobId={stage.jobId} depositCents={stage.depositCents} />
             {others.length > 0 && stage.canChangeOption && (
               <details className="rounded-xl border border-hm-line bg-hm-fog/60 px-4 py-3">
                 <summary className="cursor-pointer font-semibold text-hm-charcoal">
@@ -106,6 +107,7 @@ function OptionTile({
   jobId,
   canSelect,
   selectLabel,
+  depositCents = 0,
 }: {
   option: PortalOption;
   selected?: boolean;
@@ -113,6 +115,7 @@ function OptionTile({
   jobId?: string;
   canSelect?: boolean;
   selectLabel?: string;
+  depositCents?: number;
 }) {
   return (
     <div
@@ -125,7 +128,8 @@ function OptionTile({
         <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-hm-red">Recommended</p>
       )}
       {selected && (
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-700">
+        <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-700">
+          <Check className="hm-pop h-3.5 w-3.5" strokeWidth={3} />
           {locked ? "Your choice" : "Selected"}
         </p>
       )}
@@ -137,6 +141,12 @@ function OptionTile({
       <p className="mt-4 font-display text-2xl font-bold tracking-tight text-hm-charcoal">
         <CountUp value={money(option.price_cents)} />
       </p>
+      {selected && depositCents > 0 && (
+        <p className="mt-1 text-sm text-hm-muted">
+          Deposit{" "}
+          <CountUp value={money(depositCents)} className="font-semibold text-hm-charcoal" />
+        </p>
+      )}
       {canSelect && jobId && (
         <div className="mt-4">
           <SelectOptionButton jobId={jobId} optionId={option.id} label={selectLabel} />

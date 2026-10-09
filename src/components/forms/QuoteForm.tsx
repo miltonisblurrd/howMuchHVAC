@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { usePathname } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import {
+  isValidEmail,
+  isValidPhone,
+  QuoteProgress,
+  QuoteSuccess,
+  TrackedField,
+} from "@/components/forms/FormMotion";
 import { ServiceOptions } from "@/components/forms/ServiceOptions";
 import { site } from "@/lib/site";
 import { cn } from "@/lib/cn";
@@ -28,30 +35,76 @@ export function QuoteForm({
   portalSignup?: boolean;
   stayOnSuccess?: boolean;
 }) {
-  const router = useRouter();
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [done, setDone] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [city, setCity] = useState("");
+  const [service, setService] = useState("");
+  const [message, setMessage] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [shakes, setShakes] = useState({ phone: 0, email: 0, service: 0 });
+  const [serviceShake, setServiceShake] = useState(false);
   const guard = useFormGuard();
+
+  useEffect(() => {
+    if (!shakes.service) return;
+    setServiceShake(true);
+    const timer = window.setTimeout(() => setServiceShake(false), 450);
+    return () => window.clearTimeout(timer);
+  }, [shakes.service]);
+
+  const cardClass = cn(
+    "relative rounded-2xl bg-white p-6 text-hm-charcoal md:p-8",
+    elevated
+      ? "shadow-[0_32px_80px_-24px_rgba(0,0,0,0.55)] ring-1 ring-black/5"
+      : "shadow-xl ring-1 ring-black/5",
+    className,
+  );
+
+  const progress = useMemo(() => {
+    const fields = [firstName, lastName, phone, email];
+    if (portalSignup) fields.push(password, confirmPassword);
+    if (!compact) fields.push(service);
+    const filled = fields.filter((value) => value.trim()).length;
+    return { filled, total: fields.length };
+  }, [compact, confirmPassword, email, firstName, lastName, password, phone, portalSignup, service]);
+
+  function bump(field: "phone" | "email" | "service") {
+    setShakes((current) => ({ ...current, [field]: current[field] + 1 }));
+  }
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
     setError("");
 
-    const form = new FormData(e.currentTarget);
-    const firstName = String(form.get("firstName") || "").trim();
-    const lastName = String(form.get("lastName") || "").trim();
-    const name = [firstName, lastName].filter(Boolean).join(" ");
+    if (!isValidPhone(phone)) {
+      bump("phone");
+      setLoading(false);
+      return;
+    }
+    if (!isValidEmail(email)) {
+      bump("email");
+      setLoading(false);
+      return;
+    }
+    if (!compact && !service) {
+      bump("service");
+      setLoading(false);
+      return;
+    }
 
-    const password = portalSignup ? String(form.get("password") || "") : "";
-    const confirm = portalSignup ? String(form.get("confirmPassword") || "") : "";
+    const passwordValue = portalSignup ? password : "";
+    const confirm = portalSignup ? confirmPassword : "";
     if (portalSignup) {
-      const passwordError = validateNewPassword(password, confirm);
+      const passwordError = validateNewPassword(passwordValue, confirm);
       if (passwordError) {
         setError(passwordError);
-        setLoading(false);
         return;
       }
     }
@@ -59,12 +112,12 @@ export function QuoteForm({
     const notReady = guard.notReadyMessage();
     if (notReady) {
       setError(notReady);
-      setLoading(false);
       return;
     }
 
-    const params =
-      typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
+    setLoading(true);
+    const name = [firstName, lastName].map((value) => value.trim()).filter(Boolean).join(" ");
+    const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
 
     try {
       const res = await fetch("/api/leads", {
@@ -72,12 +125,12 @@ export function QuoteForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
-          email: form.get("email"),
-          phone: form.get("phone"),
-          city: form.get("city") || null,
-          service: form.get("service") || null,
-          message: form.get("message") || null,
-          ...(portalSignup ? { password } : {}),
+          email,
+          phone,
+          city: city || null,
+          service: service || null,
+          message: message || null,
+          ...(portalSignup ? { password: passwordValue } : {}),
           sourcePath: pathname || "/",
           sourceLabel,
           utmSource: params?.get("utm_source"),
@@ -99,21 +152,16 @@ export function QuoteForm({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            email: String(form.get("email") || "").trim().toLowerCase(),
-            password,
+            email: email.trim().toLowerCase(),
+            password: passwordValue,
             next: "/portal",
           }),
         });
         if (login.ok) markSkipPortalSkeleton();
       }
 
-      if (stayOnSuccess) {
-        setDone(true);
-        setLoading(false);
-        return;
-      }
-
-      router.push(`/thank-you?name=${encodeURIComponent(firstName || name)}`);
+      setDone(true);
+      setLoading(false);
     } catch {
       setError("Something went wrong. Please call us or try again.");
       setLoading(false);
@@ -121,83 +169,97 @@ export function QuoteForm({
   }
 
   if (done) {
+    const who = firstName.trim();
     return (
-      <div
-        className={cn(
-          "rounded-2xl bg-white p-8 text-center text-hm-charcoal",
-          elevated
-            ? "shadow-[0_32px_80px_-24px_rgba(0,0,0,0.55)] ring-1 ring-black/5"
-            : "shadow-xl ring-1 ring-black/5",
-          className,
-        )}
-      >
-        <p className="font-display text-xl font-bold">Got it — Andy will follow up</p>
-        <p className="mt-2 text-sm text-hm-muted">
-          Same-day callback. Prefer the phone? Call {site.phones.direct.display}.
-        </p>
+      <div className={cardClass}>
+        <QuoteSuccess
+          title={who ? `Andy has this, ${who}` : "Andy has this"}
+          detail={
+            stayOnSuccess
+              ? `Prefer the phone? Call ${site.phones.direct.display}.`
+              : "Your request is in. Here is what happens next."
+          }
+          portalNote={sourceLabel !== "Coming soon"}
+        />
       </div>
     );
   }
 
   return (
-    <form
-      className={cn(
-        "relative rounded-2xl bg-white p-6 text-hm-charcoal md:p-8",
-        elevated
-          ? "shadow-[0_32px_80px_-24px_rgba(0,0,0,0.55)] ring-1 ring-black/5"
-          : "shadow-xl ring-1 ring-black/5",
-        className,
-      )}
-      onSubmit={onSubmit}
-    >
+    <form className={cardClass} onSubmit={onSubmit}>
       <HoneypotField inputRef={guard.honeypotRef} />
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="font-display text-[11px] font-bold uppercase tracking-[0.22em] text-hm-red">
-            Free quote
-          </p>
-          <h3 className="mt-1.5 font-display text-xl font-bold tracking-tight md:text-2xl">
-            What Can We Help You With Today?
-          </h3>
-        </div>
-        <div className="hidden shrink-0 items-center gap-1 rounded-full bg-hm-fog px-2.5 py-1 text-[11px] font-semibold text-hm-charcoal sm:flex">
-          <span className="text-amber-500">★</span> {site.google.rating}
-        </div>
+      <div>
+        <p className="font-display text-[11px] font-bold uppercase tracking-[0.22em] text-hm-red">Free quote</p>
+        <h3 className="mt-1.5 whitespace-nowrap font-display text-base font-bold leading-tight tracking-tight sm:text-lg">
+          What Can We Help You With Today?
+        </h3>
       </div>
 
+      <QuoteProgress filled={progress.filled} total={progress.total} />
+
       <div className={`mt-5 grid gap-3 ${compact ? "" : "sm:grid-cols-2"}`}>
-        <Field label="First name" name="firstName" required autoComplete="given-name" />
-        <Field label="Last name" name="lastName" required autoComplete="family-name" />
-        <Field label="Phone" name="phone" type="tel" required autoComplete="tel" />
-        <Field label="Email" name="email" type="email" required autoComplete="email" />
+        <TrackedField label="First name" name="firstName" required autoComplete="given-name" value={firstName} onChange={setFirstName} />
+        <TrackedField label="Last name" name="lastName" required autoComplete="family-name" value={lastName} onChange={setLastName} />
+        <TrackedField
+          label="Phone"
+          name="phone"
+          type="tel"
+          required
+          autoComplete="tel"
+          value={phone}
+          onChange={setPhone}
+          validate={isValidPhone}
+          shakeSignal={shakes.phone}
+        />
+        <TrackedField
+          label="Email"
+          name="email"
+          type="email"
+          required
+          autoComplete="email"
+          value={email}
+          onChange={setEmail}
+          validate={isValidEmail}
+          shakeSignal={shakes.email}
+        />
         {portalSignup && (
           <>
-            <Field
+            <TrackedField
               label="Portal password"
               name="password"
               type="password"
               required
               autoComplete="new-password"
               minLength={MIN_PASSWORD_LENGTH}
+              value={password}
+              onChange={setPassword}
             />
-            <Field
+            <TrackedField
               label="Confirm password"
               name="confirmPassword"
               type="password"
               required
               autoComplete="new-password"
               minLength={MIN_PASSWORD_LENGTH}
+              value={confirmPassword}
+              onChange={setConfirmPassword}
             />
           </>
         )}
         {!compact && (
           <>
-            <Field label="City" name="city" autoComplete="address-level2" />
-            <label className="block">
+            <TrackedField label="City" name="city" autoComplete="address-level2" value={city} onChange={setCity} />
+            <label className={cn("block", serviceShake && "hm-shake")}>
               <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hm-muted">
                 Service needed
               </span>
-              <select name="service" className="hm-input" defaultValue="" required>
+              <select
+                name="service"
+                className="hm-input"
+                value={service}
+                required
+                onChange={(event) => setService(event.target.value)}
+              >
                 <ServiceOptions blankLabel="Select a service" blankDisabled valueKey="slug" />
                 <option value="second-opinion">Second opinion</option>
                 <option value="not-sure">Not sure yet</option>
@@ -210,6 +272,8 @@ export function QuoteForm({
               <textarea
                 name="message"
                 rows={2}
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
                 className="hm-input !h-auto min-h-[4.5rem] py-3"
                 placeholder="AC not cooling, install quote, second opinion?"
               />
@@ -220,8 +284,8 @@ export function QuoteForm({
 
       {portalSignup && (
         <p className="mt-3 text-xs text-hm-muted">
-          Already a customer? Use the portal password you already have. New here? Pick one you can
-          remember — you&apos;ll use it to sign in next time, no email link.
+          Already a customer? Use the portal password you already have. New here? Pick one you can remember —
+          you&apos;ll use it to sign in next time, no email link.
         </p>
       )}
 
@@ -235,41 +299,8 @@ export function QuoteForm({
 
       <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-[11px] text-hm-muted">
         <ShieldCheck className="h-3.5 w-3.5 text-hm-red" />
-        {site.license} · {portalSignup ? "Creates your portal login · " : ""}No pressure — same-day
-        callbacks
+        {site.license} · {portalSignup ? "Creates your portal login · " : ""}No pressure — same-day callbacks
       </p>
     </form>
-  );
-}
-
-function Field({
-  label,
-  name,
-  type = "text",
-  required,
-  autoComplete,
-  minLength,
-}: {
-  label: string;
-  name: string;
-  type?: string;
-  required?: boolean;
-  autoComplete?: string;
-  minLength?: number;
-}) {
-  return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-hm-muted">
-        {label}
-      </span>
-      <input
-        name={name}
-        type={type}
-        required={required}
-        autoComplete={autoComplete}
-        minLength={minLength}
-        className="hm-input"
-      />
-    </label>
   );
 }

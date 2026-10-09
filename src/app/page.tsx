@@ -10,7 +10,6 @@ import { PartnerLogos } from "@/components/brand/PartnerLogos";
 import { PartnerLogoStrip } from "@/components/brand/PartnerLogoStrip";
 import { GuideDownloadBand } from "@/components/home/GuideDownloadBand";
 import { CallAndyHero } from "@/components/contact/CallAndy";
-import { projects } from "@/lib/projects";
 import { getFeaturedReviews } from "@/lib/reviews";
 import { services } from "@/lib/services";
 import { site } from "@/lib/site";
@@ -251,49 +250,6 @@ export default function HomePage() {
                 </Button>
               </div>
             </div>
-          </div>
-        </Container>
-      </Section>
-
-      {/* ── Projects ── */}
-      <Section tone="white">
-        <Container>
-          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
-            <div>
-              <Eyebrow>Recent Projects</Eyebrow>
-              <Heading className="mt-3 text-hm-charcoal">Proof In The Work</Heading>
-            </div>
-            <Button href="/projects" variant="outline" tone="light">
-              View Projects
-            </Button>
-          </div>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {projects.slice(0, 3).map((project) => (
-              <Link
-                key={project.slug}
-                href={`/projects/${project.slug}`}
-                className="group overflow-hidden rounded-2xl border border-hm-line bg-hm-fog hm-card-lift"
-              >
-                <div className="relative h-48 overflow-hidden">
-                  <Image
-                    src={project.afterImage}
-                    alt={project.title}
-                    fill
-                    sizes="(max-width:768px) 100vw, 33vw"
-                    className="object-cover transition duration-500 group-hover:scale-105"
-                  />
-                </div>
-                <div className="p-5">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-hm-red">
-                    {project.city}
-                  </p>
-                  <h3 className="mt-2 font-display text-lg font-bold tracking-tight text-hm-charcoal">
-                    {project.title}
-                  </h3>
-                  <p className="mt-2 line-clamp-2 text-sm text-hm-muted">{project.summary}</p>
-                </div>
-              </Link>
-            ))}
           </div>
         </Container>
       </Section>

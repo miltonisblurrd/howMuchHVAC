@@ -18,7 +18,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = getProject(slug);
   if (!project) return {};
-  return { title: project.title, description: project.summary };
+  return { title: project.title, description: project.summary, robots: { index: false, follow: false } };
 }
 
 export default async function ProjectDetailPage({
